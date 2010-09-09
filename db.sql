@@ -1,0 +1,294 @@
+SET sql_mode = 'ALLOW_INVALID_DATES';
+/* 
+	0 <= Rate >= 1 
+	0 <= Quality	
+*/
+
+/* */
+CREATE TABLE libraries (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	Title VARCHAR(255) NOT NULL,
+	UniqueID CHAR(40) NOT NULL,
+	ServerID CHAR(32) NULL DEFAULT NULL,
+	Licence VARCHAR(255) NULL DEFAULT NULL,
+	SyncTime DATETIME NULL DEFAULT NULL,
+	PRIMARY KEY (ID)
+);
+
+/* */
+CREATE TABLE users (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	NationalID INT(11) NOT NULL,
+	FirstName VARCHAR(255) NOT NULL,
+	LastName VARCHAR(255) NOT NULL,
+	BirthDate DATE NOT NULL,
+	Address VARCHAR(255) NULL DEFAULT NULL,
+	Phone VARCHAR(50) NULL DEFAULT NULL,
+	Gender ENUM('male','female') NOT NULL,
+	RegisterTime DATETIME NULL DEFAULT NULL,
+	Description VARCHAR(255) NULL DEFAULT NULL,
+	Score INT NOT NULL DEFAULT '0',
+	Email VARCHAR(255) NOT NULL COLLATE 'ascii_bin',
+	UserName VARCHAR(50) NOT NULL,
+	UserPass VARCHAR(50) NOT NULL,
+	Permission VARCHAR(255) NULL DEFAULT NULL,
+	UpdateTime DATETIME NULL DEFAULT NULL,
+	PRIMARY KEY (ID)
+	UNIQUE KEY UserName (UserName)
+);
+
+/* */
+CREATE TABLE answers (
+	ID int(11) NOT NULL AUTO_INCREMENT,
+	UserID INT(11) NOT NULL,
+	MatchID INT(11) NOT NULL,
+	DeliverTime DATETIME NULL DEFAULT NULL,
+	ReceiveTime DATETIME NULL DEFAULT NULL,
+	CorrectTime DATETIME NULL DEFAULT NULL,
+	Rate FLOAT NULL DEFAULT NULL,
+	Score SMALLINT(6) NULL DEFAULT NULL,
+	PRIMARY KEY (ID)
+);
+CREATE TABLE payments (
+	ID int(11) NOT NULL AUTO_INCREMENT,
+	TournamentID INT(11) NOT NULL,
+	PayerID INT(11) NOT NULL,
+	UserID INT(11) NOT NULL,
+	Payment SMALLINT(6) NOT NULL,
+	PayTime DATETIME NOT NULL,
+	PRIMARY KEY (ID)
+);
+CREATE TABLE messages (
+	ID int(11) NOT NULL AUTO_INCREMENT,
+	SenderID int(11) NOT NULL,
+	ReceiverID int(11) NOT NULL,
+	Content TEXT NULL,
+	SendTime DATETIME NOT NULL,
+	ViewTime DATETIME DEFAULT NULL,
+	PRIMARY KEY (ID),
+);
+
+/* moderator tables */
+CREATE TABLE sentences (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	Sentence VARCHAR(255) NOT NULL,
+	UpdateTime DATETIME NOT NULL,
+	PRIMARY KEY (ID)
+);
+CREATE TABLE categories (
+	ID TINYINT(4) NOT NULL,
+	Title VARCHAR(255) NOT NULL,
+	Description VARCHAR(255) NULL DEFAULT NULL,
+	BeginAge TINYINT(4) NOT NULL,
+	EndAge TINYINT(4) NOT NULL,
+	UpdateTime DATETIME NOT NULL,
+	PRIMARY KEY (ID)
+);
+CREATE TABLE authors (
+	ID INT(11) NOT NULL AUTO_INCREMENT,r
+	Title VARCHAR(255) NOT NULL,
+	Quality FLOAT NOT NULL DEFAULT '1',
+	UpdateTime DATETIME NOT NULL,
+	PRIMARY KEY (ID)
+);
+CREATE TABLE publications (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	Title VARCHAR(255) NOT NULL,
+	Quality FLOAT NOT NULL DEFAULT '1',
+	UpdateTime DATETIME NOT NULL,
+	PRIMARY KEY (ID)
+);
+
+/*
+CREATE TABLE freescores (
+	LibraryID INT(11) NOT NULL,
+	ID INT(11) NOT NULL,
+	UserID INT(11) NOT NULL,
+	GroupID TINYINT(4) NOT NULL,
+	Title VARCHAR(255) NOT NULL,
+	Score SMALLINT(6) NOT NULL,
+	ScoreTime DATETIME NOT NULL,
+	OperatorID INT(11) NOT NULL,
+	PRIMARY KEY (ID, LibraryID)
+);
+CREATE TABLE groups (
+	LibraryID INT(11) NOT NULL,
+	ID TINYINT(4) NOT NULL,
+	Caption VARCHAR(255) NOT NULL,
+	SyncTime DATETIME NULL DEFAULT NULL,
+	PRIMARY KEY (LibraryID, ID)
+);
+*/
+
+
+/* global match
+
+CREATE TABLE tags (
+	Kind TINYINT(4) NOT NULL,
+	ID TINYINT(4) NOT NULL,
+	Caption VARCHAR(50) NOT NULL,
+	UpdateTime DATETIME NOT NULL,
+	PRIMARY KEY (Kind, ID)
+);
+
+
+CREATE TABLE resources (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	Rate FLOAT NOT NULL DEFAULT '1',
+	AuthorID INT(11) NULL DEFAULT NULL,
+	PublicationID INT(11) NULL DEFAULT NULL,
+	Kind ENUM('???????', '????', '??????', '???? ??') NOT NULL DEFAULT '???????',
+	Category TINYINT(4) NULL DEFAULT NULL,
+	Tags SET('????') NULL DEFAULT NULL, 
+	UpdateTime DATETIME NULL DEFAULT NULL,
+	PRIMARY KEY (ID)
+);
+CREATE TABLE matches (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	ResourceID INT(11) NULL DEFAULT NULL,
+	DesignerID INT(11) UNSIGNED NULL,
+	Rate FLOAT NOT NULL DEFAULT '1',
+	QPPaper TINYINT(4) NOT NULL,
+	Content TEXT NULL,
+	Category TINYINT(4) NULL DEFAULT NULL,
+	Configuration VARCHAR(50) NULL DEFAULT NULL,
+	UpdateTime DATETIME NULL DEFAULT NULL,
+	PRIMARY KEY (ID)
+);
+CREATE TABLE qustions (
+	MatchID INT(11) NOT NULL,
+	ID TINYINT(4) NOT NULL,
+	Question VARCHAR(1000) NOT NULL,
+	Answer VARCHAR(1000) NULL DEFAULT NULL,
+	PRIMARY KEY (MatchID, ID)
+);
+CREATE TABLE entities (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	Title VARCHAR(255) NOT NULL,
+	Tags SET('a') NULL DEFAULT NULL,
+	Category TINYINT(4) NULL DEFAULT NULL,
+	PRIMARY KEY (ID)
+);
+CREATE TABLE supports (
+	LibraryID INT(11) NOT NULL,
+	MatchID INT(11) NOT NULL,
+	CorrectorID INT(11) NOT NULL,
+	State TINYINT(4) NOT NULL
+);
+CREATE TABLE pictures (
+	LibraryID INT(11) NOT NULL,
+	ID INT(11) NOT NULL,
+	Picture MEDIUMBLOB NULL,
+	PRIMARY KEY (LibraryID, ID)
+);
+
+*/
+
+/* webmatch
+CREATE TABLE follows (
+  TournamentID int(11) NOT NULL,
+  FollowedID int(11) NOT NULL,
+  PRIMARY KEY (TournamentID,FollowedID),
+  FOREIGN KEY (TournamentID) REFERENCES tournaments(ID),
+  FOREIGN KEY (FollowedID) REFERENCES tournaments(ID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE groupings (
+  GroupID int(11) NOT NULL,
+  UserID int(11) NOT NULL,
+  Accept tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (GroupID,UserID),
+  FOREIGN KEY (GroupID) REFERENCES groups(ID),
+  FOREIGN KEY (UserID) REFERENCES users(ID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE groups (
+  ID int(11) NOT NULL AUTO_INCREMENT,
+  Title varchar(255) NOT NULL,
+  MasterID int(11) NOT NULL,
+  Score int(11) NOT NULL DEFAULT '0',
+  CorrectionTime int(11) NOT NULL DEFAULT '0' COMMENT 'Minute',
+  Active tinyint(1) NOT NULL DEFAULT '0',
+  Description varchar(1000) DEFAULT NULL,
+  PRIMARY KEY (ID),
+  FOREIGN KEY (MasterID) REFERENCES users(ID)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE links (
+  GroupID int(11) NOT NULL,
+  Link varchar(1000) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  SuggestDate date NOT NULL,
+  FOREIGN KEY (GroupID) REFERENCES groups(ID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE matches (
+  ID int(11) NOT NULL AUTO_INCREMENT,
+  DesignerID int(11) NOT NULL,
+  Title varchar(255) NOT NULL,
+  Coefficient float NOT NULL DEFAULT '1',
+  Age int(11) NOT NULL,
+  Content text,
+  Link varchar(1000) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL,
+  PRIMARY KEY (ID),
+  FOREIGN KEY (DesignerID) REFERENCES users(ID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE questions (
+  MatchID int(11) NOT NULL,
+  QID int(11) NOT NULL,
+  Question text NOT NULL,
+  AnswerNumber tinyint(4) NOT NULL COMMENT '1..4 : normal, 0 : descriptive',
+  Answer1 varchar(255) DEFAULT NULL,
+  Answer2 varchar(255) DEFAULT NULL,
+  Answer3 varchar(255) DEFAULT NULL,
+  Answer4 varchar(255) DEFAULT NULL,
+  PRIMARY KEY (MatchID,QID),
+  FOREIGN KEY (MatchID) REFERENCES matches(ID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE scores (
+  UserID int(11) NOT NULL,
+  TournamentID int(11) NOT NULL,
+  Score int(11) NOT NULL DEFAULT '0',
+  ParticipateDate date NOT NULL,
+  Confirm tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (UserID,TournamentID),
+  FOREIGN KEY (UserID) REFERENCES users(ID),
+  FOREIGN KEY (TournamentID) REFERENCES tournaments(ID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE subanswers (
+  ID int(11) NOT NULL AUTO_INCREMENT,
+  AnswerID int(11) NOT NULL,
+  Question varchar(1000) NOT NULL,
+  Answer varchar(1000) NOT NULL,
+  Rate tinyint(4) DEFAULT NULL COMMENT '0..4',
+  Message text COMMENT 'designer message to user',
+  Attachment blob,
+  PRIMARY KEY (ID),
+  FOREIGN KEY (AnswerID) REFERENCES answers(ID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE supports (
+  TournamentID int(11) NOT NULL,
+  MatchID int(11) NOT NULL,
+  PRIMARY KEY (TournamentID,MatchID),
+  FOREIGN KEY (TournamentID) REFERENCES tournaments(ID),
+  FOREIGN KEY (MatchID) REFERENCES matches(ID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE tournaments (
+  ID int(11) NOT NULL AUTO_INCREMENT,
+  Title varchar(255) NOT NULL,
+  StartDate date NOT NULL,
+  Active tinyint(1) NOT NULL,
+  GroupID int(11) NOT NULL,
+  UserPayTransform float NOT NULL,
+  DesignerPayTransform float NOT NULL,
+  OpenUser tinyint(1) NOT NULL DEFAULT '1',
+  Address varchar(1000) DEFAULT NULL,
+  PayUnit varchar(100) NOT NULL,
+  PRIMARY KEY (ID),
+  FOREIGN KEY (GroupID) REFERENCES groups(ID)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+*/

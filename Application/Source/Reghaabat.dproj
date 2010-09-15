@@ -1,0 +1,171 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{9DEE0609-FC20-46E3-B1CC-232452C7D0E2}</ProjectGuid>
+			<MainSource>Reghaabat.dpr</MainSource>
+			<Config Condition="'$(Config)'==''">Debug</Config>
+			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+			<ProjectVersion>12.0</ProjectVersion>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_ImageBase>00400000</DCC_ImageBase>
+			<DCC_UsePackage>rtl;vcl;vclx;dbrtl;vcldb;adortl;dbxcds;dbexpress;vclib;ibxpress;xmlrtl;vclie;inet;inetdbbde;inetdbxpress;dclOfficeXP;vclactnband;VclSmp;soaprtl;dsnap;bdertl;vcldbx;dsnapcon;websnap;webdsnap;fs10;fsDB10;fsBDE10;fsADO10;frxIBX10;frx10;frxDB10;frxBDE10;frxADO10;frxDBX10;frxe10;DelphiX90;WinSkinD2006;TeeImage710;TeeUI710;Tee710;TeeLanguage710;TeePro710;TeeGL710;TeeDB710;TMSD2006;tmsexd2006;TMSXLSD2006;tmswizd2006;PNG_D7</DCC_UsePackage>
+			<DCC_DependencyCheckOutputName>Reghaabat.exe</DCC_DependencyCheckOutputName>
+			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
+			<DCC_Platform>x86</DCC_Platform>
+			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
+			<DCC_N>true</DCC_N>
+			<DCC_S>false</DCC_S>
+			<DCC_K>false</DCC_K>
+			<DCC_E>false</DCC_E>
+			<DCC_F>false</DCC_F>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+			<DCC_DebugInformation>false</DCC_DebugInformation>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+		</PropertyGroup>
+		<ItemGroup>
+			<DelphiCompile Include="Reghaabat.dpr">
+				<MainSource>MainSource</MainSource>
+			</DelphiCompile>
+			<DCCReference Include="UnitMain.pas">
+				<Form>fMain</Form>
+			</DCCReference>
+			<DCCReference Include="UnitTDE.pas">
+				<Form>F_TDE</Form>
+			</DCCReference>
+			<DCCReference Include="UnitSetScore.pas">
+				<Form>fSetScore</Form>
+			</DCCReference>
+			<DCCReference Include="uCryptography.pas"/>
+			<DCCReference Include="uShamsiDate.pas"/>
+			<DCCReference Include="UnitTarrahReport.pas">
+				<Form>fDesigner</Form>
+			</DCCReference>
+			<DCCReference Include="UnitResumeTahvil.pas">
+				<Form>fFreeScore</Form>
+			</DCCReference>
+			<DCCReference Include="UnitMatchReport.pas">
+				<Form>fMatchList</Form>
+			</DCCReference>
+			<DCCReference Include="UnitDesignBC.pas">
+				<Form>fDesignBC</Form>
+			</DCCReference>
+			<DCCReference Include="UnitDesignWP.pas">
+				<Form>fDesignWP</Form>
+			</DCCReference>
+			<DCCReference Include="UnitLog.pas">
+				<Form>fLog</Form>
+			</DCCReference>
+			<DCCReference Include="UnitTotalReport.pas">
+				<Form>fTotalReport</Form>
+			</DCCReference>
+			<DCCReference Include="UnitChart.pas">
+				<Form>fChart</Form>
+			</DCCReference>
+			<DCCReference Include="UnitNewUser.pas">
+				<Form>fUser</Form>
+			</DCCReference>
+			<DCCReference Include="UnitOptions.pas">
+				<Form>fOptions</Form>
+			</DCCReference>
+			<DCCReference Include="UnitSentence.pas">
+				<Form>F_Sentence</Form>
+			</DCCReference>
+			<DCCReference Include="UnitExImport.pas">
+				<Form>fImport</Form>
+			</DCCReference>
+			<DCCReference Include="UnitForm.pas">
+				<Form>F_Form</Form>
+			</DCCReference>
+			<DCCReference Include="UnitAbout.pas">
+				<Form>fAbout</Form>
+			</DCCReference>
+			<DCCReference Include="UnitWeb.pas">
+				<Form>fWeb</Form>
+			</DCCReference>
+			<DCCReference Include="UnitMessage.pas">
+				<Form>fMessage</Form>
+			</DCCReference>
+			<DCCReference Include="Unit1.pas">
+				<Form>Form1</Form>
+			</DCCReference>
+			<DCCReference Include="UnitMaster.pas">
+				<Form>Master</Form>
+			</DCCReference>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+		<ProjectExtensions>
+			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Delphi.Personality>
+					<Source>
+						<Source Name="MainSource">Reghaabat.dpr</Source>
+					</Source>
+					<Parameters>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">True</VersionInfo>
+						<VersionInfo Name="MajorVer">3</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">649</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">1065</VersionInfo>
+						<VersionInfo Name="CodePage">1256</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName">Rooyesh</VersionInfoKeys>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">3.0.0.649</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName">Reghaabat</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">2.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+					</VersionInfoKeys>
+					<Excluded_Packages/>
+				</Delphi.Personality>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+	</Project>

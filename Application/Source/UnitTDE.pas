@@ -327,7 +327,7 @@ begin
     qScore.SQL.Text := 'SELECT OperatorID, Score, ScoreDate AS Title, "" AS MatchID FROM Payments WHERE ScoreDate >= "'+ fMain.options.Values['BeginDate'] +'" AND UserID='+ fMain.userID;
     qScore.Open;
 
-    if fMain.loginAdmin then gScore.Options := gScore.Options + [goEditing];
+    if fMain.isSuperUser then gScore.Options := gScore.Options + [goEditing];
     gScore.Columns[2].Header := 'تاریخ';
     gScore.Columns[3].Header := ' ';
     gScore.Columns[3].Width := 0;

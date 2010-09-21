@@ -4,7 +4,7 @@ object fUser: TfUser
   BiDiMode = bdRightToLeft
   BorderStyle = bsSingle
   ClientHeight = 525
-  ClientWidth = 793
+  ClientWidth = 762
   Color = clBtnFace
   Font.Charset = ARABIC_CHARSET
   Font.Color = clWindowText
@@ -24,7 +24,7 @@ object fUser: TfUser
   object AdvPanel6: TAdvPanel
     Left = 0
     Top = 0
-    Width = 793
+    Width = 762
     Height = 46
     Align = alTop
     BevelOuter = bvNone
@@ -72,7 +72,7 @@ object fUser: TfUser
       AlignWithMargins = True
       Left = 3
       Top = 3
-      Width = 787
+      Width = 756
       Height = 43
       Margins.Bottom = 0
       CaptionPosition = cpTopRight
@@ -81,10 +81,10 @@ object fUser: TfUser
       ParentCtl3D = True
       TabOrder = 0
       DesignSize = (
-        787
+        756
         43)
       object Label1: TLabel
-        Left = 712
+        Left = 681
         Top = 20
         Width = 52
         Height = 13
@@ -97,9 +97,10 @@ object fUser: TfUser
         Font.Style = []
         ParentFont = False
         Transparent = True
+        ExplicitLeft = 712
       end
       object MaskEdit1: TMaskEdit
-        Left = 674
+        Left = 643
         Top = 16
         Width = 34
         Height = 22
@@ -169,7 +170,7 @@ object fUser: TfUser
   object AdvPanel1: TAdvPanel
     Left = 0
     Top = 46
-    Width = 793
+    Width = 762
     Height = 446
     Align = alClient
     BevelOuter = bvNone
@@ -217,7 +218,7 @@ object fUser: TfUser
       AlignWithMargins = True
       Left = 3
       Top = 3
-      Width = 787
+      Width = 756
       Height = 171
       CaptionPosition = cpTopRight
       Align = alTop
@@ -226,7 +227,7 @@ object fUser: TfUser
       object gDescription: TAdvGroupBox
         Left = 3
         Top = 143
-        Width = 781
+        Width = 750
         Height = 26
         BorderStyle = bsNone
         CaptionPosition = cpTopRight
@@ -234,10 +235,10 @@ object fUser: TfUser
         ParentCtl3D = True
         TabOrder = 0
         DesignSize = (
-          781
+          750
           26)
         object Label10: TLabel
-          Left = 726
+          Left = 695
           Top = 6
           Width = 47
           Height = 13
@@ -257,7 +258,7 @@ object fUser: TfUser
         object edtDescription: TEdit
           Left = 13
           Top = 2
-          Width = 707
+          Width = 676
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           BevelOuter = bvNone
@@ -276,7 +277,7 @@ object fUser: TfUser
       object AdvGroupBox7: TAdvGroupBox
         Left = 3
         Top = 3
-        Width = 781
+        Width = 750
         Height = 140
         BorderStyle = bsNone
         CaptionPosition = cpTopRight
@@ -284,10 +285,10 @@ object fUser: TfUser
         ParentCtl3D = True
         TabOrder = 1
         DesignSize = (
-          781
+          750
           140)
         object Label6: TLabel
-          Left = 721
+          Left = 690
           Top = 20
           Width = 52
           Height = 13
@@ -303,7 +304,7 @@ object fUser: TfUser
           ExplicitLeft = 739
         end
         object Label5: TLabel
-          Left = 675
+          Left = 644
           Top = 3
           Width = 39
           Height = 44
@@ -319,7 +320,7 @@ object fUser: TfUser
           ExplicitLeft = 693
         end
         object Label2: TLabel
-          Left = 753
+          Left = 722
           Top = 48
           Width = 20
           Height = 13
@@ -337,7 +338,7 @@ object fUser: TfUser
           ExplicitLeft = 771
         end
         object Label3: TLabel
-          Left = 708
+          Left = 677
           Top = 71
           Width = 65
           Height = 13
@@ -355,7 +356,7 @@ object fUser: TfUser
           ExplicitLeft = 726
         end
         object Label8: TLabel
-          Left = 725
+          Left = 694
           Top = 94
           Width = 48
           Height = 13
@@ -371,7 +372,7 @@ object fUser: TfUser
           ExplicitLeft = 743
         end
         object Label12: TLabel
-          Left = 741
+          Left = 710
           Top = 118
           Width = 32
           Height = 13
@@ -389,7 +390,7 @@ object fUser: TfUser
           ExplicitLeft = 759
         end
         object Label11: TLabel
-          Left = 585
+          Left = 554
           Top = 94
           Width = 66
           Height = 13
@@ -407,7 +408,7 @@ object fUser: TfUser
         object Edit1: TEdit
           Left = 162
           Top = 45
-          Width = 586
+          Width = 555
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Ctl3D = True
@@ -425,7 +426,7 @@ object fUser: TfUser
         object Edit2: TEdit
           Left = 162
           Top = 68
-          Width = 541
+          Width = 510
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Ctl3D = True
@@ -441,7 +442,7 @@ object fUser: TfUser
           OnKeyDown = Edit2KeyDown
         end
         object MaskEdit3: TMaskEdit
-          Left = 658
+          Left = 627
           Top = 91
           Width = 63
           Height = 21
@@ -465,7 +466,7 @@ object fUser: TfUser
         object Edit7: TEdit
           Left = 100
           Top = 115
-          Width = 636
+          Width = 605
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Ctl3D = True
@@ -482,7 +483,7 @@ object fUser: TfUser
         object MaskEdit4: TMaskEdit
           Left = 100
           Top = 91
-          Width = 480
+          Width = 449
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           BiDiMode = bdRightToLeft
@@ -677,105 +678,121 @@ object fUser: TfUser
       AlignWithMargins = True
       Left = 3
       Top = 180
-      Width = 787
-      Height = 86
+      Width = 756
+      Height = 77
       CaptionPosition = cpTopRight
       Align = alTop
       Caption = #1581#1602' '#1608#1585#1608#1583
       ParentCtl3D = True
       TabOrder = 1
-      object AdvGroupBox3: TAdvGroupBox
-        Left = 3
-        Top = 54
-        Width = 781
-        Height = 26
-        BorderStyle = bsNone
-        CaptionPosition = cpTopRight
-        Align = alTop
-        ParentCtl3D = True
+      DesignSize = (
+        756
+        77)
+      object Label18: TLabel
+        Left = 677
+        Top = 52
+        Width = 62
+        Height = 13
+        Anchors = [akTop, akRight]
+        BiDiMode = bdRightToLeft
+        Caption = #1603#1604#1605#1607#8204#1740' '#1593#1576#1608#1585' :'
+        ParentBiDiMode = False
+        Transparent = True
+        ExplicitLeft = 708
+      end
+      object Label9: TLabel
+        Left = 717
+        Top = 29
+        Width = 22
+        Height = 13
+        Anchors = [akTop, akRight]
+        BiDiMode = bdRightToLeft
+        Caption = #1606#1608#1593' :'
+        ParentBiDiMode = False
+        Transparent = True
+        ExplicitLeft = 748
+      end
+      object ePassword: TButtonedEdit
+        Left = 130
+        Top = 48
+        Width = 542
+        Height = 21
+        Anchors = [akLeft, akTop, akRight]
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 7485192
+        Font.Height = -11
+        Font.Name = 'Library'
+        Font.Style = []
+        Images = fMain.ilEditButton
+        LeftButton.ImageIndex = 0
+        LeftButton.Visible = True
+        ParentFont = False
+        PasswordChar = '*'
         TabOrder = 0
-        DesignSize = (
-          781
-          26)
-        object Label18: TLabel
-          Left = 705
-          Top = 7
-          Width = 62
-          Height = 13
-          Anchors = [akTop, akRight]
-          BiDiMode = bdRightToLeft
-          Caption = #1603#1604#1605#1607#8204#1740' '#1593#1576#1608#1585' :'
-          ParentBiDiMode = False
-          Transparent = True
-          ExplicitLeft = 711
-        end
-        object CheckBox4: TAdvOfficeCheckBox
-          Left = 9
-          Top = 3
-          Width = 112
-          Height = 20
-          Checked = True
-          TabOrder = 0
-          OnClick = CheckBox4Click
-          Alignment = taLeftJustify
-          Caption = #1606#1605#1575#1610#1588' '#1576#1607' '#1588#1603#1604' '#1585#1605#1586
-          Ellipsis = True
-          ReturnIsTab = False
-          State = cbChecked
-          Version = '1.2.4.1'
-        end
-        object ePassword: TButtonedEdit
-          Left = 127
-          Top = 3
-          Width = 573
-          Height = 21
-          Anchors = [akLeft, akTop, akRight]
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = 7485192
-          Font.Height = -11
-          Font.Name = 'Library'
-          Font.Style = []
-          Images = fMain.ilEditButton
-          LeftButton.ImageIndex = 0
-          LeftButton.Visible = True
-          ParentFont = False
-          PasswordChar = '*'
-          TabOrder = 1
-          TextHint = 
-            #1705#1604#1605#1607#8204#1740' '#1593#1576#1608#1585' '#1605#1740#8204#1578#1608#1575#1606#1583' '#1588#1575#1605#1604' '#1575#1593#1583#1575#1583' '#1608' '#1581#1585#1608#1601' '#1604#1575#1578#1740#1606' '#1576#1575#1588#1583' '#1608' '#1582#1575#1604#1740' '#1576#1608#1583#1606' '#1570#1606 +
-            ' '#1576#1607' '#1605#1593#1606#1740' '#1606#1583#1575#1588#1578#1606' '#1581#1602' '#1608#1585#1608#1583' '#1575#1587#1578'.'
-          OnChange = ePasswordChange
-          OnLeftButtonClick = ePasswordLeftButtonClick
-        end
+        TextHint = 
+          #1705#1604#1605#1607#8204#1740' '#1593#1576#1608#1585' '#1605#1740#8204#1578#1608#1575#1606#1583' '#1588#1575#1605#1604' '#1575#1593#1583#1575#1583' '#1608' '#1581#1585#1608#1601' '#1604#1575#1578#1740#1606' '#1576#1575#1588#1583' '#1608' '#1582#1575#1604#1740' '#1576#1608#1583#1606' '#1570#1606 +
+          ' '#1576#1607' '#1605#1593#1606#1740' '#1606#1583#1575#1588#1578#1606' '#1581#1602' '#1608#1585#1608#1583' '#1575#1587#1578'.'
+        OnChange = ePasswordChange
+        OnLeftButtonClick = ePasswordLeftButtonClick
       end
-      object rgLogin: TAdvOfficeRadioGroup
-        Left = 3
-        Top = 16
-        Width = 781
-        Height = 38
-        BorderStyle = bsNone
-        Version = '1.2.4.1'
-        Align = alTop
-        ParentBackground = False
+      object CheckBox4: TAdvOfficeCheckBox
+        Left = 12
+        Top = 48
+        Width = 112
+        Height = 20
+        Checked = True
         TabOrder = 1
-        OnClick = rgLoginClick
-        Columns = 4
-        ItemIndex = 3
-        Items.Strings = (
-          #1605#1583#1610#1585' '#1603#1604
-          #1605#1583#1610#1585
-          #1575#1662#1585#1575#1578#1608#1585
-          #1587#1575#1740#1578)
-        Themed = True
+        OnClick = CheckBox4Click
+        Alignment = taLeftJustify
+        Caption = #1606#1605#1575#1610#1588' '#1576#1607' '#1588#1603#1604' '#1585#1605#1586
         Ellipsis = True
-        ShowFocus = False
+        ReturnIsTab = False
+        State = cbChecked
+        Version = '1.2.4.1'
       end
+      object cbLogin: TComboBox
+        Left = 593
+        Top = 25
+        Width = 118
+        Height = 21
+        Style = csDropDownList
+        Anchors = [akTop, akRight]
+        Ctl3D = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 7485192
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentCtl3D = False
+        ParentFont = False
+        TabOrder = 2
+      end
+    end
+    object rgLogin: TAdvOfficeRadioGroup
+      Left = 411
+      Top = 333
+      Width = 269
+      Height = 38
+      BorderStyle = bsNone
+      Version = '1.2.4.1'
+      ParentBackground = False
+      TabOrder = 2
+      OnClick = rgLoginClick
+      Columns = 4
+      ItemIndex = 2
+      Items.Strings = (
+        #1591#1585#1575#1581#8204#1740#1575#1585
+        #1591#1585#1575#1581
+        #1593#1590#1608#1740#1575#1585)
+      Themed = True
+      Ellipsis = True
+      ShowFocus = False
     end
   end
   object AdvPanel2: TAdvPanel
     Left = 0
     Top = 492
-    Width = 793
+    Width = 762
     Height = 33
     Align = alBottom
     BevelOuter = bvNone
@@ -819,7 +836,7 @@ object fUser: TfUser
     StatusBar.GradientDirection = gdVertical
     Styler = ps
     DesignSize = (
-      793
+      762
       33)
     FullHeight = 0
     object bOk: TAdvGlowButton
@@ -916,7 +933,7 @@ object fUser: TfUser
       Style = bsCheck
     end
     object bClear: TAdvGlowButton
-      Left = 684
+      Left = 653
       Top = 4
       Width = 100
       Height = 26

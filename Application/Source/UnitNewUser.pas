@@ -54,11 +54,12 @@ type
     DBImage1: TDBImage;
     DataSource: TDataSource;
     pLogin: TAdvGroupBox;
-    AdvGroupBox3: TAdvGroupBox;
-    Label18: TLabel;
-    CheckBox4: TAdvOfficeCheckBox;
-    ePassword: TButtonedEdit;
     rgLogin: TAdvOfficeRadioGroup;
+    ePassword: TButtonedEdit;
+    CheckBox4: TAdvOfficeCheckBox;
+    Label18: TLabel;
+    cbLogin: TComboBox;
+    Label9: TLabel;
     procedure Edit3KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure RG_MLClick(Sender: TObject);
     procedure ePasswordChange(Sender: TObject);
@@ -240,14 +241,14 @@ begin
   begin
     fMain.qTmp.SQL.Text := 'SELECT ID FROM Users';
     fMain.qTmp.Open;
-    if fMain.qTmp.RecordCount = 0 then Label5.Caption := '5111'
+    if fMain.qTmp.RecordCount = 0 then Label5.Caption := fMain.options.Values['UserIdStart']
     else
     begin
       fMain.qTmp.SQL.Text := 'SELECT Max(ID) FROM Users';
       fMain.qTmp.Open;
-      if fMain.qTmp.Fields[0].AsInteger > 5000 then
+      if fMain.qTmp.Fields[0].AsInteger >= StrToInt(fMain.options.Values['UserIdStart']) then
         Label5.Caption := IntToStr(fMain.qTmp.Fields[0].AsInteger + 1)
-      else Label5.Caption := '5111';
+      else Label5.Caption := fMain.options.Values['UserIdStart'];
     end;
   end;
 
@@ -317,12 +318,13 @@ end;
 procedure TfUser.loadUserFromMatch();
 var dPermission, kind : String; rgID : integer;
 begin
-  fMain.qTmp.SQL.Text := 'SELECT * FROM Users WHERE ID = '+ MaskEdit1.Text;
+{x
+  fMain.qTmp.SQL.Text := 'SELECT * FROM users LEFT JOIN permissions ON users.ID = permissions.UserID WHERE users.ID = '+ MaskEdit1.Text;
   fMain.qTmp.Open;
 
   if fMain.qTmp.RecordCount = 1 then
   begin
-    if (fMain.loginAdmin <> True) and (fMain.loginMan <> fMain.qTmp.FieldByName('Man').AsBoolean) then
+    if (fMain.isSuperUser) and (fMain.loginGender <> fMain.qTmp.FieldByName('Gender').AsString) then
     begin
       fMain.MyShowMessage('شما اجازه دسترسی به اطلاعات این عضو را ندارید');
       bClear.Click;
@@ -336,9 +338,9 @@ begin
     MaskEdit4.Text := fMain.qTmp.FieldByName('Phone').AsString;
     Edit7.Text := fMain.qTmp.FieldByName('Address').AsString;
     edtDescription.Text := fMain.qTmp.FieldByName('Description').AsString;
-    if fMain.qTmp.FieldByName('Man').AsBoolean then RG_S.ItemIndex := 0 else RG_S.ItemIndex := 1;
+    if fMain.qTmp.FieldByName('Gender').AsString = 'male' then RG_S.ItemIndex := 0 else RG_S.ItemIndex := 1;
 
-    if fMain.qTmp.FieldByName('Permission').AsString <> '' then
+    if cbLogin.Items.IndexOf(fMain.qTmp.FieldByName('Permission').AsString) >= 0 then
     begin
       dPermission := decrypt(fMain.qTmp.FieldByName('Permission').AsString);
       kind := Copy(dPermission, 5, 1);
@@ -351,14 +353,14 @@ begin
         if kind = 'O' then rgID := 2 else
         if kind = 'S' then rgID := 3;
       end;
-
-      if checkPermission(rgID) then
-      begin
-        bClear.Click;
-        fMain.MyShowMessage('شما اجازه دستیابی به اطلاعات این عضو را ندارید');
-        Abort;
-      end else rgLogin.ItemIndex := rgID;
-    end;
+    end else
+    if checkPermission(rgID) then
+    begin
+      bClear.Click;
+      fMain.MyShowMessage('شما اجازه دستیابی به اطلاعات این عضو را ندارید');
+      Abort;
+    end else rgLogin.ItemIndex := rgID;
+  end;
 
     fMain.loadJpeg(Label5.Caption, Image1, fMain.qTmp);
   end else
@@ -366,6 +368,7 @@ begin
     fMain.MyShowMessage('شما قبلا عضو نشده‌اید');
     MaskEdit1.SetFocus;
   end;
+}
 end;
 
 procedure TfUser.loadUserFromLibrary();
@@ -375,7 +378,7 @@ begin
 
   if fMain.qTmpLibrary.RecordCount <> 0 then
   begin
-    if (fMain.loginAdmin <> True) and (fMain.loginMan <> fMain.qTmpLibrary.FieldByName('Man').AsBoolean) then
+    if (fMain.isSuperUser) and (fMain.loginGender <> fMain.qTmpLibrary.FieldByName('Gender').AsString) then
     begin
       fMain.MyShowMessage('شما اجازه دسترسی به اطلاعات این عضو را ندارید');
       bClear.Click;

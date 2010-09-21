@@ -479,23 +479,13 @@ begin
   begin
     with fMain do
     begin
-      fMain.qTmp.SQL.Text := 'SELECT * FROM Licences WHERE Licence = "'+ edt2.Text +'" AND ComputerID = "'+ edt1.Text +'"';
-      fMain.qTmp.Open;
-      if fMain.qTmp.RecordCount > 0 then
-      begin
-        fMain.MyShowMessage( 'این مجوز قبلا وارد شده است و دیگر امکان ثبت آن نیست' );
-      end else
-      begin
-        fMain.executeCommand('UPDATE Licences SET ComputerID = "" WHERE ComputerID = "'+ edt1.Text +'"');
-        fMain.executeCommand('INSERT INTO Licences VALUES ("'+ edt1.Text +'", "'+ edt2.Text +'")');
-        fMain.MyShowMessage( 'مجوز وارد شده ثبت شد' );
+      fMain.executeCommand('UPDATE library SET ServerID = "'+ edt1.Text +'", Licence = "'+ edt2.Text +'"');
+      fMain.MyShowMessage( 'مجوز وارد شده ثبت شد' );
 
-        fMain.qTmp.SQL.Text := 'SELECT * FROM Licences';
-        fMain.qTmp.Open;
-
-        if LicenceCheck then
-        begin
-          ELAdmin;
+      if LicenceCheck then
+      begin
+        ELAdmin;
+        {x
         if fMain.qTmp.RecordCount = 1 then
         begin
           ME_Login.Text := '5111';
@@ -507,7 +497,7 @@ begin
           fUser.loadUserFromMatch;
           fUser.bLogin.Click;
         end;
-        end;
+        }
       end;
     end;
   end else fMain.MyShowMessage( 'ثبت این مجوز مقدور نیست' );

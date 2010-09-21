@@ -120,7 +120,7 @@ object fOptions: TfOptions
     Height = 381
     AdvOfficePagerStyler = fMain.pagers
     Align = alClient
-    ActivePage = AdvOfficePage3
+    ActivePage = AdvOfficePage1
     AntiAlias = aaAntiAlias
     ButtonSettings.CloseButtonPicture.Data = {
       424DA20400000000000036040000280000000900000009000000010008000000
@@ -1236,6 +1236,7 @@ object fOptions: TfOptions
         ParentCtl3D = True
         ParentFont = False
         TabOrder = 2
+        Visible = False
         DesignSize = (
           678
           59)
@@ -1361,6 +1362,7 @@ object fOptions: TfOptions
         Align = alTop
         ParentCtl3D = True
         TabOrder = 0
+        Visible = False
         DesignSize = (
           678
           162)
@@ -1964,6 +1966,7 @@ object fOptions: TfOptions
         ParentCtl3D = True
         ParentFont = False
         TabOrder = 0
+        Visible = False
         object AdvGroupBox12: TAdvGroupBox
           AlignWithMargins = True
           Left = 204
@@ -2529,6 +2532,7 @@ object fOptions: TfOptions
         ParentCtl3D = True
         ParentFont = False
         TabOrder = 0
+        Visible = False
         DesignSize = (
           678
           100)
@@ -2782,6 +2786,7 @@ object fOptions: TfOptions
         NotesFont.Style = []
         WordWrap = False
         TabOrder = 4
+        Visible = False
         OnClick = AdvGlowButton11Click
         Appearance.BorderColor = 14727579
         Appearance.BorderColorHot = 10079963

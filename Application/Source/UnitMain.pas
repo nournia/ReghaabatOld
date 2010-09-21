@@ -223,6 +223,10 @@ type
     procedure M_ConnectPathMatchClick(Sender: TObject);
     procedure nSetScoreClick(Sender: TObject);
 
+    function translateLoginType(login : string) : string;
+    function isSuperUser() : boolean;
+    function isMaleUser() : boolean;
+
     procedure ScaleBmp(bitmp: TBitmap);
     procedure thrImport();
     procedure ReadOptions(client : boolean = false; protect : boolean = false; first : boolean = false);
@@ -231,6 +235,7 @@ type
     procedure Backup(filename : string);
     procedure LoadFastReport( FName : String );
     procedure ELOperator( Cascade : Boolean );
+    procedure ELDesigner( Cascade : Boolean );
     procedure ELManager( Cascade : Boolean );
     procedure ELAdmin();
     procedure EAF( Low : Boolean );
@@ -277,8 +282,7 @@ type
   public
     cStates : array[0..2] of string;
     cMatches : array[0..5] of string;
-    loginAdmin, loginMan : Boolean;
-    loginUserID, userID : String;
+    loginType, loginGender, loginUserID, userID : String;
     options : TStringList;
     progressInc : Double; progressCounter, progressUnit : Integer;
     sendFolderAddress : string;
@@ -322,6 +326,23 @@ begin
             ' ON Users.ID = UserFreeScores.UserID) AS UserScores';
 end;
 
+function TfMain.translateLoginType(login : string) : string;
+begin
+  if login = 'operator' then Result := 'عضویار' else
+  if login = 'designer' then Result := 'طراح' else
+  if login = 'manager' then Result := 'طراح‌یار' else
+  if login = 'master' then Result := 'مدیر' else
+  if login = 'admin' then Result := 'مدیر سامانه' else
+  Result := 'عضو';
+end;
+function TfMain.isSuperUser() : boolean;
+begin
+   Result := (loginType = 'admin') or (loginType = 'master');
+end;
+function TfMain.isMaleUser() : boolean;
+begin
+   Result := loginType = 'man';
+end;
 function TfMain.isClient() : boolean;
 begin
   Result := (options.Values['ServerAddress'] <> '');
@@ -494,6 +515,7 @@ begin
   if options.Values['LibraryAddress'] = '' then options.Values['LibraryAddress'] := 'Library.mdb';
   if options.Values['Theme'] = '' then options.Values['Theme'] := 'Blue';
   if options.Values['ComputerID'] = '' then options.Values['ComputerID'] := getComputerID;
+  if options.Values['UserIdStart'] = '' then options.Values['UserIdStart'] := '1111';
 
   printer:= TPrinter.Create;
   if printer.Printers.Count = 0 then tmp := 0 else tmp := printer.PrinterIndex;
@@ -543,8 +565,8 @@ begin
   bDeLogin.Visible := pStatus.Visible;
   EAF(False);
 
-  loginAdmin := False;
-  loginMan := False;
+  loginType := '';
+  loginGender := '';
   loginUserID := '';
 
   bLogin.Hint := '';
@@ -574,7 +596,7 @@ begin
   if Cascade = False then
   begin
     P_LS.ImageIndex := 0;
-    L_LS.Caption := 'اپراتور';
+    L_LS.Caption := translateLoginType('operator');
     pStatus.Visible := true;
     bDeLogin.Visible := pStatus.Visible;
   end;
@@ -589,53 +611,58 @@ begin
 
   if LicenseCheckBool then
   begin
-    nUser.Enabled:=True;
-    nMessage.Enabled:=True;
-    nDeliver.Enabled:=True;
-    nReceive.Enabled:=True;
-    nScoreList.Enabled:=True;
-    nDeliverClick(nil);
+//x    nUser.Enabled:=True;
+//x    nMessage.Enabled:=True;
+//x    nDeliver.Enabled:=True;
+//x    nReceive.Enabled:=True;
+//x    nScoreList.Enabled:=True;
+//x    nDeliverClick(nil);
   end;
 end;
 
-procedure TfMain.ELManager( Cascade : Boolean );
+procedure TfMain.ELDesigner( Cascade : Boolean );
 begin
-  ELOperator(True);
-
-  if StrToBool(options.Values['DownGrade']) then
-  begin
-    bDeLogin.ImageIndex := 1;
-    bDeLogin.Hint := 'تنزل به اپراتور';
-  end;
-  if Cascade = False then
-  begin
-    P_LS.ImageIndex := 1;
-    L_LS.Caption := 'مدیر';
-  end;
   pStatus.Visible := true;
   bDeLogin.Visible := pStatus.Visible;
 
   BB_Delete.Enabled := True;
 
-  nDesignBook.Enabled:=True;
-  nDesignMultiMedia.Enabled:=True;
-  nDesignArt.Enabled:=True;
-  nDesignWork.Enabled:=True;
-  nMatchList.Enabled:=True;
-  nLabel.Enabled:=True;
+//x  nDesignBook.Enabled := True;
+//x  nDesignMultiMedia.Enabled := True;
+//x  nDesignArt.Enabled := True;
+//x  nDesignWork.Enabled := True;
+//x  nMatchList.Enabled := True;
+end;
 
+procedure TfMain.ELManager( Cascade : Boolean );
+begin
+  ELOperator(True);
+  ELDesigner(True);
+
+  if StrToBool(options.Values['DownGrade']) then
+  begin
+    bDeLogin.ImageIndex := 1;
+    bDeLogin.Hint := 'تنزل به ' + translateLoginType('operator');
+  end;
+  if Cascade = False then
+  begin
+    P_LS.ImageIndex := 1;
+    L_LS.Caption := translateLoginType('manager');
+  end;
+
+//x  nLabel.Enabled:=True;
   if LicenseCheckBool then
   begin
-    nPay.Enabled:=True;
-    nFreeScore.Enabled:=True;
-    nSetScore.Enabled:=True;
-    nTotalReport.Enabled:=True;
-    nDesigner.Enabled:=True;
-    nLog.Enabled:=True;
-    nDesignerList.Enabled:=True;
+//x    nPay.Enabled:=True;
+//x    nFreeScore.Enabled:=True;
+//x    nSetScore.Enabled:=True;
+//x    nTotalReport.Enabled:=True;
+//x    nDesigner.Enabled:=True;
+//x    nLog.Enabled:=True;
+//x    nDesignerList.Enabled:=True;
 //    nChart.Enabled:=True;
-    nImport.Enabled:=True;
-    nUpload.Enabled := True;
+//x    nImport.Enabled:=True;
+//x    nUpload.Enabled := True;
 //    N_Sentence.Enabled:=True;
   end;
 end;
@@ -645,7 +672,7 @@ begin
   ELManager(True);
 
   P_LS.ImageIndex := 2;
-  L_LS.Caption := 'مدیر كل';
+  L_LS.Caption := translateLoginType('master');
 
   nOptions.Enabled:=True;
 end;
@@ -658,15 +685,15 @@ begin
 
   BB_Delete.Enabled := False;
 
-if not Low then
-begin
-  nUser.Enabled:=False;
-  nDeliver.Enabled:=False;
-  nReceive.Enabled:=False;
-  nScoreList.Enabled:=False;
-  nMessage.Enabled:=False;
-  nSkin.Enabled := False;
-end;
+  if not Low then
+  begin
+    nUser.Enabled:=False;
+    nDeliver.Enabled:=False;
+    nReceive.Enabled:=False;
+    nScoreList.Enabled:=False;
+    nMessage.Enabled:=False;
+    nSkin.Enabled := False;
+  end;
 
   nDesignBook.Enabled:=False;
   nDesignMultiMedia.Enabled:=False;
@@ -845,9 +872,10 @@ begin
     pStatus.Visible := not pLogin.Visible;
     bDeLogin.Visible := pStatus.Visible;
 
+    {x
     if qTmp.Fields[0].AsString = '' then
     begin
-      ME_Login.Text := '5111';
+      ME_Login.Text := '1111';
       PassWordEdit.Text := '1';
       bLogin.Click;
       AdvToolBarPager.ActivePageIndex := 1;
@@ -855,10 +883,11 @@ begin
       bDeLogin.Visible := false;
     end else
     begin
+    }
       ME_Login.Text := '';
       PassWordEdit.Text := '';
       ME_Login.SetFocus;
-    end;
+    //xend;
   end;
 end;
 
@@ -1389,15 +1418,15 @@ begin
     if Sender <> nil then chServer.Checked := fMain.isClient;
     eServerAddress.Text := fMain.options.Values['ServerAddress'];
     eServerAddress.Enabled := chServer.Checked;
-
+    edt1.Text := getComputerID;
+    {x
     qGroup.SQL.Text := 'SELECT ID, Caption FROM Groups ORDER BY ID';
     qGroup.Open;
-    edt1.Text := getComputerID;
 
     fMain.qTmp.SQL.Text := 'SELECT * FRoM Library'; fMain.qTmp.Open;
     E_Title.Text := fMain.qTmp.FieldByName('Title').AsString;
     fMain.loadJpeg('1', Image1, fMain.qTmp);
-
+    }
     ME_MatchDate.Text := fMain.options.Values['BeginDate'];
     CH_AutoConnectLibrary.Checked := StrToBool(fMain.options.Values['AutoConnectLibrary']);
     chDownGrade.Checked := StrToBool(fMain.options.Values['DownGrade']);
@@ -1498,6 +1527,17 @@ begin
   begin
     fUser.P_Select.Visible := True;
 //    fUser.CB_Library.Checked := True;
+  end;
+
+  fUser.cbLogin.Items.Clear;
+  fUser.cbLogin.Items.Add(translateLoginType(''));
+  if (loginType = 'manager') or (loginType = 'master') or (loginType = 'admin') then
+  begin
+    fUser.cbLogin.Items.Add(translateLoginType('operator'));
+    if (loginType = 'master') or (loginType = 'admin') then
+    begin
+      fUser.cbLogin.Items.Add(translateLoginType('manager'));
+    end;
   end;
 
   fUser.imgChange := false;
@@ -1611,16 +1651,16 @@ end;
 
 procedure TfMain.bDeLoginClick(Sender: TObject);
 begin
-  if (StrToBool(options.Values['DownGrade'])) and (( loginAdmin )or( P_LS.ImageIndex = 1 )) then
+  if (StrToBool(options.Values['DownGrade'])) and ((isSuperUser)or( P_LS.ImageIndex = 1 )) then
   begin
     EAF(True);
     bDeLogin.ImageIndex := 0;
     bDeLogin.Hint := 'خروج از حساب کاربر';
     P_LS.ImageIndex := 0;
     L_LS.Caption := 'اپراتور';
-    if loginMan then uPicture.ImageIndex := 0 else uPicture.ImageIndex := 1;
+    if isMaleUser then uPicture.ImageIndex := 0 else uPicture.ImageIndex := 1;
     nDeliverClick(nil);
-    loginAdmin := False;
+    loginType := '';
   end else
     DeLogin;
 end;
@@ -1628,40 +1668,33 @@ end;
 procedure TfMain.bLoginClick(Sender: TObject);
 var dPermission, kind : String;
 begin
-  qTmp1.SQL.Text := 'SELECT * FROM Users WHERE ID = '+ ME_Login.Text;
+  qTmp1.SQL.Text := 'SELECT * FROM users LEFT JOIN permissions ON users.ID = permissions.UserID WHERE users.ID = '+ ME_Login.Text;
   qTmp1.Open;
-  dPermission := decrypt(qTmp1.FieldByName('Permission').AsString);
-  Kind := Copy(dPermission, 5, 1);
 
-  if (qTmp1.RecordCount = 0) or (LeftStr(dPermission, 4) <> ME_Login.Text) or (MidStr(dPermission, 6,  Length(dPermission) - 5) <> PassWordEdit.Text) then
+  if (qTmp1.RecordCount = 0) or (encrypt(PassWordEdit.Text) <> qTmp1.FieldByName('UserPass').AsString) then
   begin
     MyShowMessage('کد عضویت و یا کلمه عبور  معتبر نیست');
     PassWordEdit.SelectAll;
-  end else if Kind = 'S' then
-  begin
-    MyShowMessage('شما تنها اجازه ورود به سایت دارید');
-    PassWordEdit.SelectAll;
   end else
   begin
-    loginAdmin := False;
-    loginMan := True;
+    loginType := qTmp1.FieldByName('Permission').AsString;
+    loginGender := qTmp1.FieldByName('Gender').AsString;
     loginUserID := ME_Login.Text;
 
-    if kind = 'A' then
-    begin
-      loginAdmin := True;
-      ELAdmin;
-    end else if kind = 'M' then ELManager(False)
-    else if kind = 'O' then ELOperator(False);
+    if isSuperUser then ELAdmin else
+    if loginType = 'manager' then ELManager(False) else
+    if loginType = 'designer' then ELDesigner(False) else
+    if loginType = 'operator' then ELOperator(False);
 
-    loginMan := qTmp1.FieldByName('Man').AsBoolean;
     lLogin.Caption := qTmp1.FieldByName('FirstName').AsString + ' ' + qTmp1.FieldByName('LastName').AsString;
 
+    {x
     qTmp1.SQL.Text := 'SELECT * FROM Messages WHERE Viewed = False AND DestinationID = '+ loginUserID;
     qTmp1.Open;
     if qTmp1.RecordCount > 0 then nMessage.ImageIndex := 2 else nMessage.ImageIndex := 1;
+    }
 
-    if P_User.Visible then B_Refresh.Click;
+    //x if P_User.Visible then B_Refresh.Click;
   end;
 end;
 
@@ -1684,14 +1717,14 @@ procedure TfMain.FormCreate(Sender: TObject);
 begin
   // build database
 //  myCommand.Execute;
-  cMyLocal.Database := 'localmatch';
+//  cMyLocal.Database := 'localmatch';
 
   SplashScreen.FocusParentForm := true;
   cStates[0] := 'فعال'; cStates[1] := 'وارد شده'; cStates[2] := 'غير فعال';
   cMatches[0] := 'همه مسابقات'; cMatches[1] := 'کتاب'; cMatches[2] := 'کارعملی'; cMatches[3] := 'هنری'; cMatches[4] := 'چند رسانه‌ای'; cMatches[5] := 'مسابقات آزاد';
 
   AdvToolBarPager.ActivePageIndex := 0;
-  loginAdmin := False; loginMan := False; loginUserID := '';
+  loginType := ''; loginGender := ''; loginUserID := '';
   options := TStringList.Create;
 {
   zipMaster.DLLDirectory := ExtractFileDir(Application.ExeName);
@@ -1710,6 +1743,8 @@ begin
 
   if ICMatch.Visible then
     if StrToBool(options.Values['AutoConnectLibrary']) then nConnectLibraryClick(nil);
+
+  if pLogin.Visible then ME_Login.SetFocus;
 end;
 
 procedure TfMain.ME_LoginKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -1745,7 +1780,7 @@ begin
       Abort;
     end;
 
-    if ((qTmp.FieldByName('Man').AsBoolean <> loginMan) and (not loginAdmin)) then
+    if ((qTmp.FieldByName('Gender').AsString <> loginGender) and (not isSuperUser)) then
     begin
       MyShowMessage('شما اجازه‌ی دسترسی به این پرونده را ندارید');
       userID := '';
@@ -1889,9 +1924,9 @@ end;
 
 procedure TfMain.B_RefreshClick(Sender: TObject);
 begin
-  if loginMan then uPicture.ImageIndex := 0
+  if isMaleUser then uPicture.ImageIndex := 0
   else uPicture.ImageIndex := 1;
-  if loginAdmin then uPicture.ImageIndex := 2;
+  if isSuperUser then uPicture.ImageIndex := 2;
   Picture.Picture.Bitmap := nil;
   uPicture.Visible := true;
 
@@ -1985,8 +2020,8 @@ begin
   P_SearchUser.Visible := not P_SearchUser.Visible;
   if P_SearchUser.Visible then
   begin
-    if loginMan then F := 'WHERE Man = True' else F := 'WHERE Man = False';
-    if fMain.loginAdmin then F := '';
+    if isMaleUser then F := 'WHERE Man = True' else F := 'WHERE Man = False';
+    if fMain.isSuperUser then F := '';
 
     qTmp.SQL.Text := 'SELECT ID, FirstName, LastName FROM Users '+F+' ORDER BY ID';
     qTmp.Open;

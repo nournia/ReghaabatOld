@@ -33,18 +33,17 @@ CREATE TABLE users (
 	Score INT NOT NULL DEFAULT '0',
 	CorrectionTime INT(11) NOT NULL DEFAULT '0' COMMENT 'Minute',
 	Email VARCHAR(255) NOT NULL COLLATE 'ascii_bin',
-	UserName VARCHAR(50) NOT NULL,
-	UserPass VARCHAR(50) NOT NULL,
+	UserPass VARCHAR(255) NOT NULL 'ascii_bin',
 	
 	SyncTime DATETIME NULL DEFAULT NULL,
 	CAS TINYINT(1) NOT NULL DEFAULT '1',
 	
-	PRIMARY KEY (ID),
-	UNIQUE KEY UserName (UserName)
-);
+	PRIMARY KEY (ID)
+) AUTO_INCREMENT=1111;
 CREATE TABLE permissions (
 	TournamentID int(11) NOT NULL,
 	UserID int(11) NOT NULL,
+	Permission ENUM('operator', 'designer', 'manager', 'master', 'admin') NOT NULL, /* Ozvyar, Tarrah, Tarrahyar, Modir, Modir-e-Samaneh */
 	Accept tinyint(1) NOT NULL DEFAULT '0',
 	PRIMARY KEY (TournamentID, UserID)
 );

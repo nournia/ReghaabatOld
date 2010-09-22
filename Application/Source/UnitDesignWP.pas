@@ -122,7 +122,7 @@ begin
   fMain.executeCommand('INSERT INTO Matches (ID, DesignerID, Title, MaxScore, Age, State, Tags, Content, PictureConfiguration, GenuineID) '+
   'VALUES ('+ Code +', '+ designer +', "'+ fMain.correctString(Edit5.Text) +'", '+ SpinEdit1.Text +', '+ SpinEdit4.Text +', '+ IntToStr(ComboBox2.ItemIndex) +', "'+ clTags.Text +'", "'+ fMain.correctString(Memo1.Lines.Text) +'", "'+ SE_Height.Text + ' ' + SE_Width.Text + ' ' + SE_Top.Text + ' ' + SE_Left.Text +'", '+ genuineID +')');
 
-  if imgChange then fMain.insertJpeg(Code, Image1);
+  if imgChange then fMain.InsertOrUpdateJpeg(Code, 'match', Image1);
 end;
 
 procedure TfDesignWP.BitBtn4Click(Sender: TObject);

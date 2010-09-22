@@ -6,7 +6,6 @@ uses
   UnitTDE in 'UnitTDE.pas' {F_TDE},
   UnitSetScore in 'UnitSetScore.pas' {fSetScore},
   uCryptography in 'uCryptography.pas',
-  uShamsiDate in 'uShamsiDate.pas',
   UnitTarrahReport in 'UnitTarrahReport.pas' {fDesigner},
   UnitResumeTahvil in 'UnitResumeTahvil.pas' {fFreeScore},
   UnitMatchReport in 'UnitMatchReport.pas' {fMatchList},
@@ -24,7 +23,9 @@ uses
   UnitWeb in 'UnitWeb.pas' {fWeb},
   UnitMessage in 'UnitMessage.pas' {fMessage},
   Unit1 in 'Unit1.pas' {Form1},
-  UnitMaster in 'UnitMaster.pas' {Master};
+  UnitMaster in 'UnitMaster.pas' {Master},
+  UFaDate in 'UFaDate.pas',
+  uShamsiDate in 'uShamsiDate.pas';
 
 {Master}
 

@@ -15,6 +15,9 @@ uses
   AdvProgressBar, AdvOfficeTabSet, ExtDlgs, Printers, DBAccess, MyAccess, MemDS;
 
 type
+  TUser = (uUser = 0, uOperator, uDesigner, uManager, uMaster, uAdmin);
+  TGender = (gMale = 0, gFemale);
+
   TfMain = class(TAdvToolBarForm)
     tbs: TAdvToolBarOfficeStyler;
     pStatus: TAdvOfficeStatusBar;
@@ -223,9 +226,15 @@ type
     procedure M_ConnectPathMatchClick(Sender: TObject);
     procedure nSetScoreClick(Sender: TObject);
 
-    function translateLoginType(login : string) : string;
+    function UserToString(u : TUser) : string;
+    function UserToPersian(u : TUser) : string;
+    function StringToUser(u : string) : TUser;
+
+    function GenderToString(g : TGender) : string;
+    function StringToGender(g : string) : TGender;
+
     function isSuperUser() : boolean;
-    function isMaleUser() : boolean;
+    function hasGenderPermission(gstr : string) : boolean;
 
     procedure ScaleBmp(bitmp: TBitmap);
     procedure thrImport();
@@ -234,9 +243,10 @@ type
     procedure DeLogin();
     procedure Backup(filename : string);
     procedure LoadFastReport( FName : String );
-    procedure ELOperator( Cascade : Boolean );
-    procedure ELDesigner( Cascade : Boolean );
-    procedure ELManager( Cascade : Boolean );
+    procedure ELUser(Cascade : Boolean);
+    procedure ELOperator(Cascade : Boolean);
+    procedure ELDesigner(Cascade : Boolean);
+    procedure ELManager(Cascade : Boolean);
     procedure ELAdmin();
     procedure EAF( Low : Boolean );
     procedure GetUserMatchScore( F : Integer );
@@ -259,12 +269,14 @@ type
     procedure bDeLoginClick(Sender: TObject);
     procedure syncDatabase();
 
+    function recordExists(sql : string) : boolean;
     procedure executeCommand(sql : String);
     procedure deleteMatch(matchID : String; picture : boolean = true);
     function searchMatch( Str : String ) : Boolean;
 
-    function loadJpeg(id : String; img: TImage; qry: TMyQuery) : Boolean;
-    procedure insertJpeg(id : String; img : TImage);
+    function loadJpeg(id, group : String; img: TImage; qry: TMyQuery) : Boolean;
+    procedure InsertOrUpdateJpeg(id, kind : String; img : TImage);
+    function InsertOrUpdate(table, condition: string; fields : array of string; values : array of Variant) : boolean;
 
     function isClient() : boolean;
     function correctString(input : string) : string;
@@ -282,7 +294,9 @@ type
   public
     cStates : array[0..2] of string;
     cMatches : array[0..5] of string;
-    loginType, loginGender, loginUserID, userID : String;
+    loginUser : TUser;
+    loginGender : TGender;
+    loginUserID, userID : String;
     options : TStringList;
     progressInc : Double; progressCounter, progressUnit : Integer;
     sendFolderAddress : string;
@@ -296,10 +310,11 @@ var
 
 implementation
 
-uses UnitTDE, UnitSetScore, uShamsiDate, uCryptography,
+uses UnitTDE, UnitSetScore, uCryptography,
   UnitTarrahReport, UnitResumeTahvil, UnitMatchReport, UnitDesignBC,
   UnitDesignWP, UnitLog, UnitTotalReport, UnitChart, UnitNewUser, AdvStyleIF,
-  UnitOptions, UnitSentence, UnitExImport, UnitForm, UnitAbout, UnitWeb, UnitMessage;
+  UnitOptions, UnitSentence, UnitExImport, UnitForm, UnitAbout, UnitWeb, UnitMessage,
+  UFaDate, uShamsiDate;
 
 {$R *.dfm}
 
@@ -326,23 +341,59 @@ begin
             ' ON Users.ID = UserFreeScores.UserID) AS UserScores';
 end;
 
-function TfMain.translateLoginType(login : string) : string;
+// type conversion
+function TfMain.UserToPersian(u : TUser) : string;
 begin
-  if login = 'operator' then Result := 'عضویار' else
-  if login = 'designer' then Result := 'طراح' else
-  if login = 'manager' then Result := 'طراح‌یار' else
-  if login = 'master' then Result := 'مدیر' else
-  if login = 'admin' then Result := 'مدیر سامانه' else
-  Result := 'عضو';
+  case u of
+    uUser: Result := 'عضو';
+    uOperator: Result := 'عضویار';
+    uDesigner: Result := 'طراح';
+    uManager: Result := 'طراح‌یار';
+    uMaster: Result := 'مدیر';
+    uAdmin: Result := 'مدیر کل';
+  end;
+end;
+function TfMain.UserToString(u : TUser) : string;
+begin
+  case u of
+    uUser: Result := 'user';
+    uOperator: Result := 'operator';
+    uDesigner: Result := 'designer';
+    uManager: Result := 'manager';
+    uMaster: Result := 'master';
+    uAdmin: Result := 'admin';
+  end;
+end;
+function TfMain.StringToUser(u : string) : TUser;
+begin
+  if (u = 'user') or (u = '') then Result := uUser else
+  if u = 'operator' then Result := uOperator else
+  if u = 'designer' then Result := uDesigner else
+  if u = 'manager' then Result := uManager else
+  if u = 'master' then Result := uMaster else
+  if u = 'admin' then Result := uAdmin;
 end;
 function TfMain.isSuperUser() : boolean;
 begin
-   Result := (loginType = 'admin') or (loginType = 'master');
+   Result := (loginUser = uAdmin) or (loginUser = uMaster);
 end;
-function TfMain.isMaleUser() : boolean;
+function TfMain.GenderToString(g : TGender) : string;
 begin
-   Result := loginType = 'man';
+  case g of
+    gMale: Result := 'male';
+    gFemale: Result := 'female';
+  end;
 end;
+function TfMain.StringToGender(g : string) : TGender;
+begin
+  if g = 'male' then Result := gMale else
+  if g = 'female' then Result := gFemale;
+end;
+function TfMain.hasGenderPermission(gstr : string) : boolean;
+begin
+  Result := (isSuperUser) or (loginGender = StringToGender(gstr));
+end;
+
 function TfMain.isClient() : boolean;
 begin
   Result := (options.Values['ServerAddress'] <> '');
@@ -354,7 +405,7 @@ begin
 end;
 function TfMain.getShamsiDate() : String;
 begin
-  Result := ShamsiDate(Date, 0);
+  Result := TFaDate.Create(Date).ToDateString;
 end;
 function TfMain.StrToMatchID(MaskEditText : String) : String;
 begin
@@ -369,25 +420,82 @@ begin
   myCommand.SQL.Text := sql;
   myCommand.Execute;
 end;
-
-procedure TfMain.insertJpeg(id : String; img : TImage);
-var S : String;
+function TfMain.recordExists(sql : string) : boolean;
 begin
-  executeCommand('DELETE FROM Pictures WHERE ID = '+ id);
+  myQuery.SQL.Text := sql;
+  myQuery.Open;
+  Result := (myQuery.RecordCount = 1);
+end;
+function TfMain.InsertOrUpdate(table, condition: string; fields : array of string; values : array of Variant) : boolean; // true : insert, false : update
+var i, count : integer; sql, tmp : string;
+begin
+  count := Length(fields) - 1;
+
+  myQuery.SQL.Text := 'SELECT * FROM '+ table + ' WHERE '+ condition;
+  myQuery.Open;
+  if myQuery.RecordCount = 1 then
+  begin
+    sql := 'UPDATE '+ table + ' SET ';
+    for i := 0 to count do
+    begin
+      sql := sql + fields[i] + '=:' + fields[i];
+      if i <> count then sql := sql + ', ';
+    end;
+    sql := sql + ' WHERE '+ condition;
+    Result := false;
+  end else
+  begin
+    sql := 'INSERT INTO '+ table +' (';
+    for i := 0 to count do
+    begin
+      sql := sql + fields[i];
+      tmp := tmp + ':' + fields[i];
+      if i <> count then
+      begin
+        sql := sql + ', ';
+        tmp := tmp + ', ';
+      end;
+    end;
+    sql := sql + ') VALUES ('+ tmp +')';
+    Result := true;
+  end;
+  myCommand.SQL.Text := sql;
+  for i := 0 to count do
+    myCommand.ParamValues[fields[i]] := values[i];
+  myCommand.Execute;
+end;
+procedure TfMain.InsertOrUpdateJpeg(id, kind : String; img : TImage);
+var S : String; valid : boolean;
+begin
+  valid := false;
   if img.Picture <> nil then
   begin
     S := ExtractFileDir(Application.ExeName)+'\a.tmp';
     img.Picture.SaveToFile(S);
-    if FileExists(S) then
-    if img.Picture <> nil then
-    begin
-      qTmp.SQL.Text := 'SELECT * FROM Pictures'; qTmp.Open;
-      qTmp.AppendRecord([id, nil]);
-      qTmp.Edit;
-      TBlobField(fMain.qTmp.FieldByName('Picture')).LoadFromFile(S);
-      qTmp.Post;
-      DeleteFile(S);
-    end;
+    valid := FileExists(S);
+  end;
+
+  myQuery.SQL.Text := 'SELECT * FROM pictures WHERE Kind = "'+ kind +'" AND ID = '+ id;
+  myQuery.Open;
+  if myQuery.RecordCount = 0 then
+  begin
+    myCommand.SQL.Text := 'INSERT INTO pictures (ID, Kind) VALUES ('+ id +', "'+ kind +'")';
+    myCommand.Execute;
+    myQuery.SQL.Text := 'SELECT * FROM pictures WHERE Kind = "'+ kind +'" AND ID = '+ id;
+    myQuery.Open;
+  end else
+  if myQuery.RecordCount = 1 then
+  begin
+    if not valid then
+      executeCommand('DELETE FROM Pictures WHERE ID = '+ id);
+  end;
+
+  if valid then
+  begin
+    myQuery.Edit;
+    TBlobField(myQuery.FieldByName('Picture')).LoadFromFile(S);
+    myQuery.Post;
+    DeleteFile(S);
   end;
 end;
 procedure getJpeg(Image: TImage; Field: TField);
@@ -404,9 +512,9 @@ begin
     BS.Free; Jpeg.Free;
   end;
 end;
-function TfMain.loadJpeg(id : String; img: TImage; qry: TMyQuery) : Boolean;
+function TfMain.loadJpeg(id, group: string; img: TImage; qry: TMyQuery) : Boolean;
 begin
-  qry.SQL.Text := 'SELECT * FROM Pictures WHERE Picture IS NOT NULL AND ID = ' + id;
+  qry.SQL.Text := 'SELECT Picture FROM pictures WHERE Picture IS NOT NULL AND Kind = "'+ group +'" AND ID = ' + id;
   qry.Open;
   Result := true;
   if qry.RecordCount = 1 then
@@ -565,8 +673,8 @@ begin
   bDeLogin.Visible := pStatus.Visible;
   EAF(False);
 
-  loginType := '';
-  loginGender := '';
+  loginUser := uUser;
+  loginGender := gMale;
   loginUserID := '';
 
   bLogin.Hint := '';
@@ -586,20 +694,19 @@ begin
   fMain.SetFocus;
 end;
 
-procedure TfMain.ELOperator( Cascade : Boolean );
+procedure TfMain.ELUser( Cascade : Boolean );
 begin
   pLogin.Visible := false;
   PassWordEdit.Text:='';
-
   bDeLogin.ImageIndex := 0;
   bDeLogin.Hint := 'خروج از حساب کاربر';
-  if Cascade = False then
-  begin
-    P_LS.ImageIndex := 0;
-    L_LS.Caption := translateLoginType('operator');
-    pStatus.Visible := true;
-    bDeLogin.Visible := pStatus.Visible;
-  end;
+  pStatus.Visible := true;
+  bDeLogin.Visible := pStatus.Visible;
+  nSkin.Enabled := True;
+end;
+procedure TfMain.ELOperator( Cascade : Boolean );
+begin
+  ELUser(True);
 
   LicenseCheckBool := False;
   try
@@ -607,11 +714,9 @@ begin
   except on E: Exception do
   end;
 
-  nSkin.Enabled := True;
-
   if LicenseCheckBool then
   begin
-//x    nUser.Enabled:=True;
+    nUser.Enabled:=True;
 //x    nMessage.Enabled:=True;
 //x    nDeliver.Enabled:=True;
 //x    nReceive.Enabled:=True;
@@ -622,6 +727,8 @@ end;
 
 procedure TfMain.ELDesigner( Cascade : Boolean );
 begin
+  ELOperator(True);
+
   pStatus.Visible := true;
   bDeLogin.Visible := pStatus.Visible;
 
@@ -636,18 +743,12 @@ end;
 
 procedure TfMain.ELManager( Cascade : Boolean );
 begin
-  ELOperator(True);
   ELDesigner(True);
 
   if StrToBool(options.Values['DownGrade']) then
   begin
     bDeLogin.ImageIndex := 1;
-    bDeLogin.Hint := 'تنزل به ' + translateLoginType('operator');
-  end;
-  if Cascade = False then
-  begin
-    P_LS.ImageIndex := 1;
-    L_LS.Caption := translateLoginType('manager');
+    bDeLogin.Hint := 'تنزل به ' + UserToPersian(uOperator);
   end;
 
 //x  nLabel.Enabled:=True;
@@ -670,10 +771,6 @@ end;
 procedure TfMain.ELAdmin();
 begin
   ELManager(True);
-
-  P_LS.ImageIndex := 2;
-  L_LS.Caption := translateLoginType('master');
-
   nOptions.Enabled:=True;
 end;
 
@@ -834,6 +931,31 @@ begin
             'Jet OLEDB:SFP=False';
 end;
 
+procedure presetMenu();
+begin
+  with fMain do
+  begin
+    P_Temp.Visible := True;
+    P_User.Visible := False;
+    P_MatchEdit.Visible := False;
+    P_SearchUser.Visible := False;
+  end;
+end;
+procedure postsetMenu(title : string; form : TForm);
+begin
+  with fMain do
+  begin
+    AdvToolBarPager.Caption.Caption := title;
+    form.BringToFront;
+    P_Temp.Visible := False;
+
+    if ICLibrary.Visible then
+    begin
+     if fUser = nil then fUser.bImportFromLibrary.Visible := True;
+    end;
+  end;
+end;
+
 procedure TfMain.nConnectMatchClick(Sender: TObject);
 var Ok : Boolean; matchAddress : string;
 begin
@@ -916,7 +1038,7 @@ begin
   begin
     if fUser <> nil then
     begin
-      fUser.P_Select.Visible := True;
+      fUser.bImportFromLibrary.Visible := True;
     end;
 
     if F_TDE <> nil then
@@ -1386,7 +1508,7 @@ begin
       SE_Top.Text := getNextToken(qTmp.FieldByName('PictureConfiguration').AsString, ' ', tokpos);
       SE_Left.Text := getNextToken(qTmp.FieldByName('PictureConfiguration').AsString, ' ', tokpos);
 
-      loadJpeg(qTmp.FieldByName('ID').AsString, fDesignWP.Image1, qTmp);
+      loadJpeg(qTmp.FieldByName('ID').AsString, 'match', fDesignWP.Image1, qTmp);
     end;
   end;
 
@@ -1513,38 +1635,26 @@ end;
 
 procedure TfMain.nUserClick(Sender: TObject);
 begin
-  AdvToolBarPager.Caption.Caption := 'مدیریت اعضا';
-
-  P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := False;
-  P_SearchUser.Visible := False;
+  presetMenu;
 
   if fUser = nil then
     Application.CreateForm(TfUser, fUser);
 
-  if ICLibrary.Visible then
+  with fUser do
   begin
-    fUser.P_Select.Visible := True;
-//    fUser.CB_Library.Checked := True;
-  end;
-
-  fUser.cbLogin.Items.Clear;
-  fUser.cbLogin.Items.Add(translateLoginType(''));
-  if (loginType = 'manager') or (loginType = 'master') or (loginType = 'admin') then
-  begin
-    fUser.cbLogin.Items.Add(translateLoginType('operator'));
-    if (loginType = 'master') or (loginType = 'admin') then
+    if loginUser < uManager then
     begin
-      fUser.cbLogin.Items.Add(translateLoginType('manager'));
+      gMenu.Visible := false;
+      meUserID.Text := loginUserID;
+      loadUserFromMatch;
+    end else
+    begin
+      gMenu.Visible := true;
+      fUser.bClearClick(nil);
     end;
   end;
 
-  fUser.imgChange := false;
-  fUser.BringToFront;
-  P_Temp.Visible := False;
-
-  fUser.bClear.Click;
+  postsetMenu('مدیریت اعضا', fUser);
 end;
 
 procedure TfMain.nTotalReportClick(Sender: TObject);
@@ -1658,9 +1768,9 @@ begin
     bDeLogin.Hint := 'خروج از حساب کاربر';
     P_LS.ImageIndex := 0;
     L_LS.Caption := 'اپراتور';
-    if isMaleUser then uPicture.ImageIndex := 0 else uPicture.ImageIndex := 1;
+    uPicture.ImageIndex := ord(loginGender);
     nDeliverClick(nil);
-    loginType := '';
+    loginUser := uUser;
   end else
     DeLogin;
 end;
@@ -1677,14 +1787,16 @@ begin
     PassWordEdit.SelectAll;
   end else
   begin
-    loginType := qTmp1.FieldByName('Permission').AsString;
-    loginGender := qTmp1.FieldByName('Gender').AsString;
+    loginUser := StringToUser(qTmp1.FieldByName('Permission').AsString);
+    loginGender := StringToGender(qTmp1.FieldByName('Gender').AsString);
     loginUserID := ME_Login.Text;
 
     if isSuperUser then ELAdmin else
-    if loginType = 'manager' then ELManager(False) else
-    if loginType = 'designer' then ELDesigner(False) else
-    if loginType = 'operator' then ELOperator(False);
+    if loginUser = uManager then ELManager(False) else
+    if loginUser = uDesigner then ELDesigner(False) else
+    if (loginUser = uOperator) or (loginUser = uUser) then ELOperator(False);
+    P_LS.ImageIndex := ord(loginUser);
+    L_LS.Caption := UserToPersian(loginUser);
 
     lLogin.Caption := qTmp1.FieldByName('FirstName').AsString + ' ' + qTmp1.FieldByName('LastName').AsString;
 
@@ -1724,7 +1836,7 @@ begin
   cMatches[0] := 'همه مسابقات'; cMatches[1] := 'کتاب'; cMatches[2] := 'کارعملی'; cMatches[3] := 'هنری'; cMatches[4] := 'چند رسانه‌ای'; cMatches[5] := 'مسابقات آزاد';
 
   AdvToolBarPager.ActivePageIndex := 0;
-  loginType := ''; loginGender := ''; loginUserID := '';
+  loginUser := uUser; loginGender := gMale; loginUserID := '';
   options := TStringList.Create;
 {
   zipMaster.DLLDirectory := ExtractFileDir(Application.ExeName);
@@ -1780,7 +1892,7 @@ begin
       Abort;
     end;
 
-    if ((qTmp.FieldByName('Gender').AsString <> loginGender) and (not isSuperUser)) then
+    if not hasGenderPermission(qTmp.FieldByName('Gender').AsString) then
     begin
       MyShowMessage('شما اجازه‌ی دسترسی به این پرونده را ندارید');
       userID := '';
@@ -1799,7 +1911,7 @@ begin
 
     if LDescription.Caption <> '' then Label2.Visible := True;
 
-    uPicture.Visible := not loadJpeg(userID, Picture, qTmp);
+    uPicture.Visible := not loadJpeg(userID, 'user', Picture, qTmp);
 
 // TDE Code --------------------------------------------------------------------
   if F_TDE <> nil then
@@ -1924,8 +2036,7 @@ end;
 
 procedure TfMain.B_RefreshClick(Sender: TObject);
 begin
-  if isMaleUser then uPicture.ImageIndex := 0
-  else uPicture.ImageIndex := 1;
+  uPicture.ImageIndex := ord(loginGender);
   if isSuperUser then uPicture.ImageIndex := 2;
   Picture.Picture.Bitmap := nil;
   uPicture.Visible := true;
@@ -2020,7 +2131,7 @@ begin
   P_SearchUser.Visible := not P_SearchUser.Visible;
   if P_SearchUser.Visible then
   begin
-    if isMaleUser then F := 'WHERE Man = True' else F := 'WHERE Man = False';
+    if loginGender = gMale then F := 'WHERE Man = True' else F := 'WHERE Man = False';
     if fMain.isSuperUser then F := '';
 
     qTmp.SQL.Text := 'SELECT ID, FirstName, LastName FROM Users '+F+' ORDER BY ID';
@@ -2093,12 +2204,8 @@ procedure TfMain.nDeliverClick(Sender: TObject);
 var
   b : Boolean;
 begin
-  AdvToolBarPager.Caption.Caption := 'تحویل مسابقه';
-
-  P_Temp.Visible := True;
+  presetMenu;
   P_User.Visible := True;
-  P_MatchEdit.Visible := False;
-  P_SearchUser.Visible := False;
 
   if F_TDE = nil then
   begin
@@ -2118,8 +2225,7 @@ begin
     F_TDE.D_CheckBoxLibrary.Visible := True;
   end;
 
-  F_TDE.BringToFront;
-  P_Temp.Visible := False;
+  postsetMenu('تحویل مسابقه', F_TDE);
 
   b := F_TDE.AdvOfficePager.Enabled;
   F_TDE.AdvOfficePager.Enabled := True;
@@ -2276,12 +2382,7 @@ end;
 
 procedure TfMain.nMessageClick(Sender: TObject);
 begin
-  AdvToolBarPager.Caption.Caption := 'پیغام';
-
-  P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := False;
-  P_SearchUser.Visible := False;
+  presetMenu;
 
   if fMessage = nil then
     Application.CreateForm( TfMessage, fMessage );
@@ -2300,8 +2401,7 @@ begin
     else AdvOfficeTabSet1.ActiveTabIndex := 0;
   end;
 
-  fMessage.BringToFront;
-  P_Temp.Visible := False;
+  postsetMenu('پیامها', fMessage);
 end;
 
 procedure TfMain.nDesignBookClick(Sender: TObject);

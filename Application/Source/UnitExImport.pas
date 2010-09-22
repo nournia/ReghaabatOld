@@ -188,7 +188,7 @@ begin
   else if (LeftStr(MatchID, 2) = '32') or (LeftStr(MatchID, 2) = '33') then
   begin
     L_ShowMatch.Caption := qry.FieldByName('Content').AsString;
-    fMain.loadJpeg(MatchID, Image1, qry);
+    fMain.loadJpeg(MatchID, 'match', Image1, qry);
     gbPicture.Width := 160;
     spPicture.Width := 2;
   end;

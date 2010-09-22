@@ -107,9 +107,9 @@ begin
   end;
 
   if fMain.P_LS.ImageIndex = 0 then
-    if fMain.loginGender <> fMain.qTmp.FieldByName('Gender').AsString then
+    if fMain.GenderToString(fMain.loginGender) <> fMain.qTmp.FieldByName('Gender').AsString then
     begin
-      if fMain.isMaleUser then str := 'آقایان' else str := 'خانمها';
+      if fMain.loginGender = gMale then str := 'آقایان' else str := 'خانمها';
       fMain.MyShowMessage('شما تنها می توانید برای ' + str + ' پیغام بفرستید');
       Abort;
     end;
@@ -177,16 +177,15 @@ begin
       Abort;
     end;
 
-    if fMain.P_LS.ImageIndex = 0 then
-    if fMain.loginGender <> fMain.qTmp.FieldByName('Gender').AsString then
+    if not fMain.hasGenderPermission(fMain.qTmp.FieldByName('Gender').AsString) then
     begin
-      if fMain.isMaleUser then str := 'آقایان' else str := 'خانمها';
+      if fMain.loginGender = gMale then str := 'آقایان' else str := 'خانمها';
       fMain.MyShowMessage('شما تنها می توانید برای ' + str + ' پیغام بفرستید');
-      Abort;
+    end else
+    begin
+      lName.Caption := fMain.qTmp.FieldByName('LastName').AsString;
+      mContent.SetFocus;
     end;
-
-    lName.Caption := fMain.qTmp.FieldByName('LastName').AsString;
-    mContent.SetFocus;
   end;
 end;
 

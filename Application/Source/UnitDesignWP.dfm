@@ -405,7 +405,7 @@ object fDesignWP: TfDesignWP
         Left = 449
         Top = 25
         Width = 34
-        Height = 22
+        Height = 21
         Anchors = [akTop, akRight]
         BiDiMode = bdLeftToRight
         Ctl3D = True
@@ -435,7 +435,7 @@ object fDesignWP: TfDesignWP
         object Label2: TLabel
           Left = 3
           Top = 3
-          Width = 259
+          Width = 245
           Height = 109
           Align = alTop
           Alignment = taCenter
@@ -449,7 +449,6 @@ object fDesignWP: TfDesignWP
           ParentBiDiMode = False
           ParentFont = False
           Transparent = True
-          ExplicitWidth = 245
         end
       end
       object SpinEdit1: TAdvSpinEdit
@@ -458,7 +457,7 @@ object fDesignWP: TfDesignWP
         Width = 55
         Height = 22
         Value = 0
-        DateValue = 40395.923889398150000000
+        DateValue = 40443.295824039350000000
         HexValue = 0
         Anchors = [akTop, akRight]
         Enabled = True
@@ -859,7 +858,7 @@ object fDesignWP: TfDesignWP
           Height = 22
           SpinType = sptFloat
           Value = 0
-          DateValue = 40395.923889421300000000
+          DateValue = 40443.295824050930000000
           HexValue = 0
           SpinFlat = True
           Anchors = [akTop, akRight]
@@ -892,7 +891,7 @@ object fDesignWP: TfDesignWP
           Height = 22
           SpinType = sptFloat
           Value = 0
-          DateValue = 40395.923889421300000000
+          DateValue = 40443.295824050930000000
           HexValue = 0
           SpinFlat = True
           Anchors = [akTop, akRight]
@@ -925,7 +924,7 @@ object fDesignWP: TfDesignWP
           Height = 22
           SpinType = sptFloat
           Value = 0
-          DateValue = 40395.923889421300000000
+          DateValue = 40443.295824062500000000
           HexValue = 0
           SpinFlat = True
           Anchors = [akTop, akRight]
@@ -958,7 +957,7 @@ object fDesignWP: TfDesignWP
           Height = 22
           SpinType = sptFloat
           Value = 0
-          DateValue = 40395.923889421300000000
+          DateValue = 40443.295824062500000000
           HexValue = 0
           SpinFlat = True
           Anchors = [akTop, akRight]

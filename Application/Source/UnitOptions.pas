@@ -426,7 +426,7 @@ begin
   end;
 
   fMain.executeCommand('UPDATE Library SET Title = "'+ fMain.correctString(E_Title.Text) + '"');
-  if imgChange then fMain.insertJpeg('1', Image1);
+  if imgChange then fMain.InsertOrUpdateJpeg('0', 'library', Image1);
 
   fMain.options.Values['AutoConnectLibrary'] := BoolToStr(CH_AutoConnectLibrary.Checked);
   fMain.options.Values['DownGrade'] := BoolToStr(chDownGrade.Checked);

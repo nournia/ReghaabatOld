@@ -1,4 +1,3 @@
-SET sql_mode = 'ALLOW_INVALID_DATES';
 CREATE DATABASE IF NOT EXISTS reghaabat CHARACTER SET utf8 COLLATE utf8_bin;
 USE reghaabat;
 -- 0 <= Rate >= 1, 0 <= Quality	

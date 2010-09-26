@@ -1,4 +1,4 @@
-﻿unit UnitMain;
+﻿ unit UnitMain;
 
 interface
 uses
@@ -12,12 +12,9 @@ uses
   ImgList, AdvOfficeHint, DB, ADODB, frxClass, frxDBSet, TaskDialog,
   TaskDialogEx, AdvOfficeImage, GDIPPictureContainer, AdvOfficeButtons, AdvCGrid,
   AdvSmoothButton, pngimage, AdvSmoothSplashScreen, AdvSmoothMessageDialog, jpeg,
-  AdvProgressBar, AdvOfficeTabSet, ExtDlgs, Printers, DBAccess, MyAccess, MemDS;
+  AdvProgressBar, AdvOfficeTabSet, ExtDlgs, Printers, DBAccess, MyAccess, MemDS, UnitTypes;
 
 type
-  TUser = (uUser = 0, uOperator, uDesigner, uManager, uMaster, uAdmin);
-  TGender = (gMale = 0, gFemale);
-
   TfMain = class(TAdvToolBarForm)
     tbs: TAdvToolBarOfficeStyler;
     pStatus: TAdvOfficeStatusBar;
@@ -38,10 +35,9 @@ type
     M_UserMatchScore2: TMenuItem;
     M_UserMatchScore3: TMenuItem;
     N_T_Design: TAdvToolBar;
-    nDesignArt: TAdvGlowButton;
-    nDesignWork: TAdvGlowButton;
-    nDesignMultiMedia: TAdvGlowButton;
-    nDesignBook: TAdvGlowButton;
+    nInstructionMatches: TAdvGlowButton;
+    nQuestionMatches: TAdvGlowButton;
+    nResources: TAdvGlowButton;
     nOptions: TAdvGlowButton;
     nSkin: TAdvGlowButton;
     pagers: TAdvOfficePagerOfficeStyler;
@@ -198,10 +194,9 @@ type
     procedure nLogClick(Sender: TObject);
     procedure BB_DeleteClick(Sender: TObject);
     procedure BB_ModifyClick(Sender: TObject);
-    procedure nDesignArtClick(Sender: TObject);
-    procedure nDesignWorkClick(Sender: TObject);
-    procedure nDesignMultiMediaClick(Sender: TObject);
-    procedure nDesignBookClick(Sender: TObject);
+    procedure nInstructionMatchesClick(Sender: TObject);
+    procedure nQuestionMatchesClick(Sender: TObject);
+    procedure nResourcesClick(Sender: TObject);
     procedure MaskEdit4KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure nMatchListClick(Sender: TObject);
     procedure nFreeScoreClick(Sender: TObject);
@@ -226,12 +221,11 @@ type
     procedure M_ConnectPathMatchClick(Sender: TObject);
     procedure nSetScoreClick(Sender: TObject);
 
-    function UserToString(u : TUser) : string;
-    function UserToPersian(u : TUser) : string;
-    function StringToUser(u : string) : TUser;
+    procedure presetMenu();
+    procedure postsetMenu(title : string; form : TForm);
+    procedure fillComboWithQuery(cb : TComboBox; isql : string);
+    procedure showResourceForm();
 
-    function GenderToString(g : TGender) : string;
-    function StringToGender(g : string) : TGender;
 
     function isSuperUser() : boolean;
     function hasGenderPermission(gstr : string) : boolean;
@@ -276,7 +270,7 @@ type
 
     function loadJpeg(id, group : String; img: TImage; qry: TMyQuery) : Boolean;
     procedure InsertOrUpdateJpeg(id, kind : String; img : TImage);
-    function InsertOrUpdate(table, condition: string; fields : array of string; values : array of Variant) : boolean;
+    function InsertOrUpdate(table, condition: string; fields : array of string; values : array of Variant) : integer;
 
     function isClient() : boolean;
     function correctString(input : string) : string;
@@ -292,12 +286,14 @@ type
   protected
     { Protected declarations }
   public
-    cStates : array[0..2] of string;
-    cMatches : array[0..5] of string;
+    resourceAddress : string;
     loginUser : TUser;
     loginGender : TGender;
     loginUserID, userID : String;
     options : TStringList;
+
+    cStates : array[0..2] of string;
+    cMatches : array[0..5] of string;
     progressInc : Double; progressCounter, progressUnit : Integer;
     sendFolderAddress : string;
     listHeader, listField : array[0..100] of String;
@@ -314,7 +310,7 @@ uses UnitTDE, UnitSetScore, uCryptography,
   UnitTarrahReport, UnitResumeTahvil, UnitMatchReport, UnitDesignBC,
   UnitDesignWP, UnitLog, UnitTotalReport, UnitChart, UnitNewUser, AdvStyleIF,
   UnitOptions, UnitSentence, UnitExImport, UnitForm, UnitAbout, UnitWeb, UnitMessage,
-  UFaDate, uShamsiDate;
+  UFaDate, uShamsiDate, UnitReference;
 
 {$R *.dfm}
 
@@ -341,53 +337,9 @@ begin
             ' ON Users.ID = UserFreeScores.UserID) AS UserScores';
 end;
 
-// type conversion
-function TfMain.UserToPersian(u : TUser) : string;
-begin
-  case u of
-    uUser: Result := 'عضو';
-    uOperator: Result := 'عضویار';
-    uDesigner: Result := 'طراح';
-    uManager: Result := 'طراح‌یار';
-    uMaster: Result := 'مدیر';
-    uAdmin: Result := 'مدیر کل';
-  end;
-end;
-function TfMain.UserToString(u : TUser) : string;
-begin
-  case u of
-    uUser: Result := 'user';
-    uOperator: Result := 'operator';
-    uDesigner: Result := 'designer';
-    uManager: Result := 'manager';
-    uMaster: Result := 'master';
-    uAdmin: Result := 'admin';
-  end;
-end;
-function TfMain.StringToUser(u : string) : TUser;
-begin
-  if (u = 'user') or (u = '') then Result := uUser else
-  if u = 'operator' then Result := uOperator else
-  if u = 'designer' then Result := uDesigner else
-  if u = 'manager' then Result := uManager else
-  if u = 'master' then Result := uMaster else
-  if u = 'admin' then Result := uAdmin;
-end;
 function TfMain.isSuperUser() : boolean;
 begin
    Result := (loginUser = uAdmin) or (loginUser = uMaster);
-end;
-function TfMain.GenderToString(g : TGender) : string;
-begin
-  case g of
-    gMale: Result := 'male';
-    gFemale: Result := 'female';
-  end;
-end;
-function TfMain.StringToGender(g : string) : TGender;
-begin
-  if g = 'male' then Result := gMale else
-  if g = 'female' then Result := gFemale;
 end;
 function TfMain.hasGenderPermission(gstr : string) : boolean;
 begin
@@ -426,7 +378,7 @@ begin
   myQuery.Open;
   Result := (myQuery.RecordCount = 1);
 end;
-function TfMain.InsertOrUpdate(table, condition: string; fields : array of string; values : array of Variant) : boolean; // true : insert, false : update
+function TfMain.InsertOrUpdate(table, condition: string; fields : array of string; values : array of Variant) : integer; // -1: update, else : insertedId
 var i, count : integer; sql, tmp : string;
 begin
   count := Length(fields) - 1;
@@ -442,7 +394,7 @@ begin
       if i <> count then sql := sql + ', ';
     end;
     sql := sql + ' WHERE '+ condition;
-    Result := false;
+    Result := -1;
   end else
   begin
     sql := 'INSERT INTO '+ table +' (';
@@ -457,12 +409,14 @@ begin
       end;
     end;
     sql := sql + ') VALUES ('+ tmp +')';
-    Result := true;
+    Result := 0;
   end;
   myCommand.SQL.Text := sql;
   for i := 0 to count do
     myCommand.ParamValues[fields[i]] := values[i];
   myCommand.Execute;
+
+  if Result = 0 then Result := myCommand.InsertId;
 end;
 procedure TfMain.InsertOrUpdateJpeg(id, kind : String; img : TImage);
 var S : String; valid : boolean;
@@ -734,9 +688,9 @@ begin
 
   BB_Delete.Enabled := True;
 
-//x  nDesignBook.Enabled := True;
-//x  nDesignMultiMedia.Enabled := True;
-//x  nDesignArt.Enabled := True;
+  nResources.Enabled := True;
+//x  nQuestionMatches.Enabled := True;
+//x  nInstructionMatches.Enabled := True;
 //x  nDesignWork.Enabled := True;
 //x  nMatchList.Enabled := True;
 end;
@@ -792,10 +746,9 @@ begin
     nSkin.Enabled := False;
   end;
 
-  nDesignBook.Enabled:=False;
-  nDesignMultiMedia.Enabled:=False;
-  nDesignArt.Enabled:=False;
-  nDesignWork.Enabled:=False;
+  nResources.Enabled := False;
+  nQuestionMatches.Enabled := False;
+  nInstructionMatches.Enabled := False;
   nPay.Enabled:=False;
   nSetScore.Enabled:=False;
   nTotalReport.Enabled:=False;
@@ -931,7 +884,7 @@ begin
             'Jet OLEDB:SFP=False';
 end;
 
-procedure presetMenu();
+procedure TfMain.presetMenu();
 begin
   with fMain do
   begin
@@ -941,7 +894,7 @@ begin
     P_SearchUser.Visible := False;
   end;
 end;
-procedure postsetMenu(title : string; form : TForm);
+procedure TfMain.postsetMenu(title : string; form : TForm);
 begin
   with fMain do
   begin
@@ -954,6 +907,43 @@ begin
      if fUser = nil then fUser.bImportFromLibrary.Visible := True;
     end;
   end;
+end;
+
+procedure TfMain.fillComboWithQuery(cb : TComboBox; isql : string);
+var i : integer;
+begin
+  with myQueryTmp do
+  begin
+    SQL.Text := isql;
+    Open;
+    if cb.Items.Count <> RecordCount then
+    begin
+      cb.Items.Clear;
+      for i := 1 to RecordCount do
+      begin
+        cb.Items.Add(Fields[0].AsString);
+        next;
+      end;
+    end;
+  end;
+  cb.ItemIndex := 0;
+end;
+
+procedure TfMain.showResourceForm();
+var rc : TResourceContent;
+begin
+  fMain.presetMenu;
+
+  if fResource = nil then
+  begin
+    Application.CreateForm(TfResource, fResource);
+    fResource.cbKind.Items.Clear;
+    for rc := rBook to rWebPage do
+      fResource.cbKind.Items.Add(ResourceToPersian(rc));
+    fResource.refresh;
+  end;
+
+  fMain.postsetMenu('منبع جدید', fResource);
 end;
 
 procedure TfMain.nConnectMatchClick(Sender: TObject);
@@ -1387,6 +1377,7 @@ end;
 procedure TfMain.BB_DeleteClick(Sender: TObject);
 var str : string;
 begin
+{x
   str := StrToMatchID(MaskEdit4.Text);
   if SearchMatch(str) then
   begin
@@ -1402,6 +1393,7 @@ begin
       end;
     end;
   end else MyShowMessage('چنین مسابقه‌ای وجود ندارد');
+}
 end;
 
 procedure SetComboItem(cb : TComboBox; str : String);
@@ -1425,6 +1417,7 @@ var
   isBookMatch : Boolean;
   i, tokpos : Integer;
 begin
+{x
   isBookMatch := False;
   Str := StrToMatchID(MaskEdit4.Text);
   if SearchMatch(Str) then
@@ -1513,6 +1506,7 @@ begin
   end;
 
   end else MyShowMessage('چنین مسابقه‌ای وجود ندارد');
+}
 end;
 
 procedure TfMain.nOptionsClick(Sender: TObject);
@@ -1838,12 +1832,9 @@ begin
   AdvToolBarPager.ActivePageIndex := 0;
   loginUser := uUser; loginGender := gMale; loginUserID := '';
   options := TStringList.Create;
-{
-  zipMaster.DLLDirectory := ExtractFileDir(Application.ExeName);
-  zipMaster.DLL_Load := true;
-  sendFolderAddress := ExtractFileDir(Application.ExeName) + '\Send\';
-  if not DirectoryExists(fMain.sendFolderAddress) then CreateDir(fMain.sendFolderAddress);
-}
+
+  resourceAddress := ExtractFileDir(Application.ExeName)+'\Resource\';
+  if not DirectoryExists(resourceAddress) then CreateDir(resourceAddress);
 end;
 
 procedure TfMain.FormShow(Sender: TObject);
@@ -2354,6 +2345,7 @@ end;
 
 procedure TfMain.nMatchListClick(Sender: TObject);
 begin
+{x
   AdvToolBarPager.Caption.Caption := 'لیست مسابقات';
 
   P_Temp.Visible := True;
@@ -2378,6 +2370,7 @@ begin
     fMatchList.BitBtn1.Enabled := True
   else
     fMatchList.BitBtn1.Enabled := False;
+}
 end;
 
 procedure TfMain.nMessageClick(Sender: TObject);
@@ -2404,40 +2397,59 @@ begin
   postsetMenu('پیامها', fMessage);
 end;
 
-procedure TfMain.nDesignBookClick(Sender: TObject);
+procedure addGridColumns(grid : TAdvColumnGrid; columns : array of string; strech : integer);
 var
   i : integer;
 begin
-  AdvToolBarPager.Caption.Caption := 'طراحی مسابقه كتاب';
-
-  P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := True;
-  P_SearchUser.Visible := False;
-
-  if fDesignBC = nil then
-    Application.CreateForm(TfDesignBC, fDesignBC);
-
-  qTmp.SQL.Text := 'SELECT Caption FROM Groups WHERE Kind = 1 ORDER BY ID';
-  qTmp.Open;
-  fDesignBC.clTags.Items.Clear;
-  for i := 1 to qTmp.RecordCount do
+  grid.ColumnSize.Stretch := false;
+  grid.Columns.Clear;
+  for i := 0 to Length(columns)-1 do
   begin
-    fDesignBC.clTags.Items.Add(qTmp.FieldByName('Caption').AsString);
-    qTmp.Next;
+    grid.Columns.Add;
+    grid.Columns[i].Header := columns[i];
+    grid.Columns[i].Font.Name := 'B Nazanin';
+    grid.Columns[i].Font.Size := 9;
+    grid.Columns[i].Font.Style := [fsBold];
+    grid.Columns[i].Alignment := taCenter;
+    grid.Columns[i].HeaderFont.Name := 'B Nazanin';
+    grid.Columns[i].HeaderFont.Size := 8;
+    grid.Columns[i].HeaderFont.Style := [fsBold];
+    grid.Columns[i].HeaderAlignment := taCenter;
+    grid.Columns[i].ReadOnly := true;
+  end;
+  grid.Columns[strech].Alignment := taLeftJustify;
+  grid.Columns[strech].HeaderAlignment := taLeftJustify;
+  grid.ColumnSize.StretchColumn := strech;
+  grid.ColumnSize.Stretch := true;
+end;
+procedure TfMain.nResourcesClick(Sender: TObject);
+var
+  i : integer;
+begin
+  presetMenu;
+
+  if fMatchList = nil then
+    Application.CreateForm(TfMatchList, fMatchList);
+
+  with fMatchList do
+  begin
+    addGridColumns(Grid, ['', 'عنوان', 'پدید آورنده', 'مرکز نشر', 'نوع', 'رده سنی', 'ایجاد کننده'], 1);
+    Grid.Columns[0].Width := 0;
+    Grid.Columns[2].Width := 100;
+    Grid.Columns[3].Width := 100;
+    state := 'resource';
+    MakeQuery(false, true);
+    bNewEntity.Caption := 'منبع جدید';
+
+    Grid.SearchFooter.Visible := false;
+    Grid.Options := Grid.Options - [goEditing];
   end;
 
-  fDesignBC.genuineID := '0';
-  fDesignBC.Label3.Caption := 'كد كتاب :';
-  fDesignBC.bookMode := true;
-  fDesignBC.BitBtn4.Click;
-
-  fDesignBC.BringToFront;
-  P_Temp.Visible := False;
+  postsetMenu('منابع', fMatchList);
 end;
 
 
-procedure TfMain.nDesignMultiMediaClick(Sender: TObject);
+procedure TfMain.nQuestionMatchesClick(Sender: TObject);
 var
   i : integer;
 begin
@@ -2469,7 +2481,7 @@ begin
   P_Temp.Visible := False;
 end;
 
-procedure TfMain.nDesignWorkClick(Sender: TObject);
+procedure TfMain.nInstructionMatchesClick(Sender: TObject);
 var
   i : Integer;
 begin
@@ -2494,38 +2506,6 @@ begin
 
   fDesignWP.genuineID := '0';
   fDesignWP.workMode := true;
-  fDesignWP.BitBtn4.Click;
-
-  fDesignWP.BringToFront;
-  P_Temp.Visible := False;
-end;
-
-procedure TfMain.nDesignArtClick(Sender: TObject);
-var
-  i : Integer;
-begin
-  AdvToolBarPager.Caption.Caption := 'طراحی مسابقه هنری';
-
-  P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := True;
-  P_SearchUser.Visible := False;
-
-  if fDesignWP = nil then
-    Application.CreateForm(TfDesignWP, fDesignWP);
-
-  qTmp.SQL.Text := 'SELECT Caption FROM Groups WHERE Kind = 3 ORDER BY ID';
-  qTmp.Open;
-  fDesignWP.clTags.Items.Clear;
-  for i := 1 to qTmp.RecordCount do
-  begin
-    fDesignWP.clTags.Items.Add(qTmp.FieldByName('Caption').AsString);
-    qTmp.Next;
-  end;
-
-  fDesignWP.genuineID := '0';
-  fDesignWP.workMode := false;
-  fDesignWP.imgChange := false;
   fDesignWP.BitBtn4.Click;
 
   fDesignWP.BringToFront;

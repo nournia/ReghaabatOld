@@ -52,7 +52,7 @@ var
 
 implementation
 
-uses UnitMain;
+uses UnitMain, UnitTypes;
 
 {$R *.dfm}
 procedure TfMessage.AdvOfficeTabSet1Change(Sender: TObject);
@@ -107,7 +107,7 @@ begin
   end;
 
   if fMain.P_LS.ImageIndex = 0 then
-    if fMain.GenderToString(fMain.loginGender) <> fMain.qTmp.FieldByName('Gender').AsString then
+    if GenderToString(fMain.loginGender) <> fMain.qTmp.FieldByName('Gender').AsString then
     begin
       if fMain.loginGender = gMale then str := 'آقایان' else str := 'خانمها';
       fMain.MyShowMessage('شما تنها می توانید برای ' + str + ' پیغام بفرستید');

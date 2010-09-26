@@ -111,6 +111,10 @@
 			</DCCReference>
 			<DCCReference Include="UFaDate.pas"/>
 			<DCCReference Include="uShamsiDate.pas"/>
+			<DCCReference Include="UnitReference.pas">
+				<Form>fResource</Form>
+			</DCCReference>
+			<DCCReference Include="UnitTypes.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -143,7 +147,7 @@
 						<VersionInfo Name="MajorVer">3</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">789</VersionInfo>
+						<VersionInfo Name="Build">902</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -155,7 +159,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">Rooyesh</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">3.0.0.789</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">3.0.0.902</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>

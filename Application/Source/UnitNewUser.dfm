@@ -67,7 +67,6 @@ object fUser: TfUser
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    ExplicitTop = 31
     FullHeight = 0
     object AdvGroupBox1: TAdvGroupBox
       AlignWithMargins = True
@@ -188,7 +187,7 @@ object fUser: TfUser
       end
       object RG_S: TAdvOfficeRadioGroup
         Left = 459
-        Top = 3
+        Top = 5
         Width = 70
         Height = 60
         BorderStyle = bsNone
@@ -214,7 +213,6 @@ object fUser: TfUser
         Anchors = [akLeft, akTop, akRight]
         ParentCtl3D = True
         TabOrder = 7
-        ExplicitWidth = 797
         DesignSize = (
           741
           27)
@@ -253,7 +251,6 @@ object fUser: TfUser
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 0
-          ExplicitWidth = 710
         end
       end
       object Edit1: TEdit
@@ -396,7 +393,6 @@ object fUser: TfUser
         ParentCtl3D = False
         ParentFont = False
         TabOrder = 5
-        ExplicitWidth = 710
       end
       object eNationalID: TEdit
         Left = 586
@@ -415,7 +411,6 @@ object fUser: TfUser
         ParentFont = False
         TabOrder = 2
         OnKeyDown = eNationalIDKeyDown
-        ExplicitLeft = 643
       end
       object MaskEdit3: TMaskEdit
         Left = 607
@@ -438,7 +433,6 @@ object fUser: TfUser
         TabOrder = 3
         Text = '    /  /  '
         OnKeyDown = MaskEdit3KeyDown
-        ExplicitLeft = 664
       end
       object AdvGroupBox4: TAdvGroupBox
         Left = 17
@@ -524,7 +518,6 @@ object fUser: TfUser
         ParentFont = False
         TabOrder = 4
         OnKeyDown = ePhoneKeyDown
-        ExplicitLeft = 643
       end
     end
     object pLogin: TAdvGroupBox
@@ -538,8 +531,6 @@ object fUser: TfUser
       Caption = #1581#1602' '#1608#1585#1608#1583
       ParentCtl3D = True
       TabOrder = 1
-      ExplicitTop = 199
-      ExplicitWidth = 809
       DesignSize = (
         752
         75)
@@ -583,13 +574,12 @@ object fUser: TfUser
         LeftButton.Visible = True
         ParentFont = False
         PasswordChar = '*'
-        TabOrder = 0
+        TabOrder = 1
         TextHint = 
           #1705#1604#1605#1607#8204#1740' '#1593#1576#1608#1585' '#1605#1740#8204#1578#1608#1575#1606#1583' '#1588#1575#1605#1604' '#1575#1593#1583#1575#1583' '#1608' '#1581#1585#1608#1601' '#1604#1575#1578#1740#1606' '#1576#1575#1588#1583' '#1608' '#1582#1575#1604#1740' '#1576#1608#1583#1606' '#1570#1606 +
           ' '#1576#1607' '#1605#1593#1606#1740' '#1606#1583#1575#1588#1578#1606' '#1581#1602' '#1608#1585#1608#1583' '#1575#1587#1578'.'
         OnChange = ePasswordChange
         OnLeftButtonClick = ePasswordLeftButtonClick
-        ExplicitWidth = 597
       end
       object CheckBox4: TAdvOfficeCheckBox
         Left = 12
@@ -597,7 +587,7 @@ object fUser: TfUser
         Width = 112
         Height = 20
         Checked = True
-        TabOrder = 1
+        TabOrder = 2
         OnClick = CheckBox4Click
         Alignment = taLeftJustify
         Caption = #1606#1605#1575#1610#1588' '#1576#1607' '#1588#1603#1604' '#1585#1605#1586
@@ -621,8 +611,7 @@ object fUser: TfUser
         Font.Style = []
         ParentCtl3D = False
         ParentFont = False
-        TabOrder = 2
-        ExplicitLeft = 643
+        TabOrder = 0
       end
     end
   end
@@ -672,10 +661,8 @@ object fUser: TfUser
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    ExplicitTop = 492
-    ExplicitWidth = 774
     FullHeight = 0
-    object bOk: TAdvGlowButton
+    object bApply: TAdvGlowButton
       Left = 9
       Top = 4
       Width = 100
@@ -689,8 +676,10 @@ object fUser: TfUser
       NotesFont.Height = -11
       NotesFont.Name = 'Tahoma'
       NotesFont.Style = []
+      Transparent = True
       TabOrder = 0
-      OnClick = bOkClick
+      TabStop = True
+      OnClick = bApplyClick
       Appearance.BorderColor = 14727579
       Appearance.BorderColorHot = 10079963
       Appearance.BorderColorDown = 4548219
@@ -720,6 +709,7 @@ object fUser: TfUser
       Appearance.GradientDown = ggVertical
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
+      Layout = blGlyphRight
     end
     object bLogin: TAdvGlowButton
       Left = 115
@@ -735,6 +725,7 @@ object fUser: TfUser
       NotesFont.Height = -11
       NotesFont.Name = 'Tahoma'
       NotesFont.Style = []
+      Transparent = True
       TabOrder = 1
       OnClick = bLoginClick
       Appearance.BorderColor = 14727579
@@ -766,6 +757,7 @@ object fUser: TfUser
       Appearance.GradientDown = ggVertical
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
+      Layout = blGlyphRight
       Style = bsCheck
     end
   end
@@ -1105,7 +1097,7 @@ object fUser: TfUser
     Width = 35
     Height = 15
     DataSource = DataSource
-    TabOrder = 4
+    TabOrder = 3
     Visible = False
   end
   object gMenu: TAdvPanel
@@ -1154,8 +1146,6 @@ object fUser: TfUser
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    ExplicitLeft = -8
-    ExplicitTop = 17
     DesignSize = (
       758
       33)
@@ -1207,7 +1197,7 @@ object fUser: TfUser
       Appearance.GradientDown = ggVertical
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
-      ExplicitLeft = 662
+      Layout = blGlyphRight
     end
     object bAccounts: TAdvGlowButton
       Left = 9
@@ -1255,6 +1245,7 @@ object fUser: TfUser
       Appearance.GradientDown = ggVertical
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
+      Layout = blGlyphRight
     end
     object bEdit: TAdvGlowButton
       Left = 540
@@ -1303,6 +1294,7 @@ object fUser: TfUser
       Appearance.GradientDown = ggVertical
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
+      Layout = blGlyphRight
     end
     object bImportFromLibrary: TAdvGlowButton
       Left = 145
@@ -1350,6 +1342,7 @@ object fUser: TfUser
       Appearance.GradientDown = ggVertical
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
+      Layout = blGlyphRight
     end
     object gEdit: TAdvGroupBox
       Left = 430
@@ -1359,13 +1352,12 @@ object fUser: TfUser
       BorderStyle = bsNone
       Anchors = [akTop, akRight]
       TabOrder = 4
-      ExplicitLeft = 472
       DesignSize = (
         104
         26)
       object Label1: TLabel
         Left = 48
-        Top = 8
+        Top = 7
         Width = 52
         Height = 13
         Anchors = [akTop, akRight]
@@ -1377,7 +1369,6 @@ object fUser: TfUser
         Font.Style = []
         ParentFont = False
         Transparent = True
-        ExplicitLeft = 54
       end
       object meUserID: TMaskEdit
         Left = 10

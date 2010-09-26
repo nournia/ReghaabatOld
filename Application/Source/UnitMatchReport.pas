@@ -11,7 +11,7 @@ uses
 type
   TfMatchList = class(TMaster)
     AdvPanel2: TAdvPanel;
-    BitBtn1: TAdvGlowButton;
+    bEdit: TAdvGlowButton;
     BitBtn5: TAdvGlowButton;
     BitBtn2: TAdvGlowButton;
     AdvPanel1: TAdvPanel;
@@ -28,20 +28,21 @@ type
     AdvGlowButton1: TAdvGlowButton;
     Label9: TLabel;
     spLevel: TAdvSpinEdit;
+    bNewEntity: TAdvGlowButton;
     procedure GridEditingDone(Sender: TObject);
     procedure GridDblClickCell(Sender: TObject; ARow, ACol: Integer);
     procedure BitBtn5Click(Sender: TObject);
-    procedure BitBtn1Click(Sender: TObject);
+    procedure bEditClick(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure CB_MatchChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure MakeQuery( Prev, changeGrid : Boolean );
     procedure AdvGlowButton1Click(Sender: TObject);
+    procedure bNewEntityClick(Sender: TObject);
   private
     { Private declarations }
   public
-    { Public declarations }
+    state : string;
   end;
 
 var
@@ -49,7 +50,7 @@ var
 
 implementation
 
-uses UnitMain, StrUtils, UnitDesignBC;
+uses UnitMain, StrUtils, UnitDesignBC, UnitReference, UnitTypes;
 
 {$R *.dfm}
 
@@ -58,26 +59,25 @@ begin
   MakeQuery(False, True);
 end;
 
-procedure TfMatchList.BitBtn1Click(Sender: TObject);
+procedure TfMatchList.bEditClick(Sender: TObject);
 var
   i : integer;
 begin
-  if BitBtn1.Down then
+{x
+  if bEdit.Down then
   begin
     Grid.Options := Grid.Options + [goEditing];
-    for i := 0 to Grid.ColCount-1 do Grid.Columns[ i ].ReadOnly := False;
-    if CB_Match.ItemIndex = 4 then Grid.Columns[ 7 ].ReadOnly := True;
-    Grid.Columns[ 1 ].ReadOnly := True;
-    Grid.Columns[ 2 ].ReadOnly := True;
-    Grid.Columns[ 3 ].ReadOnly := True;
-    Grid.Columns[ 5 ].ReadOnly := True;
-    Grid.Columns[ 8 ].ReadOnly := True;
-    Grid.Columns[ 9 ].ReadOnly := True;
+    for i := 0 to Grid.ColCount-1 do Grid.Columns[i].ReadOnly := false;
+    if state = 'resource' then
+    begin
+
+    end;
   end else
   begin
     Grid.Options := Grid.Options - [goEditing];
-    for i := 0 to Grid.ColCount-1 do Grid.Columns[ i ].ReadOnly := True;
+    for i := 0 to Grid.ColCount-1 do Grid.Columns[ i ].ReadOnly := true;
   end;
+}
 end;
 
 procedure TfMatchList.BitBtn2Click(Sender: TObject);
@@ -87,6 +87,7 @@ var
   str, beyt : string;
   ix : integer;
 begin
+{x
   MakeQuery(True, False);
 
   with fMain do
@@ -106,6 +107,7 @@ begin
   end;
 
   MakeQuery(False, False);
+}
 end;
 
 procedure TfMatchList.BitBtn5Click(Sender: TObject);
@@ -113,10 +115,20 @@ begin
   Grid.SearchFooter.Visible := not Grid.SearchFooter.Visible;
 end;
 
+procedure TfMatchList.bNewEntityClick(Sender: TObject);
+begin
+  if state = 'resource' then
+  begin
+    fMain.showResourceForm;
+    fResource.refresh;
+  end;
+end;
+
 procedure TfMatchList.CB_MatchChange(Sender: TObject);
 var
   i, temp : integer;
 begin
+{x
   Grid.Columns[7].ComboItems.Clear;
 
   if CB_Match.ItemIndex = 4 then
@@ -141,10 +153,12 @@ begin
   if CB_Sort.ItemIndex = -1 then CB_Sort.ItemIndex := 0;
 
   MakeQuery(False, True);
+}
 end;
 
 procedure TfMatchList.FormCreate(Sender: TObject);
 begin
+{x
   with Grid.Columns[0].ComboItems do
   begin
     Clear;
@@ -155,27 +169,29 @@ begin
 
   Grid.FixedCols := 0;
   Grid.Options := Grid.Options + [goEditing];
-end;
-
-procedure TfMatchList.FormShow(Sender: TObject);
-begin
-  Grid.Options := Grid.Options - [goEditing];
+}
 end;
 
 procedure TfMatchList.GridDblClickCell(Sender: TObject; ARow, ACol: Integer);
 begin
   if ARow > 0 then
-  if (not BitBtn1.Down)and(BitBtn1.Visible) then
-  if Grid.Cells[8,ARow] <> '' then
-  if ( fMain.P_LS.ImageIndex = 2 )or( fMain.P_LS.ImageIndex = 1 ) then
+  if (not bEdit.Down) and (bEdit.Visible) then
+  if Grid.Cells[0,ARow] <> '' then
+  if fMain.loginUser >= uDesigner then
   begin
-    fMain.P_MatchEdit.Visible := True;
-    fMain.MaskEdit4.Text := Grid.Cells[9,ARow];
-    fMain.BB_Modify.Click;
+    if state = 'resource' then
+    begin
+      fMain.showResourceForm;
+      fResource.loadData(StrToInt(Grid.Cells[0,ARow]));
+    end;
   end;
 end;
 
 procedure TfMatchList.GridEditingDone(Sender: TObject);
+begin
+  //
+end;
+{x
 var
   state, group, maxscore, fitage, updatecmd : string;
   x : integer;
@@ -220,12 +236,41 @@ begin
     try fMain.executeCommand(updatecmd); except  end;
   end;
 end;
+}
 
-procedure TfMatchList.MakeQuery( Prev, changeGrid : Boolean );
+procedure TfMatchList.MakeQuery(Prev, changeGrid : Boolean);
 var
-  Sort, i : Integer;
-  SQLT, Group, FA, Level : String;
+  Sort, i, j : Integer;
+  sql, Group, FA, Level : String;
+  rc : TResourceContent;
 begin
+  if state = 'resource' then
+  begin
+    sql := 'CASE(Kind) ';
+    for rc := rBook to rWebPage do
+      sql := sql + 'WHEN "'+ ResourceToString(rc) +'" THEN "'+ ResourceToPersian(rc) +'" ';
+    sql := sql + 'END';
+    sql := 'SELECT resources.ID, resources.Title AS Resource, authors.Title AS Author, publications.Title AS Publiation, '+ sql +' AS Kind, ageclasses.Title AS AgeClass, CreatorID FROM ((resources LEFT JOIN authors ON resources.AuthorID = authors.ID) LEFT JOIN publications ON resources.PublicationID = publications.ID) LEFT JOIN ageclasses ON resources.AgeClass = ageclasses.ID';
+
+    if fMain.loginUser = uDesigner then sql := sql + ' WHERE resources.CreatorID = '+ fMain.loginUserID;
+  end;
+
+  with fMain do
+  begin
+    myQuery.SQL.Text := sql;
+    myQuery.Open;
+
+    Grid.RemoveRows(2, Grid.RowCount-2);
+    Grid.ClearRows(1, 1);
+    for i := 1 to myQuery.RecordCount do
+    begin
+      if i <> myQuery.RecordCount then Grid.AddRow;
+      for j := 0 to myQuery.FieldCount - 1 do
+        Grid.Cells[j, i] := myQuery.Fields[j].AsString;
+      myQuery.Next;
+    end;
+  end;
+{x
   CB_Sort.ItemIndex := 9 - Grid.SortSettings.Column;
   if Grid.SortSettings.Direction = sdAscending then CB_SortDir.ItemIndex := 0 else  CB_SortDir.ItemIndex := 1;
 
@@ -292,6 +337,7 @@ begin
       Grid.Cells[0,i] := fMain.qTmp.FieldByName('tState').AsString;
     end;
   end;
+}
 end;
 
 end.

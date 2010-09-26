@@ -25,7 +25,9 @@ uses
   Unit1 in 'Unit1.pas' {Form1},
   UnitMaster in 'UnitMaster.pas' {Master},
   UFaDate in 'UFaDate.pas',
-  uShamsiDate in 'uShamsiDate.pas';
+  uShamsiDate in 'uShamsiDate.pas',
+  UnitReference in 'UnitReference.pas' {fResource},
+  UnitTypes in 'UnitTypes.pas';
 
 {Master}
 
@@ -38,6 +40,7 @@ begin
   Application.CreateForm(TF_TDE, F_TDE);
   //	fMain.SplashScreen.ProgressBar.Position := 100;
 {
+  Application.CreateForm(TfReference, fReference);
   Application.CreateForm(TfUser, fUser);
   Application.CreateForm(TF_DesignBC, F_DesignBC);
   Application.CreateForm(TF_MatchReport, F_MatchReport);

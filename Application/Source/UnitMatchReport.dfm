@@ -2,8 +2,8 @@ object fMatchList: TfMatchList
   Left = 448
   Top = 240
   BiDiMode = bdRightToLeft
-  ClientHeight = 562
-  ClientWidth = 848
+  ClientHeight = 546
+  ClientWidth = 791
   Color = clBtnFace
   Font.Charset = ARABIC_CHARSET
   Font.Color = clWindowText
@@ -17,13 +17,12 @@ object fMatchList: TfMatchList
   Visible = True
   WindowState = wsMaximized
   OnCreate = FormCreate
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 28
   object AdvPanel2: TAdvPanel
     Left = 0
-    Top = 527
-    Width = 848
+    Top = 511
+    Width = 791
     Height = 35
     Align = alBottom
     BevelOuter = bvNone
@@ -67,11 +66,11 @@ object fMatchList: TfMatchList
     StatusBar.GradientDirection = gdVertical
     Styler = ps
     DesignSize = (
-      848
+      791
       35)
     FullHeight = 0
-    object BitBtn1: TAdvGlowButton
-      Left = 726
+    object bEdit: TAdvGlowButton
+      Left = 669
       Top = 5
       Width = 112
       Height = 26
@@ -85,8 +84,9 @@ object fMatchList: TfMatchList
       NotesFont.Height = -11
       NotesFont.Name = 'Tahoma'
       NotesFont.Style = []
+      Transparent = True
       TabOrder = 0
-      OnClick = BitBtn1Click
+      OnClick = bEditClick
       Appearance.BorderColor = 14727579
       Appearance.BorderColorHot = 10079963
       Appearance.BorderColorDown = 4548219
@@ -132,6 +132,7 @@ object fMatchList: TfMatchList
       NotesFont.Height = -11
       NotesFont.Name = 'Tahoma'
       NotesFont.Style = []
+      Transparent = True
       TabOrder = 1
       OnClick = BitBtn5Click
       Appearance.BorderColor = 14727579
@@ -178,6 +179,7 @@ object fMatchList: TfMatchList
       NotesFont.Height = -11
       NotesFont.Name = 'Tahoma'
       NotesFont.Style = []
+      Transparent = True
       TabOrder = 2
       OnClick = BitBtn2Click
       Appearance.BorderColor = 14727579
@@ -209,6 +211,7 @@ object fMatchList: TfMatchList
       Appearance.GradientDown = ggVertical
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
+      Enabled = False
     end
     object AdvGroupBox1: TAdvGroupBox
       Left = 232
@@ -297,7 +300,7 @@ object fMatchList: TfMatchList
   object AdvPanel1: TAdvPanel
     Left = 0
     Top = 0
-    Width = 848
+    Width = 791
     Height = 33
     Align = alTop
     BevelOuter = bvNone
@@ -340,13 +343,12 @@ object fMatchList: TfMatchList
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    ExplicitTop = -6
     DesignSize = (
-      848
+      791
       33)
     FullHeight = 0
     object Label1: TLabel
-      Left = 798
+      Left = 357
       Top = 12
       Width = 40
       Height = 13
@@ -359,9 +361,11 @@ object fMatchList: TfMatchList
       Font.Style = []
       ParentFont = False
       Transparent = True
+      Visible = False
+      ExplicitLeft = 414
     end
     object Label9: TLabel
-      Left = 659
+      Left = 218
       Top = 12
       Width = 31
       Height = 13
@@ -374,9 +378,11 @@ object fMatchList: TfMatchList
       Font.Style = []
       ParentFont = False
       Transparent = True
+      Visible = False
+      ExplicitLeft = 275
     end
     object CB_Match: TComboBox
-      Left = 703
+      Left = 262
       Top = 8
       Width = 90
       Height = 21
@@ -391,6 +397,7 @@ object fMatchList: TfMatchList
       ParentFont = False
       TabOrder = 0
       Text = #1705#1578#1575#1576
+      Visible = False
       OnChange = CB_MatchChange
       Items.Strings = (
         #1705#1578#1575#1576
@@ -400,7 +407,7 @@ object fMatchList: TfMatchList
         #1607#1605#1607)
     end
     object AdvGlowButton1: TAdvGlowButton
-      Left = 571
+      Left = 130
       Top = 2
       Width = 28
       Height = 28
@@ -415,6 +422,7 @@ object fMatchList: TfMatchList
       NotesFont.Style = []
       Transparent = True
       TabOrder = 1
+      Visible = False
       OnClick = AdvGlowButton1Click
       Appearance.BorderColor = 14727579
       Appearance.BorderColorHot = 10079963
@@ -447,12 +455,12 @@ object fMatchList: TfMatchList
       Appearance.GradientChecked = ggVertical
     end
     object spLevel: TAdvSpinEdit
-      Left = 612
-      Top = 7
+      Left = 164
+      Top = 5
       Width = 43
       Height = 22
       Value = 0
-      DateValue = 40395.877505266200000000
+      DateValue = 40447.351168750000000000
       HexValue = 0
       Anchors = [akTop, akRight]
       Enabled = True
@@ -471,19 +479,66 @@ object fMatchList: TfMatchList
       MaxValue = 4
       ParentFont = False
       TabOrder = 2
-      Visible = True
+      Visible = False
       Version = '1.4.5.1'
+    end
+    object bNewEntity: TAdvGlowButton
+      Left = 681
+      Top = 5
+      Width = 100
+      Height = 26
+      Anchors = [akTop, akRight]
+      Caption = #1605#1606#1576#1593' '#1580#1583#1740#1583
+      Images = fMain.ilButton
+      DisabledImages = fMain.ilButtonOff
+      NotesFont.Charset = DEFAULT_CHARSET
+      NotesFont.Color = clWindowText
+      NotesFont.Height = -11
+      NotesFont.Name = 'Tahoma'
+      NotesFont.Style = []
+      Transparent = True
+      TabOrder = 3
+      OnClick = bNewEntityClick
+      Appearance.BorderColor = 14727579
+      Appearance.BorderColorHot = 10079963
+      Appearance.BorderColorDown = 4548219
+      Appearance.BorderColorChecked = 4548219
+      Appearance.Color = 15653832
+      Appearance.ColorTo = 16178633
+      Appearance.ColorChecked = 11918331
+      Appearance.ColorCheckedTo = 7915518
+      Appearance.ColorDisabled = 15921906
+      Appearance.ColorDisabledTo = 15921906
+      Appearance.ColorDown = 7778289
+      Appearance.ColorDownTo = 4296947
+      Appearance.ColorHot = 15465983
+      Appearance.ColorHotTo = 11332863
+      Appearance.ColorMirror = 15586496
+      Appearance.ColorMirrorTo = 16245200
+      Appearance.ColorMirrorHot = 5888767
+      Appearance.ColorMirrorHotTo = 10807807
+      Appearance.ColorMirrorDown = 946929
+      Appearance.ColorMirrorDownTo = 5021693
+      Appearance.ColorMirrorChecked = 10480637
+      Appearance.ColorMirrorCheckedTo = 5682430
+      Appearance.ColorMirrorDisabled = 11974326
+      Appearance.ColorMirrorDisabledTo = 15921906
+      Appearance.GradientHot = ggVertical
+      Appearance.GradientMirrorHot = ggVertical
+      Appearance.GradientDown = ggVertical
+      Appearance.GradientMirrorDown = ggVertical
+      Appearance.GradientChecked = ggVertical
     end
   end
   object Grid: TAdvColumnGrid
     Left = 0
     Top = 33
-    Width = 848
-    Height = 494
+    Width = 791
+    Height = 478
     Cursor = crDefault
     Align = alClient
-    BiDiMode = bdLeftToRight
-    ColCount = 10
+    BiDiMode = bdRightToLeft
+    ColCount = 1
     Ctl3D = True
     DefaultRowHeight = 21
     FixedCols = 0
@@ -513,19 +568,7 @@ object fMatchList: TfMatchList
     ActiveCellFont.Style = [fsBold]
     ActiveCellColor = 10344697
     ActiveCellColorTo = 6210033
-    ColumnHeaders.Strings = (
-      #1608#1590#1593#1740#1578
-      #1662#1575#1587#1582
-      #1587#1608#1575#1604
-      #1587#1608#1575#1604' '#1583#1585' '#1589#1601#1581#1607
-      #1587#1606
-      #1591#1585#1575#1581
-      #1581#1583#1575#1603#1579#1585' '#1575#1605#1578#1610#1575#1586
-      #1576#1585#1670#1587#1576#1607#1575
-      #1593#1606#1608#1575#1606' '#1605#1587#1575#1576#1602#1607
-      #1603#1583' '#1605#1587#1575#1576#1602#1607)
-    ColumnSize.Stretch = True
-    ColumnSize.StretchColumn = 8
+    ColumnSize.StretchColumn = 0
     ControlLook.FixedGradientFrom = 16513526
     ControlLook.FixedGradientTo = 15260626
     ControlLook.FixedGradientHoverFrom = 15000287
@@ -598,8 +641,8 @@ object fMatchList: TfMatchList
     ScrollWidth = 16
     SearchFooter.Color = 16513526
     SearchFooter.ColorTo = clNone
-    SearchFooter.FindNextCaption = #1576#1593#1583#1610
-    SearchFooter.FindPrevCaption = #1602#1576#1604#1610
+    SearchFooter.FindNextCaption = #1576#1593#1583
+    SearchFooter.FindPrevCaption = #1602#1576#1604
     SearchFooter.Font.Charset = DEFAULT_CHARSET
     SearchFooter.Font.Color = clWindowText
     SearchFooter.Font.Height = -11
@@ -611,8 +654,10 @@ object fMatchList: TfMatchList
     SearchFooter.HintFindPrev = 'Find previous occurence'
     SearchFooter.HintHighlight = 'Highlight occurences'
     SearchFooter.MatchCaseCaption = 'Match case'
+    SearchFooter.ShowClose = False
     SearchFooter.ShowHighLight = False
     SearchFooter.ShowMatchCase = False
+    SearchFooter.Visible = True
     SelectionColor = 6210033
     SelectionColorTo = 15387318
     ShowDesignHelper = False
@@ -676,7 +721,7 @@ object fMatchList: TfMatchList
       item
         AutoMinSize = 0
         AutoMaxSize = 0
-        Alignment = taCenter
+        Alignment = taLeftJustify
         Borders = []
         BorderPen.Color = clSilver
         CheckFalse = 'N'
@@ -685,21 +730,20 @@ object fMatchList: TfMatchList
         ColumnPopupType = cpFixedCellsRClick
         DropDownCount = 8
         EditLength = 0
-        Editor = edComboList
+        Editor = edNormal
         FilterCaseSensitive = False
         Fixed = False
-        Font.Charset = ARABIC_CHARSET
+        Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'B Nazanin'
-        Font.Style = [fsBold]
-        Header = #1608#1590#1593#1740#1578
-        HeaderAlignment = taCenter
-        HeaderFont.Charset = ARABIC_CHARSET
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        HeaderAlignment = taLeftJustify
+        HeaderFont.Charset = DEFAULT_CHARSET
         HeaderFont.Color = clWindowText
         HeaderFont.Height = -11
-        HeaderFont.Name = 'B Nazanin'
-        HeaderFont.Style = [fsBold]
+        HeaderFont.Name = 'Tahoma'
+        HeaderFont.Style = []
         MinSize = 0
         MaxSize = 0
         Password = False
@@ -711,420 +755,6 @@ object fMatchList: TfMatchList
         PrintFont.Name = 'Tahoma'
         PrintFont.Style = []
         ReadOnly = False
-        ShowBands = False
-        SortStyle = ssAutomatic
-        SpinMax = 0
-        SpinMin = 0
-        SpinStep = 1
-        Tag = 0
-        Width = 70
-      end
-      item
-        AutoMinSize = 0
-        AutoMaxSize = 0
-        Alignment = taCenter
-        Borders = []
-        BorderPen.Color = clSilver
-        CheckFalse = 'N'
-        CheckTrue = 'Y'
-        Color = clWindow
-        ColumnPopupType = cpFixedCellsRClick
-        DropDownCount = 8
-        EditLength = 0
-        Editor = edNormal
-        FilterCaseSensitive = False
-        Fixed = False
-        Font.Charset = ARABIC_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'B Nazanin'
-        Font.Style = [fsBold]
-        Header = #1662#1575#1587#1582
-        HeaderAlignment = taCenter
-        HeaderFont.Charset = ARABIC_CHARSET
-        HeaderFont.Color = clWindowText
-        HeaderFont.Height = -11
-        HeaderFont.Name = 'B Nazanin'
-        HeaderFont.Style = [fsBold]
-        MinSize = 0
-        MaxSize = 0
-        Password = False
-        PrintBorders = [cbTop, cbLeft, cbRight, cbBottom]
-        PrintColor = clWhite
-        PrintFont.Charset = ARABIC_CHARSET
-        PrintFont.Color = clWindowText
-        PrintFont.Height = -11
-        PrintFont.Name = 'Tahoma'
-        PrintFont.Style = []
-        ReadOnly = True
-        ShowBands = False
-        SortStyle = ssAutomatic
-        SpinMax = 0
-        SpinMin = 0
-        SpinStep = 1
-        Tag = 0
-        Width = 55
-      end
-      item
-        AutoMinSize = 0
-        AutoMaxSize = 0
-        Alignment = taCenter
-        Borders = []
-        BorderPen.Color = clSilver
-        CheckFalse = 'N'
-        CheckTrue = 'Y'
-        Color = clWindow
-        ColumnPopupType = cpFixedCellsRClick
-        DropDownCount = 8
-        EditLength = 0
-        Editor = edNormal
-        FilterCaseSensitive = False
-        Fixed = False
-        Font.Charset = ARABIC_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'B Nazanin'
-        Font.Style = [fsBold]
-        Header = #1587#1608#1575#1604
-        HeaderAlignment = taCenter
-        HeaderFont.Charset = ARABIC_CHARSET
-        HeaderFont.Color = clWindowText
-        HeaderFont.Height = -11
-        HeaderFont.Name = 'B Nazanin'
-        HeaderFont.Style = [fsBold]
-        MinSize = 0
-        MaxSize = 0
-        Password = False
-        PrintBorders = [cbTop, cbLeft, cbRight, cbBottom]
-        PrintColor = clWhite
-        PrintFont.Charset = DEFAULT_CHARSET
-        PrintFont.Color = clWindowText
-        PrintFont.Height = -11
-        PrintFont.Name = 'Tahoma'
-        PrintFont.Style = []
-        ReadOnly = True
-        ShowBands = False
-        SortStyle = ssAutomatic
-        SpinMax = 0
-        SpinMin = 0
-        SpinStep = 50
-        Tag = 0
-        Width = 55
-      end
-      item
-        AutoMinSize = 0
-        AutoMaxSize = 0
-        Alignment = taCenter
-        Borders = []
-        BorderPen.Color = clSilver
-        CheckFalse = 'N'
-        CheckTrue = 'Y'
-        Color = clWindow
-        ColumnPopupType = cpFixedCellsRClick
-        DropDownCount = 8
-        EditLength = 0
-        Editor = edNormal
-        FilterCaseSensitive = False
-        Fixed = False
-        Font.Charset = ARABIC_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'B Nazanin'
-        Font.Style = [fsBold]
-        Header = #1587#1608#1575#1604' '#1583#1585' '#1589#1601#1581#1607
-        HeaderAlignment = taCenter
-        HeaderFont.Charset = ARABIC_CHARSET
-        HeaderFont.Color = clWindowText
-        HeaderFont.Height = -11
-        HeaderFont.Name = 'B Nazanin'
-        HeaderFont.Style = [fsBold]
-        MinSize = 0
-        MaxSize = 0
-        Password = False
-        PrintBorders = [cbTop, cbLeft, cbRight, cbBottom]
-        PrintColor = clWhite
-        PrintFont.Charset = DEFAULT_CHARSET
-        PrintFont.Color = clWindowText
-        PrintFont.Height = -11
-        PrintFont.Name = 'Tahoma'
-        PrintFont.Style = []
-        ReadOnly = True
-        ShowBands = False
-        SortStyle = ssAutomatic
-        SpinMax = 0
-        SpinMin = 0
-        SpinStep = 50
-        Tag = 0
-        Width = 65
-      end
-      item
-        AutoMinSize = 0
-        AutoMaxSize = 0
-        Alignment = taCenter
-        Borders = []
-        BorderPen.Color = clSilver
-        CheckFalse = 'N'
-        CheckTrue = 'Y'
-        Color = clWindow
-        ColumnPopupType = cpFixedCellsRClick
-        DropDownCount = 8
-        EditLength = 0
-        Editor = edSpinEdit
-        FilterCaseSensitive = False
-        Fixed = False
-        Font.Charset = ARABIC_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'B Nazanin'
-        Font.Style = [fsBold]
-        Header = #1587#1606
-        HeaderAlignment = taCenter
-        HeaderFont.Charset = ARABIC_CHARSET
-        HeaderFont.Color = clWindowText
-        HeaderFont.Height = -11
-        HeaderFont.Name = 'B Nazanin'
-        HeaderFont.Style = [fsBold]
-        MinSize = 0
-        MaxSize = 0
-        Password = False
-        PrintBorders = [cbTop, cbLeft, cbRight, cbBottom]
-        PrintColor = clWhite
-        PrintFont.Charset = DEFAULT_CHARSET
-        PrintFont.Color = clWindowText
-        PrintFont.Height = -11
-        PrintFont.Name = 'Tahoma'
-        PrintFont.Style = []
-        ReadOnly = False
-        ShowBands = False
-        SortStyle = ssAutomatic
-        SpinMax = 100
-        SpinMin = 7
-        SpinStep = 1
-        Tag = 0
-        Width = 45
-      end
-      item
-        AutoMinSize = 0
-        AutoMaxSize = 0
-        Alignment = taCenter
-        Borders = []
-        BorderPen.Color = clSilver
-        CheckFalse = 'N'
-        CheckTrue = 'Y'
-        Color = clWindow
-        ColumnPopupType = cpFixedCellsRClick
-        DropDownCount = 8
-        EditLength = 0
-        Editor = edNormal
-        FilterCaseSensitive = False
-        Fixed = False
-        Font.Charset = ARABIC_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'B Nazanin'
-        Font.Style = [fsBold]
-        Header = #1591#1585#1575#1581
-        HeaderAlignment = taCenter
-        HeaderFont.Charset = ARABIC_CHARSET
-        HeaderFont.Color = clWindowText
-        HeaderFont.Height = -11
-        HeaderFont.Name = 'B Nazanin'
-        HeaderFont.Style = [fsBold]
-        MinSize = 0
-        MaxSize = 0
-        Password = False
-        PrintBorders = [cbTop, cbLeft, cbRight, cbBottom]
-        PrintColor = clWhite
-        PrintFont.Charset = DEFAULT_CHARSET
-        PrintFont.Color = clWindowText
-        PrintFont.Height = -11
-        PrintFont.Name = 'Tahoma'
-        PrintFont.Style = []
-        ReadOnly = False
-        ShowBands = False
-        SortStyle = ssAutomatic
-        SpinMax = 0
-        SpinMin = 0
-        SpinStep = 1
-        Tag = 0
-        Width = 55
-      end
-      item
-        AutoMinSize = 0
-        AutoMaxSize = 0
-        Alignment = taCenter
-        Borders = []
-        BorderPen.Color = clSilver
-        CheckFalse = 'N'
-        CheckTrue = 'Y'
-        Color = clWindow
-        ColumnPopupType = cpFixedCellsRClick
-        DropDownCount = 8
-        EditLength = 0
-        Editor = edSpinEdit
-        FilterCaseSensitive = False
-        Fixed = False
-        Font.Charset = ARABIC_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'B Nazanin'
-        Font.Style = [fsBold]
-        Header = #1581#1583#1575#1603#1579#1585' '#1575#1605#1578#1610#1575#1586
-        HeaderAlignment = taCenter
-        HeaderFont.Charset = ARABIC_CHARSET
-        HeaderFont.Color = clWindowText
-        HeaderFont.Height = -11
-        HeaderFont.Name = 'B Nazanin'
-        HeaderFont.Style = [fsBold]
-        MinSize = 0
-        MaxSize = 0
-        Password = False
-        PrintBorders = [cbTop, cbLeft, cbRight, cbBottom]
-        PrintColor = clWhite
-        PrintFont.Charset = ARABIC_CHARSET
-        PrintFont.Color = clWindowText
-        PrintFont.Height = -11
-        PrintFont.Name = 'Tahoma'
-        PrintFont.Style = [fsBold]
-        ReadOnly = False
-        ShowBands = False
-        SortStyle = ssAutomatic
-        SpinMax = 10000
-        SpinMin = 0
-        SpinStep = 50
-        Tag = 0
-        Width = 60
-      end
-      item
-        AutoMinSize = 0
-        AutoMaxSize = 0
-        Alignment = taCenter
-        Borders = []
-        BorderPen.Color = clSilver
-        CheckFalse = 'N'
-        CheckTrue = 'Y'
-        Color = clWindow
-        ColumnPopupType = cpFixedCellsRClick
-        DropDownCount = 8
-        EditLength = 0
-        Editor = edComboList
-        FilterCaseSensitive = False
-        Fixed = False
-        Font.Charset = ARABIC_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'B Nazanin'
-        Font.Style = [fsBold]
-        Header = #1576#1585#1670#1587#1576#1607#1575
-        HeaderAlignment = taCenter
-        HeaderFont.Charset = ARABIC_CHARSET
-        HeaderFont.Color = clWindowText
-        HeaderFont.Height = -11
-        HeaderFont.Name = 'B Nazanin'
-        HeaderFont.Style = [fsBold]
-        MinSize = 0
-        MaxSize = 0
-        Password = False
-        PrintBorders = [cbTop, cbLeft, cbRight, cbBottom]
-        PrintColor = clWhite
-        PrintFont.Charset = ARABIC_CHARSET
-        PrintFont.Color = clWindowText
-        PrintFont.Height = -11
-        PrintFont.Name = 'Tahoma'
-        PrintFont.Style = [fsBold]
-        ReadOnly = True
-        ShowBands = False
-        SortStyle = ssAutomatic
-        SpinMax = 0
-        SpinMin = 0
-        SpinStep = 1
-        Tag = 0
-        Width = 80
-      end
-      item
-        AutoMinSize = 0
-        AutoMaxSize = 0
-        Alignment = taRightJustify
-        Borders = []
-        BorderPen.Color = clSilver
-        CheckFalse = 'N'
-        CheckTrue = 'Y'
-        Color = clWindow
-        ColumnPopupType = cpFixedCellsRClick
-        DropDownCount = 8
-        EditLength = 0
-        Editor = edNormal
-        FilterCaseSensitive = False
-        Fixed = False
-        Font.Charset = ARABIC_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'B Nazanin'
-        Font.Style = [fsBold]
-        Header = #1593#1606#1608#1575#1606' '#1605#1587#1575#1576#1602#1607
-        HeaderAlignment = taRightJustify
-        HeaderFont.Charset = ARABIC_CHARSET
-        HeaderFont.Color = clWindowText
-        HeaderFont.Height = -11
-        HeaderFont.Name = 'B Nazanin'
-        HeaderFont.Style = [fsBold]
-        MinSize = 0
-        MaxSize = 0
-        Password = False
-        PrintBorders = [cbTop, cbLeft, cbRight, cbBottom]
-        PrintColor = clWhite
-        PrintFont.Charset = ARABIC_CHARSET
-        PrintFont.Color = clWindowText
-        PrintFont.Height = -11
-        PrintFont.Name = 'Tahoma'
-        PrintFont.Style = [fsBold]
-        ReadOnly = True
-        ShowBands = False
-        SortStyle = ssAutomatic
-        SpinMax = 0
-        SpinMin = 0
-        SpinStep = 1
-        Tag = 0
-        Width = 288
-      end
-      item
-        AutoMinSize = 0
-        AutoMaxSize = 0
-        Alignment = taCenter
-        Borders = []
-        BorderPen.Color = clSilver
-        CheckFalse = 'N'
-        CheckTrue = 'Y'
-        Color = clWindow
-        ColumnPopupType = cpFixedCellsRClick
-        DropDownCount = 8
-        EditLength = 0
-        Editor = edNormal
-        FilterCaseSensitive = False
-        Fixed = True
-        Font.Charset = ARABIC_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'B Nazanin'
-        Font.Style = [fsBold]
-        Header = #1603#1583' '#1605#1587#1575#1576#1602#1607
-        HeaderAlignment = taCenter
-        HeaderFont.Charset = ARABIC_CHARSET
-        HeaderFont.Color = clWindowText
-        HeaderFont.Height = -11
-        HeaderFont.Name = 'B Nazanin'
-        HeaderFont.Style = [fsBold]
-        MinSize = 0
-        MaxSize = 0
-        Password = False
-        PrintBorders = [cbTop, cbLeft, cbRight, cbBottom]
-        PrintColor = clWhite
-        PrintFont.Charset = ARABIC_CHARSET
-        PrintFont.Color = clWindowText
-        PrintFont.Height = -11
-        PrintFont.Name = 'Tahoma'
-        PrintFont.Style = []
-        ReadOnly = True
         ShowBands = False
         SortStyle = ssAutomatic
         SpinMax = 0
@@ -1133,17 +763,7 @@ object fMatchList: TfMatchList
         Tag = 0
         Width = 70
       end>
-    ExplicitTop = 32
     ColWidths = (
-      70
-      55
-      55
-      65
-      45
-      55
-      60
-      80
-      288
       70)
   end
   object fs: TAdvFormStyler

@@ -13,7 +13,7 @@ type
     ADOQuery3: TADOQuery;
     AdvPanel1: TAdvPanel;
     AdvPanel2: TAdvPanel;
-    bOk: TAdvGlowButton;
+    bApply: TAdvGlowButton;
     bLogin: TAdvGlowButton;
     AdvGroupBox1: TAdvGroupBox;
     fs: TAdvFormStyler;
@@ -33,8 +33,6 @@ type
     bEdit: TAdvGlowButton;
     bImportFromLibrary: TAdvGlowButton;
     gEdit: TAdvGroupBox;
-    Label1: TLabel;
-    meUserID: TMaskEdit;
     gDescription: TAdvGroupBox;
     Label10: TLabel;
     edtDescription: TEdit;
@@ -57,6 +55,8 @@ type
     Label3: TLabel;
     Edit2: TEdit;
     ePhone: TEdit;
+    meUserID: TMaskEdit;
+    Label1: TLabel;
     procedure Edit3KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ePasswordChange(Sender: TObject);
     procedure bAccountsClick(Sender: TObject);
@@ -64,7 +64,7 @@ type
     procedure MaskEdit3KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Edit2KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure bOkClick(Sender: TObject);
+    procedure bApplyClick(Sender: TObject);
     procedure bClearClick(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
@@ -91,7 +91,7 @@ var
 
 implementation
 
-uses UnitMain, uCryptography, UFaDate;
+uses UnitMain, uCryptography, UFaDate, UnitTypes;
 
 {$R *.dfm}
 
@@ -130,7 +130,7 @@ begin
 
       gAccounts.Cells[0,i] := fMain.qTmp.FieldByName('UserID').AsString;
       gAccounts.Cells[1,i] := fMain.qTmp.FieldByName('LastName').AsString;
-      gAccounts.Cells[2,i] := fMain.UserToPersian(fMain.StringToUser(fMain.qTmp.FieldByName('Permission').AsString));
+      gAccounts.Cells[2,i] := UserToPersian(StringToUser(fMain.qTmp.FieldByName('Permission').AsString));
 
       fMain.qTmp.Next;
     end;
@@ -152,8 +152,8 @@ begin
   if Key = 13 then Edit7.SetFocus;
 end;
 
-procedure TfUser.bOkClick(Sender: TObject);
-var gender, user, userID : String; i : Integer; j : TUser; inserted : boolean;
+procedure TfUser.bApplyClick(Sender: TObject);
+var gender, user : string; tId, userId, i : Integer; j : TUser;
 begin
   if (Edit1.Text = '') or (Edit2.Text = '') or (eNationalID.Text = '') then
   begin
@@ -166,38 +166,34 @@ begin
     Abort;
   end;
 
-  if meUserID.Text = '    ' then userID := '-1' else userID := meUserID.Text;
+  if meUserID.Text = '    ' then userID := -1 else userID := StrToInt(meUserID.Text);
 
-  if RG_S.ItemIndex = 0 then gender := fMain.GenderToString(gMale) else gender := fMain.GenderToString(gFemale);
-  inserted := fMain.InsertOrUpdate('users', 'ID = '+ userID,
-                                  ['NationalID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Gender', 'RegisterTime', 'Description', 'UserPass'],
-                                  [eNationalID.Text, Edit1.Text, Edit2.Text, TFaDate.CreateByPersianDate(MaskEdit3.Text).ToGregorianDate, Edit7.Text, ePhone.Text, gender, Now, edtDescription.Text, encrypt(ePassword.Text)]);
-
-  if inserted then userID := IntToStr(fMain.myCommand.InsertId);
+  if RG_S.ItemIndex = 0 then gender := GenderToString(gMale) else gender := GenderToString(gFemale);
+  tId := fMain.InsertOrUpdate('users', 'ID = '+ IntToStr(userID),
+                              ['NationalID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Gender', 'RegisterTime', 'Description', 'UserPass'],
+                              [eNationalID.Text, Edit1.Text, Edit2.Text, TFaDate.CreateByPersianDate(MaskEdit3.Text).ToGregorianDate, Edit7.Text, ePhone.Text, gender, Now, edtDescription.Text, encrypt(ePassword.Text)]);
+  if tId <> -1 then userId := tId;
 
 //  Convert Image
 //  if (Image1.Picture.Width <> 54) or (Image1.Picture.Height <> 72) then fMain.ScaleBmp(Image1.Picture.Bitmap);
   if imgChange then
-    fMain.InsertOrUpdateJpeg(userID, 'user', Image1);
+    fMain.InsertOrUpdateJpeg(IntToStr(userID), 'user', Image1);
 
   if bLogin.Visible then
   begin
     for j := uUser to uAdmin do
-      if fMain.UserToPersian(j) = cbLogin.Text then
+      if UserToPersian(j) = cbLogin.Text then
       begin
-        user := fMain.UserToString(j);
+        user := UserToString(j);
         break;
       end;
 
-    if (user = fMain.UserToString(uUser)) or (ePassword.Text = '') then
-      fMain.executeCommand('DELETE FROM permissions WHERE TournamentID = 1 AND UserID = '+ userID)
-    else
-      fMain.InsertOrUpdate('permissions', 'TournamentID = 1 AND UserID = '+ userID,
-                          ['TournamentID', 'UserID', 'Permission', 'Accept'],
-                          [1, userID, user, 1]);
+    fMain.InsertOrUpdate('permissions', 'TournamentID = 1 AND UserID = '+ IntToStr(userID),
+                        ['TournamentID', 'UserID', 'Permission', 'Accept'],
+                        [1, userID, user, 1]);
   end;
 
-  if inserted then fMain.MyShowMessage('عضو جدید با کد '+ userID +' ثبت شد');
+  if tId <> -1 then fMain.MyShowMessage('عضو جدید با کد '+ IntToStr(userID) +' ثبت شد');
 {
   fMain.myQuery.SQL.Text := 'SELECT Permission FROM permissions WHERE Permission = "'+ fMain.UserToString(uAdmin) +'" OR Permission = "'+ fMain.UserToString(uMaster) +'"';
   fMain.myQuery.Open;
@@ -285,7 +281,7 @@ end;
 
 procedure TfUser.Edit3KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if Key = 13 then bOk.SetFocus;
+  if Key = 13 then bApply.SetFocus;
 end;
 
 procedure TfUser.eNationalIDKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -324,17 +320,17 @@ end;
 procedure TfUser.fillCBLogin(userID : string);
 begin
   cbLogin.Items.Clear;
-  cbLogin.Items.Add(fMain.UserToPersian(uUser));
+  cbLogin.Items.Add(UserToPersian(uUser));
   if fMain.loginUser >= uManager then
   begin
-    cbLogin.Items.Add(fMain.UserToPersian(uOperator));
-    cbLogin.Items.Add(fMain.UserToPersian(uDesigner));
+    cbLogin.Items.Add(UserToPersian(uOperator));
+    cbLogin.Items.Add(UserToPersian(uDesigner));
     if fMain.loginUser >= uMaster then
-      cbLogin.Items.Add(fMain.UserToPersian(uManager));
+      cbLogin.Items.Add(UserToPersian(uManager));
   end;
 
-  if (userID <> '') and (fMain.loginUserID = userID) and (cbLogin.Items.IndexOf(fMain.UserToPersian(fMain.loginUser)) < 0) then
-      cbLogin.Items.Add(fMain.UserToPersian(fMain.loginUser));
+  if (userID <> '') and (fMain.loginUserID = userID) and (cbLogin.Items.IndexOf(UserToPersian(fMain.loginUser)) < 0) then
+      cbLogin.Items.Add(UserToPersian(fMain.loginUser));
 end;
 
 procedure TfUser.loadUserFromMatch();
@@ -363,7 +359,7 @@ begin
 
     fillCBLogin(fMain.qTmp.FieldByName('ID').AsString);
 
-    pix := cbLogin.Items.IndexOf(fMain.UserToPersian(fMain.StringToUser(fMain.qTmp.FieldByName('Permission').AsString)));
+    pix := cbLogin.Items.IndexOf(UserToPersian(StringToUser(fMain.qTmp.FieldByName('Permission').AsString)));
     if (pix >= 0) or ((fMain.loginUser >= uManager) and (fMain.qTmp.FieldByName('Permission').AsString = '')) then
     begin
       if fMain.qTmp.FieldByName('Permission').AsString <> '' then cbLogin.ItemIndex := pix else cbLogin.ItemIndex := 0;

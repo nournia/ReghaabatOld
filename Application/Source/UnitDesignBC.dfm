@@ -65,7 +65,6 @@ object fDesignBC: TfDesignBC
     StatusBar.GradientDirection = gdVertical
     Styler = ps
     ExplicitTop = -3
-    ExplicitWidth = 774
     FullHeight = 140
     object AdvGroupBox3: TAdvGroupBox
       AlignWithMargins = True
@@ -82,9 +81,6 @@ object fDesignBC: TfDesignBC
       ParentCtl3D = True
       ParentFont = False
       TabOrder = 0
-      ExplicitLeft = 4
-      ExplicitTop = 0
-      ExplicitWidth = 655
       DesignSize = (
         767
         134)
@@ -265,7 +261,6 @@ object fDesignBC: TfDesignBC
         ParentFont = False
         TabOrder = 6
         OnKeyDown = Edit5KeyDown
-        ExplicitWidth = 441
       end
       object MaskEdit1: TMaskEdit
         Left = 284
@@ -289,7 +284,6 @@ object fDesignBC: TfDesignBC
         Text = '   -   '
         Visible = False
         OnKeyDown = MaskEdit1KeyDown
-        ExplicitLeft = 285
       end
       object ComboBox2: TComboBox
         Left = 645
@@ -308,7 +302,6 @@ object fDesignBC: TfDesignBC
         ParentFont = False
         TabOrder = 4
         OnKeyDown = ComboBox2KeyDown
-        ExplicitLeft = 646
       end
       object MaskEdit2: TMaskEdit
         Left = 681
@@ -331,7 +324,6 @@ object fDesignBC: TfDesignBC
         TabOrder = 1
         Text = '    '
         OnKeyDown = MaskEdit2KeyDown
-        ExplicitLeft = 682
       end
       object Edit1: TEdit
         Left = 531
@@ -349,7 +341,6 @@ object fDesignBC: TfDesignBC
         ParentFont = False
         TabOrder = 7
         OnKeyDown = Edit1KeyDown
-        ExplicitLeft = 532
       end
       object Edit2: TEdit
         Left = 284
@@ -367,7 +358,6 @@ object fDesignBC: TfDesignBC
         ParentFont = False
         TabOrder = 8
         OnKeyDown = Edit2KeyDown
-        ExplicitWidth = 189
       end
       object AdvGroupBox1: TAdvGroupBox
         Left = 12
@@ -427,7 +417,6 @@ object fDesignBC: TfDesignBC
         Visible = True
         Version = '1.4.5.1'
         OnKeyDown = SpinEdit2KeyDown
-        ExplicitLeft = 398
       end
       object SpinEdit1: TAdvSpinEdit
         Left = 521
@@ -435,7 +424,7 @@ object fDesignBC: TfDesignBC
         Width = 55
         Height = 22
         Value = 0
-        DateValue = 40394.481873333330000000
+        DateValue = 40445.366169155100000000
         HexValue = 0
         Anchors = [akTop, akRight]
         Enabled = True
@@ -458,7 +447,6 @@ object fDesignBC: TfDesignBC
         Visible = True
         Version = '1.4.5.1'
         OnKeyDown = SpinEdit1KeyDown
-        ExplicitLeft = 522
       end
       object SpinEdit4: TAdvSpinEdit
         Left = 521
@@ -490,7 +478,6 @@ object fDesignBC: TfDesignBC
         Visible = True
         Version = '1.4.5.1'
         OnKeyDown = SpinEdit4KeyDown
-        ExplicitLeft = 522
       end
       object clTags: TCheckListEdit
         Left = 284
@@ -513,7 +500,6 @@ object fDesignBC: TfDesignBC
         TextDelimiter = ','
         OnClickBtn = clTagsClickBtn
         Version = '1.3.6.0'
-        ExplicitWidth = 183
       end
     end
     object Grid: TAdvColumnGrid
@@ -839,10 +825,6 @@ object fDesignBC: TfDesignBC
           Tag = 0
           Width = 200
         end>
-      ExplicitLeft = 0
-      ExplicitTop = 140
-      ExplicitWidth = 774
-      ExplicitHeight = 298
       ColWidths = (
         25
         487
@@ -861,7 +843,6 @@ object fDesignBC: TfDesignBC
       Align = alBottom
       TabOrder = 2
       Visible = False
-      ExplicitWidth = 770
       DesignSize = (
         769
         62)
@@ -914,7 +895,6 @@ object fDesignBC: TfDesignBC
         TabOrder = 0
         OnChange = mQuestionChange
         OnKeyDown = mQuestionKeyDown
-        ExplicitWidth = 719
       end
       object mAnswer: TMemo
         AlignWithMargins = True
@@ -937,7 +917,6 @@ object fDesignBC: TfDesignBC
         ScrollBars = ssVertical
         TabOrder = 1
         OnChange = mAnswerChange
-        ExplicitWidth = 719
       end
     end
   end
@@ -987,7 +966,6 @@ object fDesignBC: TfDesignBC
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    ExplicitWidth = 774
     DesignSize = (
       773
       33)
@@ -1130,7 +1108,6 @@ object fDesignBC: TfDesignBC
       Appearance.GradientDown = ggVertical
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
-      ExplicitLeft = 662
     end
     object AdvGlowButton1: TAdvGlowButton
       Left = 223

@@ -460,7 +460,7 @@ object fMatchList: TfMatchList
       Width = 43
       Height = 22
       Value = 0
-      DateValue = 40447.351168750000000000
+      DateValue = 40449.407502013890000000
       HexValue = 0
       Anchors = [akTop, akRight]
       Enabled = True
@@ -483,9 +483,9 @@ object fMatchList: TfMatchList
       Version = '1.4.5.1'
     end
     object bNewEntity: TAdvGlowButton
-      Left = 681
+      Left = 650
       Top = 5
-      Width = 100
+      Width = 130
       Height = 26
       Anchors = [akTop, akRight]
       Caption = #1605#1606#1576#1593' '#1580#1583#1740#1583
@@ -499,6 +499,56 @@ object fMatchList: TfMatchList
       Transparent = True
       TabOrder = 3
       OnClick = bNewEntityClick
+      Appearance.BorderColor = 14727579
+      Appearance.BorderColorHot = 10079963
+      Appearance.BorderColorDown = 4548219
+      Appearance.BorderColorChecked = 4548219
+      Appearance.Color = 15653832
+      Appearance.ColorTo = 16178633
+      Appearance.ColorChecked = 11918331
+      Appearance.ColorCheckedTo = 7915518
+      Appearance.ColorDisabled = 15921906
+      Appearance.ColorDisabledTo = 15921906
+      Appearance.ColorDown = 7778289
+      Appearance.ColorDownTo = 4296947
+      Appearance.ColorHot = 15465983
+      Appearance.ColorHotTo = 11332863
+      Appearance.ColorMirror = 15586496
+      Appearance.ColorMirrorTo = 16245200
+      Appearance.ColorMirrorHot = 5888767
+      Appearance.ColorMirrorHotTo = 10807807
+      Appearance.ColorMirrorDown = 946929
+      Appearance.ColorMirrorDownTo = 5021693
+      Appearance.ColorMirrorChecked = 10480637
+      Appearance.ColorMirrorCheckedTo = 5682430
+      Appearance.ColorMirrorDisabled = 11974326
+      Appearance.ColorMirrorDisabledTo = 15921906
+      Appearance.GradientHot = ggVertical
+      Appearance.GradientMirrorHot = ggVertical
+      Appearance.GradientDown = ggVertical
+      Appearance.GradientMirrorDown = ggVertical
+      Appearance.GradientChecked = ggVertical
+    end
+    object bNewQuestionMatch: TAdvGlowButton
+      Left = 508
+      Top = 5
+      Width = 130
+      Height = 26
+      Hint = #1591#1585#1575#1581#1740' '#1605#1587#1575#1576#1602#1607#8204#1740' '#1662#1585#1587#1588#1740' '#1575#1586' '#1585#1608#1740' '#1605#1606#1576#1593' '#1575#1606#1578#1582#1575#1576#8204#1588#1583#1607
+      Anchors = [akTop, akRight]
+      Caption = #1591#1585#1575#1581#1740' '#1605#1587#1575#1576#1602#1607' '#1662#1585#1587#1588#1740' '
+      Images = fMain.ilButton
+      DisabledImages = fMain.ilButtonOff
+      NotesFont.Charset = DEFAULT_CHARSET
+      NotesFont.Color = clWindowText
+      NotesFont.Height = -11
+      NotesFont.Name = 'Tahoma'
+      NotesFont.Style = []
+      Transparent = True
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 4
+      OnClick = bNewQuestionMatchClick
       Appearance.BorderColor = 14727579
       Appearance.BorderColorHot = 10079963
       Appearance.BorderColorDown = 4548219

@@ -65,10 +65,10 @@
 				<Form>fMatchList</Form>
 			</DCCReference>
 			<DCCReference Include="UnitDesignBC.pas">
-				<Form>fDesignBC</Form>
+				<Form>fQuestionMatch</Form>
 			</DCCReference>
 			<DCCReference Include="UnitDesignWP.pas">
-				<Form>fDesignWP</Form>
+				<Form>fInstructionMatch</Form>
 			</DCCReference>
 			<DCCReference Include="UnitLog.pas">
 				<Form>fLog</Form>
@@ -147,7 +147,7 @@
 						<VersionInfo Name="MajorVer">3</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">902</VersionInfo>
+						<VersionInfo Name="Build">969</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -159,7 +159,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">Rooyesh</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">3.0.0.902</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">3.0.0.969</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>

@@ -1,4 +1,4 @@
-object fDesignBC: TfDesignBC
+object fQuestionMatch: TfQuestionMatch
   Left = 0
   Top = 0
   BiDiMode = bdRightToLeft
@@ -15,7 +15,6 @@ object fDesignBC: TfDesignBC
   ParentBiDiMode = False
   Visible = True
   WindowState = wsMaximized
-  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object P_MatchEdit: TAdvPanel
@@ -64,14 +63,13 @@ object fDesignBC: TfDesignBC
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    ExplicitTop = -3
     FullHeight = 140
-    object AdvGroupBox3: TAdvGroupBox
+    object gProperties: TAdvGroupBox
       AlignWithMargins = True
       Left = 3
       Top = 3
       Width = 767
-      Height = 134
+      Height = 59
       Align = alTop
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 7485192
@@ -81,28 +79,13 @@ object fDesignBC: TfDesignBC
       ParentCtl3D = True
       ParentFont = False
       TabOrder = 0
+      ExplicitLeft = 4
       DesignSize = (
         767
-        134)
-      object Label7: TLabel
-        Left = 718
-        Top = 25
-        Width = 40
-        Height = 13
-        Anchors = [akTop, akRight]
-        Caption = #1603#1583' '#1591#1585#1575#1581':'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 7485192
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        ParentFont = False
-        Transparent = True
-        ExplicitLeft = 719
-      end
+        59)
       object Label1: TLabel
         Left = 728
-        Top = 82
+        Top = 12
         Width = 30
         Height = 13
         Anchors = [akTop, akRight]
@@ -114,43 +97,10 @@ object fDesignBC: TfDesignBC
         Font.Style = []
         ParentFont = False
         Transparent = True
-        ExplicitLeft = 729
-      end
-      object Label5: TLabel
-        Left = 579
-        Top = 25
-        Width = 61
-        Height = 13
-        Anchors = [akTop, akRight]
-        Caption = #1581#1583#1575#1705#1579#1585' '#1575#1605#1578#1610#1575#1586':'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 7485192
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        ParentFont = False
-        Transparent = True
-        ExplicitLeft = 580
-      end
-      object Label9: TLabel
-        Left = 580
-        Top = 54
-        Width = 60
-        Height = 13
-        Anchors = [akTop, akRight]
-        Caption = #1587#1606' '#1605#1606#1575#1587#1576':'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 7485192
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        ParentFont = False
-        Transparent = True
-        ExplicitLeft = 581
       end
       object Label10: TLabel
-        Left = 441
-        Top = 25
+        Left = 395
+        Top = 36
         Width = 73
         Height = 13
         Anchors = [akTop, akRight]
@@ -162,190 +112,26 @@ object fDesignBC: TfDesignBC
         Font.Style = []
         ParentFont = False
         Transparent = True
-        ExplicitLeft = 442
-      end
-      object Label6: TLabel
-        Left = 720
-        Top = 54
-        Width = 38
-        Height = 13
-        Anchors = [akTop, akRight]
-        Caption = #1608#1590#1593#1740#1578':'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 7485192
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        ParentFont = False
-        Transparent = True
-        ExplicitLeft = 721
       end
       object Label3: TLabel
-        Left = 335
-        Top = 25
-        Width = 55
-        Height = 13
-        Anchors = [akTop, akRight]
-        Caption = #1603#1583' '#1587#1740#8204#1583#1740':'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 7485192
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        ParentFont = False
-        Transparent = True
-        Visible = False
-        ExplicitLeft = 336
-      end
-      object Label8: TLabel
-        Left = 707
-        Top = 112
-        Width = 51
-        Height = 13
-        Anchors = [akTop, akRight]
-        Caption = #1662#1583#1610#1583' '#1570#1608#1585#1606#1583#1607':'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 7485192
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        ParentFont = False
-        Transparent = True
-        ExplicitLeft = 708
-      end
-      object Label11: TLabel
-        Left = 477
-        Top = 112
-        Width = 45
-        Height = 13
-        Anchors = [akTop, akRight]
-        Caption = #1575#1606#1578#1588#1575#1585#1575#1578':'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 7485192
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        ParentFont = False
-        Transparent = True
-        ExplicitLeft = 478
-      end
-      object Label14: TLabel
-        Left = 470
-        Top = 54
-        Width = 44
-        Height = 13
-        Anchors = [akTop, akRight]
-        Caption = #1576#1585#1670#1587#1576#1607#1575':'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 7485192
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        ParentFont = False
-        Transparent = True
-        ExplicitLeft = 471
-      end
-      object Edit5: TEdit
-        Left = 284
-        Top = 78
-        Width = 440
-        Height = 21
-        Anchors = [akLeft, akTop, akRight]
-        Ctl3D = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        ParentCtl3D = False
-        ParentFont = False
-        TabOrder = 6
-        OnKeyDown = Edit5KeyDown
-      end
-      object MaskEdit1: TMaskEdit
-        Left = 284
-        Top = 21
+        Left = 709
+        Top = 36
         Width = 47
-        Height = 21
+        Height = 13
         Anchors = [akTop, akRight]
-        BiDiMode = bdLeftToRight
-        Ctl3D = True
-        EditMask = '000-000;1;_'
+        Caption = #1585#1583#1607' '#1587#1606#1740':'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
+        Font.Color = 7485192
         Font.Height = -11
         Font.Name = 'Library'
         Font.Style = []
-        MaxLength = 7
-        ParentBiDiMode = False
-        ParentCtl3D = False
         ParentFont = False
-        TabOrder = 5
-        Text = '   -   '
-        Visible = False
-        OnKeyDown = MaskEdit1KeyDown
+        Transparent = True
       end
-      object ComboBox2: TComboBox
-        Left = 645
-        Top = 50
-        Width = 70
-        Height = 21
-        Style = csDropDownList
-        Anchors = [akTop, akRight]
-        Ctl3D = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        ParentCtl3D = False
-        ParentFont = False
-        TabOrder = 4
-        OnKeyDown = ComboBox2KeyDown
-      end
-      object MaskEdit2: TMaskEdit
-        Left = 681
-        Top = 20
-        Width = 34
-        Height = 22
-        Anchors = [akTop, akRight]
-        BiDiMode = bdLeftToRight
-        Ctl3D = True
-        EditMask = '0000;1;_'
-        Font.Charset = ARABIC_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'Library'
-        Font.Style = []
-        MaxLength = 4
-        ParentBiDiMode = False
-        ParentCtl3D = False
-        ParentFont = False
-        TabOrder = 1
-        Text = '    '
-        OnKeyDown = MaskEdit2KeyDown
-      end
-      object Edit1: TEdit
-        Left = 531
-        Top = 108
-        Width = 172
-        Height = 21
-        Anchors = [akTop, akRight]
-        Ctl3D = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        ParentCtl3D = False
-        ParentFont = False
-        TabOrder = 7
-        OnKeyDown = Edit1KeyDown
-      end
-      object Edit2: TEdit
-        Left = 284
-        Top = 108
-        Width = 188
+      object eTitle: TEdit
+        Left = 3
+        Top = 8
+        Width = 700
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         Ctl3D = True
@@ -356,41 +142,11 @@ object fDesignBC: TfDesignBC
         Font.Style = []
         ParentCtl3D = False
         ParentFont = False
-        TabOrder = 8
-        OnKeyDown = Edit2KeyDown
+        TabOrder = 0
       end
-      object AdvGroupBox1: TAdvGroupBox
-        Left = 12
-        Top = 20
-        Width = 265
-        Height = 93
-        CaptionPosition = cpTopRight
-        Align = alCustom
-        ParentCtl3D = True
-        TabOrder = 9
-        object Label2: TLabel
-          Left = 3
-          Top = 3
-          Width = 259
-          Height = 109
-          Align = alTop
-          Alignment = taCenter
-          BiDiMode = bdLeftToRight
-          Caption = '555-555'
-          Font.Charset = ARABIC_CHARSET
-          Font.Color = clBlue
-          Font.Height = -60
-          Font.Name = 'B Homa'
-          Font.Style = []
-          ParentBiDiMode = False
-          ParentFont = False
-          Transparent = True
-          ExplicitWidth = 245
-        end
-      end
-      object SpinEdit2: TAdvSpinEdit
-        Left = 397
-        Top = 20
+      object sQPPaper: TAdvSpinEdit
+        Left = 350
+        Top = 31
         Width = 39
         Height = 22
         Value = 4
@@ -416,99 +172,34 @@ object fDesignBC: TfDesignBC
         TabOrder = 2
         Visible = True
         Version = '1.4.5.1'
-        OnKeyDown = SpinEdit2KeyDown
       end
-      object SpinEdit1: TAdvSpinEdit
-        Left = 521
-        Top = 20
-        Width = 55
-        Height = 22
-        Value = 0
-        DateValue = 40445.366169155100000000
-        HexValue = 0
-        Anchors = [akTop, akRight]
-        Enabled = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 7485192
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        Increment = 50
-        IncrementFloat = 0.100000000000000000
-        IncrementFloatPage = 1.000000000000000000
-        LabelFont.Charset = DEFAULT_CHARSET
-        LabelFont.Color = clWindowText
-        LabelFont.Height = -11
-        LabelFont.Name = 'Tahoma'
-        LabelFont.Style = []
-        MaxValue = 10000
-        ParentFont = False
-        TabOrder = 0
-        Visible = True
-        Version = '1.4.5.1'
-        OnKeyDown = SpinEdit1KeyDown
-      end
-      object SpinEdit4: TAdvSpinEdit
-        Left = 521
-        Top = 49
-        Width = 55
-        Height = 22
-        Value = 12
-        FloatValue = 12.000000000000000000
-        TimeValue = 0.500000000000000000
-        HexValue = 0
-        Anchors = [akTop, akRight]
-        Enabled = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 7485192
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        IncrementFloat = 0.100000000000000000
-        IncrementFloatPage = 1.000000000000000000
-        LabelFont.Charset = DEFAULT_CHARSET
-        LabelFont.Color = clWindowText
-        LabelFont.Height = -11
-        LabelFont.Name = 'Tahoma'
-        LabelFont.Style = []
-        MaxValue = 100
-        MinValue = 7
-        ParentFont = False
-        TabOrder = 3
-        Visible = True
-        Version = '1.4.5.1'
-        OnKeyDown = SpinEdit4KeyDown
-      end
-      object clTags: TCheckListEdit
-        Left = 284
-        Top = 50
-        Width = 182
+      object cbAgeClass: TComboBox
+        Left = 509
+        Top = 32
+        Width = 194
         Height = 21
-        Anchors = [akLeft, akTop, akRight]
-        AutoDropWidthSize = False
-        EditorEnabled = False
-        TabOrder = 10
-        DropWidth = 121
-        DropHeight = 50
-        DropColumns = 2
-        DropFont.Charset = DEFAULT_CHARSET
-        DropFont.Color = clWindowText
-        DropFont.Height = -11
-        DropFont.Name = 'Tahoma'
-        DropFont.Style = []
-        DropSorted = True
-        TextDelimiter = ','
-        OnClickBtn = clTagsClickBtn
-        Version = '1.3.6.0'
+        Style = csDropDownList
+        Anchors = [akTop, akRight]
+        Ctl3D = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Library'
+        Font.Style = []
+        ParentCtl3D = False
+        ParentFont = False
+        TabOrder = 1
       end
     end
     object Grid: TAdvColumnGrid
       AlignWithMargins = True
       Left = 3
-      Top = 143
+      Top = 65
       Width = 767
-      Height = 292
+      Height = 373
       Cursor = crDefault
+      Margins.Top = 0
+      Margins.Bottom = 0
       Align = alClient
       BiDiMode = bdRightToLeft
       ColCount = 3
@@ -825,6 +516,9 @@ object fDesignBC: TfDesignBC
           Tag = 0
           Width = 200
         end>
+      ExplicitLeft = -8
+      ExplicitTop = 58
+      ExplicitHeight = 367
       ColWidths = (
         25
         487
@@ -966,11 +660,8 @@ object fDesignBC: TfDesignBC
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    DesignSize = (
-      773
-      33)
     FullHeight = 0
-    object BitBtn3: TAdvGlowButton
+    object bApply: TAdvGlowButton
       Left = 9
       Top = 3
       Width = 100
@@ -984,8 +675,10 @@ object fDesignBC: TfDesignBC
       NotesFont.Height = -11
       NotesFont.Name = 'Tahoma'
       NotesFont.Style = []
+      Transparent = True
       TabOrder = 0
-      OnClick = BitBtn3Click
+      TabStop = True
+      OnClick = bApplyClick
       Appearance.BorderColor = 14727579
       Appearance.BorderColorHot = 10079963
       Appearance.BorderColorDown = 4548219
@@ -1016,7 +709,7 @@ object fDesignBC: TfDesignBC
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
     end
-    object BitBtn1: TAdvGlowButton
+    object bPreview: TAdvGlowButton
       Left = 116
       Top = 3
       Width = 100
@@ -1030,8 +723,9 @@ object fDesignBC: TfDesignBC
       NotesFont.Height = -11
       NotesFont.Name = 'Tahoma'
       NotesFont.Style = []
+      Transparent = True
       TabOrder = 1
-      OnClick = BitBtn1Click
+      OnClick = bPreviewClick
       Appearance.BorderColor = 14727579
       Appearance.BorderColorHot = 10079963
       Appearance.BorderColorDown = 4548219
@@ -1061,55 +755,9 @@ object fDesignBC: TfDesignBC
       Appearance.GradientDown = ggVertical
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
+      Enabled = False
     end
-    object BitBtn4: TAdvGlowButton
-      Left = 661
-      Top = 3
-      Width = 100
-      Height = 26
-      Anchors = [akTop, akRight]
-      Caption = #1662#1575#1603#1587#1575#1586#1740
-      ImageIndex = 1
-      Images = fMain.ilButton
-      DisabledImages = fMain.ilButtonOff
-      NotesFont.Charset = DEFAULT_CHARSET
-      NotesFont.Color = clWindowText
-      NotesFont.Height = -11
-      NotesFont.Name = 'Tahoma'
-      NotesFont.Style = []
-      TabOrder = 2
-      OnClick = BitBtn4Click
-      Appearance.BorderColor = 14727579
-      Appearance.BorderColorHot = 10079963
-      Appearance.BorderColorDown = 4548219
-      Appearance.BorderColorChecked = 4548219
-      Appearance.Color = 15653832
-      Appearance.ColorTo = 16178633
-      Appearance.ColorChecked = 11918331
-      Appearance.ColorCheckedTo = 7915518
-      Appearance.ColorDisabled = 15921906
-      Appearance.ColorDisabledTo = 15921906
-      Appearance.ColorDown = 7778289
-      Appearance.ColorDownTo = 4296947
-      Appearance.ColorHot = 15465983
-      Appearance.ColorHotTo = 11332863
-      Appearance.ColorMirror = 15586496
-      Appearance.ColorMirrorTo = 16245200
-      Appearance.ColorMirrorHot = 5888767
-      Appearance.ColorMirrorHotTo = 10807807
-      Appearance.ColorMirrorDown = 946929
-      Appearance.ColorMirrorDownTo = 5021693
-      Appearance.ColorMirrorChecked = 10480637
-      Appearance.ColorMirrorCheckedTo = 5682430
-      Appearance.ColorMirrorDisabled = 11974326
-      Appearance.ColorMirrorDisabledTo = 15921906
-      Appearance.GradientHot = ggVertical
-      Appearance.GradientMirrorHot = ggVertical
-      Appearance.GradientDown = ggVertical
-      Appearance.GradientMirrorDown = ggVertical
-      Appearance.GradientChecked = ggVertical
-    end
-    object AdvGlowButton1: TAdvGlowButton
+    object bEditor: TAdvGlowButton
       Left = 223
       Top = 3
       Width = 100
@@ -1123,8 +771,9 @@ object fDesignBC: TfDesignBC
       NotesFont.Height = -11
       NotesFont.Name = 'Tahoma'
       NotesFont.Style = []
-      TabOrder = 3
-      OnClick = AdvGlowButton1Click
+      Transparent = True
+      TabOrder = 2
+      OnClick = bEditorClick
       Appearance.BorderColor = 14727579
       Appearance.BorderColorHot = 10079963
       Appearance.BorderColorDown = 4548219

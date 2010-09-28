@@ -2,6 +2,26 @@ CREATE DATABASE IF NOT EXISTS reghaabat_library CHARACTER SET utf8 COLLATE utf8_
 USE reghaabat_library;
 -- 0 <= Rate >= 1, 0 <= Quality	
 
+/* globals */
+CREATE TABLE ageclasses(
+	ID TINYINT(4) NOT NULL,
+	Title VARCHAR(255) NOT NULL,
+	Description VARCHAR(255) NULL DEFAULT NULL,
+	BeginAge TINYINT(4) NOT NULL,
+	EndAge TINYINT(4) NOT NULL,
+	PRIMARY KEY (ID)
+);
+CREATE TABLE tags (
+	ID TINYINT(4) NOT NULL,
+	Title VARCHAR(50) NOT NULL,
+	PRIMARY KEY (ID)
+);
+CREATE TABLE categories (
+	ID TINYINT(4) NOT NULL,
+	Title VARCHAR(255) NOT NULL,
+	PRIMARY KEY (ID)
+);
+
 /* users */
 CREATE TABLE library (
 	/* group */
@@ -46,18 +66,10 @@ CREATE TABLE pictures (
 	ID INT(11) NOT NULL,
 	Kind ENUM('library', 'user', 'resource', 'match') NOT NULL,
 	Picture MEDIUMBLOB NULL,
-	PRIMARY KEY (ID)
+	PRIMARY KEY (ID, Kind)
 );
 
 /* matches */
-CREATE TABLE ageclasses(
-	ID TINYINT(4) NOT NULL,
-	Title VARCHAR(255) NOT NULL,
-	Description VARCHAR(255) NULL DEFAULT NULL,
-	BeginAge TINYINT(4) NOT NULL,
-	EndAge TINYINT(4) NOT NULL,
-	PRIMARY KEY (ID)
-);
 CREATE TABLE authors (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
 	Title VARCHAR(255) NOT NULL,
@@ -77,30 +89,38 @@ CREATE TABLE resources (
 	PublicationID INT(11) NULL DEFAULT NULL,
 	Quality FLOAT NOT NULL DEFAULT '1',
 	Kind ENUM('book', 'audio', 'video', 'webpage') NOT NULL DEFAULT 'book',
-	
+	Tags SET('') NULL DEFAULT NULL,
+
+	Title VARCHAR(255) NOT NULL,
+	AgeClass TINYINT(4) NULL DEFAULT NULL,
+
+	-- Audio & Video
 	FileType VARCHAR(5) NULL DEFAULT NULL COLLATE 'ascii_bin',
+	
+	-- WebPage
 	Content TEXT NULL,
 	Link varchar(1000) NULL DEFAULT NULL COLLATE 'ascii_bin',
 
-	Title VARCHAR(255) NOT NULL,
-	Tags SET('') NULL DEFAULT NULL,
-	AgeClass TINYINT(4) NULL DEFAULT NULL,
 	PRIMARY KEY (ID)
 );
 
 CREATE TABLE matches (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
-	ResourceID INT(11) NULL DEFAULT NULL,
-	DesignerID INT(11) UNSIGNED NULL,
+	DesignerID INT(11) NOT NULL,
 	Quality FLOAT NOT NULL DEFAULT '1',
 
-	QPPaper TINYINT(4) NOT NULL,
-	Content TEXT NULL,
+	Title VARCHAR(255) NOT NULL,
+	AgeClass TINYINT(4) NULL DEFAULT NULL,
+	
+	-- Question
+	ResourceID INT(11) NULL DEFAULT NULL,
+	QPPaper TINYINT(4) NULL DEFAULT NULL,
+	
+	-- Instruction
+	CategoryID TINYINT(4) NULL DEFAULT NULL,
+	Content TEXT NULL DEFAULT NULL,
 	Configuration VARCHAR(50) NULL DEFAULT NULL,
 
-	Title VARCHAR(255) NOT NULL,
-	Tags SET('') NULL DEFAULT NULL,
-	AgeClass TINYINT(4) NULL DEFAULT NULL,
 	PRIMARY KEY (ID)
 );
 CREATE TABLE questions (
@@ -108,13 +128,37 @@ CREATE TABLE questions (
 	ID TINYINT(4) NOT NULL,
 	Question VARCHAR(1000) NOT NULL,
 	Answer VARCHAR(1000) NULL DEFAULT NULL,
-	Kind ENUM('write', 'choose') NOT NULL DEFAULT 'write',
+	ChoiceNumber TINYINT(4) NOT NULL DEFAULT '-1' COMMENT '-1: no choice, 0..n : valid',
 	PRIMARY KEY (MatchID, ID)
 );
+CREATE TABLE choices (
+	MatchID INT(11) NOT NULL,
+	QuestionID TINYINT(4) NOT NULL,
+	ID TINYINT(4) NOT NULL,
+	Choice VARCHAR(255) DEFAULT NULL,
+	PRIMARY KEY (MatchID, QuestionID, ID)
+);
 
+CREATE TABLE supports (
+	TournamentID INT(11) NOT NULL,
+	MatchID INT(11) NOT NULL,
+	CorrectorID INT(11) NOT NULL,
+	CurrentState ENUM('active', 'disabled', 'imported') NOT NULL,
+	PRIMARY KEY (TournamentID, MatchID)
+);
+
+
+/* data */
 INSERT INTO ageclasses	(ID, Title, Description, BeginAge, EndAge) VALUES 
 						(0, 'الف', 'آمادگی و سال اول دبستان', 6, 7), 
 						(1, 'ب', 'سال‌های دوم و سوم دبستان', 8, 9), 
 						(2, 'ج', 'سال‌های چهارم و پنجم دبستان', 10, 11), 
 						(3, 'د', 'سال‌های راهنمایی', 12, 14), 
 						(4, 'ه', 'سال‌های دبیرستان', 15, 18);
+						
+INSERT INTO categories 	(ID, Title) VALUES 
+						(0, 'نقاشی'), 
+						(1, 'رنگ‌آمیزی'), 
+						(2, 'تحقیق'), 
+						(3, 'آزمایش'), 
+						(4, 'کاردستی');

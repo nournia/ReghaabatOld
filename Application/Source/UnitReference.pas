@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, AdvPanel, AdvAppStyler, StdCtrls, ComCtrls, AdvGroupBox,
-  AdvGlowButton, AdvEdit, UnitMaster, UnitTypes, StrUtils;
+  AdvGlowButton, AdvEdit, UnitMaster, UnitTypes, StrUtils, clisted;
 
 type
   TfResource = class(TMaster)
@@ -26,7 +26,7 @@ type
     eLink: TEdit;
     mContent: TMemo;
     odMultiMeida: TOpenDialog;
-    AdvGroupBox1: TAdvGroupBox;
+    gProperties: TAdvGroupBox;
     Label6: TLabel;
     Label1: TLabel;
     Label3: TLabel;
@@ -35,6 +35,7 @@ type
     cbAgeClass: TComboBox;
     AdvPanel2: TAdvPanel;
     bApply: TAdvGlowButton;
+    clTags: TCheckListEdit;
 
     procedure refresh();
     function validate() : boolean;
@@ -58,6 +59,25 @@ uses UnitMain;
 
 {$R *.dfm}
 
+procedure TfResource.refresh();
+begin
+  fMain.fillComboWithQuery(cbAgeClass, 'SELECT CONCAT(Title, " - ", Description) FROM ageclasses ORDER BY ID');
+  fMain.fillComboWithQuery(cbAuthor, 'SELECT Title FROM authors ORDER BY ID');
+  fMain.fillComboWithQuery(cbPublication, 'SELECT Title FROM publications ORDER BY ID');
+  cbKind.ItemIndex := 0;
+  cbAuthor.Text := '';
+  cbPublication.Text := '';
+  eTitle.Text := '';
+  cbAgeClass.ItemIndex := 0;
+  mContent.Text := '';
+  eLink.Text := '';
+  eFile.Text := '';
+  cbKindChange(nil);
+  resourceId := -1;
+  creatorId := StrToInt(fMain.loginUserID);
+
+  cbKind.SetFocus;
+end;
 function TfResource.validate() : boolean;
 begin
   Result := (eTitle.Text <> '');
@@ -72,23 +92,6 @@ begin
   end;
 
   if not Result then fMain.MyShowMessage('مقادیر وارد شده معتبر نیستند');
-end;
-procedure TfResource.refresh();
-begin
-  fMain.fillComboWithQuery(cbAgeClass, 'SELECT CONCAT(Title, " - ", Description) FROM ageclasses');
-  fMain.fillComboWithQuery(cbAuthor, 'SELECT Title FROM authors');
-  fMain.fillComboWithQuery(cbPublication, 'SELECT Title FROM publications');
-  cbKind.ItemIndex := 0;
-  cbAuthor.Text := '';
-  cbPublication.Text := '';
-  eTitle.Text := '';
-  cbAgeClass.ItemIndex := 0;
-  mContent.Text := '';
-  eLink.Text := '';
-  eFile.Text := '';
-  cbKindChange(nil);
-  resourceId := -1;
-  creatorId := -1;
 end;
 procedure TfResource.loadData(id : integer);
 begin
@@ -135,30 +138,28 @@ begin
   begin
     with fMain do
     begin
-      myQuery.SQL.Text := 'SELECT ID FROM authors WHERE Title = "'+ cbAuthor.Text +'"';
+      myQuery.SQL.Text := 'SELECT ID FROM authors WHERE Title = "'+ fMain.correctString(cbAuthor.Text) +'"';
       myQuery.Open;
       if myQuery.RecordCount > 0 then authorId := myQuery.Fields[0].AsInteger
       else
       begin
-        executeCommand('INSERT INTO authors (Title) VALUES ("'+ cbAuthor.Text +'")');
+        executeCommand('INSERT INTO authors (Title) VALUES ("'+ fMain.correctString(cbAuthor.Text) +'")');
         authorId := myCommand.InsertId;
       end;
 
-      myQuery.SQL.Text := 'SELECT ID FROM publications WHERE Title = "'+ cbPublication.Text +'"';
+      myQuery.SQL.Text := 'SELECT ID FROM publications WHERE Title = "'+ fMain.correctString(cbPublication.Text) +'"';
       myQuery.Open;
       if myQuery.RecordCount > 0 then publicationId := myQuery.Fields[0].AsInteger
       else
       begin
-        executeCommand('INSERT INTO publications (Title) VALUES ("'+ cbPublication.Text +'")');
+        executeCommand('INSERT INTO publications (Title) VALUES ("'+ fMain.correctString(cbPublication.Text) +'")');
         publicationId := myCommand.InsertId;
       end;
     end;
 
-    if creatorId = -1 then creatorId := StrToInt(fMain.loginUserID);
-
     tId := fMain.InsertOrUpdate('resources', 'ID = '+ IntToStr(resourceId),
                                 ['CreatorID', 'AuthorID', 'PublicationID', 'Kind', 'Content', 'Link', 'Title', 'AgeClass'],
-                                [creatorId, IntToStr(authorId), IntToStr(publicationId), ResourceToString(kind), mContent.Lines.Text, eLink.Text, eTitle.Text, cbAgeClass.ItemIndex]);
+                                [creatorId, authorId, publicationId, ResourceToString(kind), fMain.correctString(mContent.Lines.Text), eLink.Text, fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex]);
     if tId <> -1 then resourceId := tId;
 
     if (kind = rAudio) or (kind = rVideo) then

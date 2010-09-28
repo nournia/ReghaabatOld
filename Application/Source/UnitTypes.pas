@@ -5,6 +5,7 @@ type
   TUser = (uUser = 0, uOperator, uDesigner, uManager, uMaster, uAdmin);
   TGender = (gMale = 0, gFemale);
   TResourceContent = (rBook = 0, rAudio, rVideo, rWebPage);
+  TListState = (lResource, lQuestionMatch, lInstructionMatch);
 
   function UserToString(u : TUser) : string;
   function StringToUser(u : string) : TUser;

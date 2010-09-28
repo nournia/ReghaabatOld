@@ -225,7 +225,8 @@ type
     procedure postsetMenu(title : string; form : TForm);
     procedure fillComboWithQuery(cb : TComboBox; isql : string);
     procedure showResourceForm();
-
+    procedure showQuestionMatchForm();
+    procedure showInstructionMatchForm();
 
     function isSuperUser() : boolean;
     function hasGenderPermission(gstr : string) : boolean;
@@ -689,9 +690,8 @@ begin
   BB_Delete.Enabled := True;
 
   nResources.Enabled := True;
-//x  nQuestionMatches.Enabled := True;
-//x  nInstructionMatches.Enabled := True;
-//x  nDesignWork.Enabled := True;
+  nQuestionMatches.Enabled := True;
+  nInstructionMatches.Enabled := True;
 //x  nMatchList.Enabled := True;
 end;
 
@@ -932,7 +932,7 @@ end;
 procedure TfMain.showResourceForm();
 var rc : TResourceContent;
 begin
-  fMain.presetMenu;
+  presetMenu;
 
   if fResource = nil then
   begin
@@ -943,7 +943,31 @@ begin
     fResource.refresh;
   end;
 
-  fMain.postsetMenu('منبع جدید', fResource);
+  postsetMenu('منابع', fResource);
+end;
+procedure TfMain.showQuestionMatchForm();
+begin
+  presetMenu;
+
+  if fQuestionMatch = nil then
+  begin
+    Application.CreateForm(TfQuestionMatch, fQuestionMatch);
+    fQuestionMatch.refresh;
+  end;
+
+  postsetMenu('مسابقه‌های پرسشی', fQuestionMatch);
+end;
+procedure TfMain.showInstructionMatchForm();
+begin
+  presetMenu;
+
+  if fInstructionMatch = nil then
+  begin
+    Application.CreateForm(TfInstructionMatch, fInstructionMatch);
+    fInstructionMatch.refresh;
+  end;
+
+  postsetMenu('مسابقه‌های دستوری', fInstructionMatch);
 end;
 
 procedure TfMain.nConnectMatchClick(Sender: TObject);
@@ -1636,15 +1660,15 @@ begin
 
   with fUser do
   begin
-    if loginUser < uManager then
+    if (loginUser < uManager) and (loginUser <> uOperator) then
     begin
       gMenu.Visible := false;
       meUserID.Text := loginUserID;
-      loadUserFromMatch;
+      loadData(StrToInt(loginUserID));
     end else
     begin
       gMenu.Visible := true;
-      fUser.bClearClick(nil);
+      fUser.refresh;
     end;
   end;
 
@@ -2423,8 +2447,6 @@ begin
   grid.ColumnSize.Stretch := true;
 end;
 procedure TfMain.nResourcesClick(Sender: TObject);
-var
-  i : integer;
 begin
   presetMenu;
 
@@ -2437,9 +2459,11 @@ begin
     Grid.Columns[0].Width := 0;
     Grid.Columns[2].Width := 100;
     Grid.Columns[3].Width := 100;
-    state := 'resource';
+    state := lResource;
     MakeQuery(false, true);
     bNewEntity.Caption := 'منبع جدید';
+    bNewEntity.Visible := true;
+    bNewQuestionMatch.Visible := true;
 
     Grid.SearchFooter.Visible := false;
     Grid.Options := Grid.Options - [goEditing];
@@ -2448,68 +2472,53 @@ begin
   postsetMenu('منابع', fMatchList);
 end;
 
-
 procedure TfMain.nQuestionMatchesClick(Sender: TObject);
-var
-  i : integer;
 begin
-  AdvToolBarPager.Caption.Caption := 'طراحی مسابقه چند رسانه‌ای';
+  presetMenu;
 
-  P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := True;
-  P_SearchUser.Visible := False;
+  if fMatchList = nil then
+    Application.CreateForm(TfMatchList, fMatchList);
 
-  if fDesignBC = nil then
-    Application.CreateForm(TfDesignBC, fDesignBC);
-
-  qTmp.SQL.Text := 'SELECT Caption FROM Groups WHERE Kind = 4 ORDER BY ID';
-  qTmp.Open;
-  fDesignBC.clTags.Items.Clear;
-  for i := 1 to qTmp.RecordCount do
+  with fMatchList do
   begin
-    fDesignBC.clTags.Items.Add(qTmp.FieldByName('Caption').AsString);
-    qTmp.Next;
+    addGridColumns(Grid, ['', 'عنوان', 'رده سنی', 'سوال در صفحه', 'طراح', 'سوالها', 'پاسخها'], 1);
+    Grid.Columns[0].Width := 0;
+    state := lQuestionMatch;
+    MakeQuery(false, true);
+    bNewEntity.Visible := false;
+    bNewQuestionMatch.Visible := false;
+
+    Grid.SearchFooter.Visible := false;
+    Grid.Options := Grid.Options - [goEditing];
   end;
 
-  fDesignBC.genuineID := '0';
-  fDesignBC.Label3.Caption := 'كد سی‌دی :';
-  fDesignBC.bookMode := false;
-  fDesignBC.BitBtn4.Click;
-
-  fDesignBC.BringToFront;
-  P_Temp.Visible := False;
+  postsetMenu('مسابقه‌های پرسشی', fMatchList);
 end;
 
 procedure TfMain.nInstructionMatchesClick(Sender: TObject);
 var
   i : Integer;
 begin
-  AdvToolBarPager.Caption.Caption := 'طراحی مسابقه كارعملی';
+  presetMenu;
 
-  P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := True;
-  P_SearchUser.Visible := False;
+  if fMatchList = nil then
+    Application.CreateForm(TfMatchList, fMatchList);
 
-  if fDesignWP = nil then
-    Application.CreateForm(TfDesignWP, fDesignWP);
-
-  qTmp.SQL.Text := 'SELECT Caption FROM Groups WHERE Kind = 2 ORDER BY ID';
-  qTmp.Open;
-  fDesignWP.clTags.Items.Clear;
-  for i := 1 to qTmp.RecordCount do
+  with fMatchList do
   begin
-    fDesignWP.clTags.Items.Add(qTmp.FieldByName('Caption').AsString);
-    qTmp.Next;
+    addGridColumns(Grid, ['', 'عنوان', 'رده سنی', 'گروه', 'طراح'], 1);
+    Grid.Columns[0].Width := 0;
+    state := lInstructionMatch;
+    MakeQuery(false, true);
+    bNewEntity.Caption := 'مسابقه‌ی دستوری جدید';
+    bNewEntity.Visible := true;
+    bNewQuestionMatch.Visible := false;
+
+    Grid.SearchFooter.Visible := false;
+    Grid.Options := Grid.Options - [goEditing];
   end;
 
-  fDesignWP.genuineID := '0';
-  fDesignWP.workMode := true;
-  fDesignWP.BitBtn4.Click;
-
-  fDesignWP.BringToFront;
-  P_Temp.Visible := False;
+  postsetMenu('مسابقه‌های دستوری', fMatchList);
 end;
 
 procedure TfMain.nLogClick(Sender: TObject);

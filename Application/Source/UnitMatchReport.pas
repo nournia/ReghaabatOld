@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, DB, ADODB, Buttons, ExtCtrls, Grids, BaseGrid, AdvGrid,
   DBAdvGrid, asgprev, asgprint, Spin, frxClass, frxDBSet, AdvGlowButton,
-  AdvPanel, Mask, AdvSpin, AdvAppStyler, AdvCGrid, AdvGroupBox, UnitMaster;
+  AdvPanel, Mask, AdvSpin, AdvAppStyler, AdvCGrid, AdvGroupBox, UnitMaster, UnitTypes;
 
 type
   TfMatchList = class(TMaster)
@@ -29,6 +29,7 @@ type
     Label9: TLabel;
     spLevel: TAdvSpinEdit;
     bNewEntity: TAdvGlowButton;
+    bNewQuestionMatch: TAdvGlowButton;
     procedure GridEditingDone(Sender: TObject);
     procedure GridDblClickCell(Sender: TObject; ARow, ACol: Integer);
     procedure BitBtn5Click(Sender: TObject);
@@ -39,10 +40,11 @@ type
     procedure MakeQuery( Prev, changeGrid : Boolean );
     procedure AdvGlowButton1Click(Sender: TObject);
     procedure bNewEntityClick(Sender: TObject);
+    procedure bNewQuestionMatchClick(Sender: TObject);
   private
     { Private declarations }
   public
-    state : string;
+    state : TListState;
   end;
 
 var
@@ -50,7 +52,7 @@ var
 
 implementation
 
-uses UnitMain, StrUtils, UnitDesignBC, UnitReference, UnitTypes;
+uses UnitMain, StrUtils, UnitDesignBC, UnitReference, UnitDesignWP;
 
 {$R *.dfm}
 
@@ -117,10 +119,18 @@ end;
 
 procedure TfMatchList.bNewEntityClick(Sender: TObject);
 begin
-  if state = 'resource' then
-  begin
-    fMain.showResourceForm;
-    fResource.refresh;
+  case state of
+    lResource:
+    begin
+      fMain.showResourceForm;
+      fResource.refresh;
+    end;
+
+    lInstructionMatch:
+    begin
+      fMain.showInstructionMatchForm;
+      fInstructionMatch.refresh;
+    end;
   end;
 end;
 
@@ -179,10 +189,22 @@ begin
   if Grid.Cells[0,ARow] <> '' then
   if fMain.loginUser >= uDesigner then
   begin
-    if state = 'resource' then
-    begin
-      fMain.showResourceForm;
-      fResource.loadData(StrToInt(Grid.Cells[0,ARow]));
+    case state of
+      lResource:
+      begin
+        fMain.showResourceForm;
+        fResource.loadData(StrToInt(Grid.Cells[0,ARow]));
+      end;
+      lQuestionMatch:
+      begin
+        fMain.showQuestionMatchForm;
+        fQuestionMatch.loadData(StrToInt(Grid.Cells[0,ARow]));
+      end;
+      lInstructionMatch:
+      begin
+        fMain.showInstructionMatchForm;
+        fInstructionMatch.loadData(StrToInt(Grid.Cells[0,ARow]));
+      end;
     end;
   end;
 end;
@@ -244,15 +266,32 @@ var
   sql, Group, FA, Level : String;
   rc : TResourceContent;
 begin
-  if state = 'resource' then
-  begin
-    sql := 'CASE(Kind) ';
-    for rc := rBook to rWebPage do
-      sql := sql + 'WHEN "'+ ResourceToString(rc) +'" THEN "'+ ResourceToPersian(rc) +'" ';
-    sql := sql + 'END';
-    sql := 'SELECT resources.ID, resources.Title AS Resource, authors.Title AS Author, publications.Title AS Publiation, '+ sql +' AS Kind, ageclasses.Title AS AgeClass, CreatorID FROM ((resources LEFT JOIN authors ON resources.AuthorID = authors.ID) LEFT JOIN publications ON resources.PublicationID = publications.ID) LEFT JOIN ageclasses ON resources.AgeClass = ageclasses.ID';
+  case state of
+    lResource:
+    begin
+      sql := 'CASE(Kind) ';
+      for rc := rBook to rWebPage do
+        sql := sql + 'WHEN "'+ ResourceToString(rc) +'" THEN "'+ ResourceToPersian(rc) +'" ';
+      sql := sql + 'END';
+      sql := 'SELECT resources.ID, resources.Title AS Resource, authors.Title AS Author, publications.Title AS Publiation, '+ sql +' AS Kind, ageclasses.Title AS AgeClass, CreatorID FROM ((resources LEFT JOIN authors ON resources.AuthorID = authors.ID) LEFT JOIN publications ON resources.PublicationID = publications.ID) LEFT JOIN ageclasses ON resources.AgeClass = ageclasses.ID';
 
-    if fMain.loginUser = uDesigner then sql := sql + ' WHERE resources.CreatorID = '+ fMain.loginUserID;
+      if fMain.loginUser = uDesigner then sql := sql + ' WHERE resources.CreatorID = '+ fMain.loginUserID;
+    end;
+
+    lQuestionMatch:
+    begin
+      sql := 'SELECT matches.ID, matches.Title, ageclasses.Title AS AgeClass, matches.QPPaper, matches.DesignerID, QuestionCount, AnswerCount FROM (matches LEFT JOIN ageclasses ON matches.AgeClass = ageclasses.ID) '+
+             'LEFT JOIN (SELECT MatchID, COUNT(Question) AS QuestionCount, COUNT(Answer) AS AnswerCount FROM questions GROUP BY MatchID) AS qs ON matches.ID = qs.MatchID WHERE matches.ResourceID IS NOT NULL';
+
+      if fMain.loginUser = uDesigner then sql := sql + ' AND matches.DesignerID = '+ fMain.loginUserID;
+    end;
+
+    lInstructionMatch:
+    begin
+      sql := 'SELECT matches.ID, matches.Title, ageclasses.Title AS AgeClass, categories.Title, matches.DesignerID FROM (matches LEFT JOIN ageclasses ON matches.AgeClass = ageclasses.ID) '+'LEFT JOIN categories ON matches.CategoryID = categories.ID WHERE matches.ResourceID IS NULL';
+
+      if fMain.loginUser = uDesigner then sql := sql + ' AND matches.DesignerID = '+ fMain.loginUserID;
+    end;
   end;
 
   with fMain do
@@ -338,6 +377,25 @@ begin
     end;
   end;
 }
+end;
+
+procedure TfMatchList.bNewQuestionMatchClick(Sender: TObject);
+var i : integer;
+begin
+  if state = lResource then
+  begin
+    fMain.showQuestionMatchForm;
+    fQuestionMatch.refresh;
+
+    with fMain.myQuery do
+    begin
+      SQL.Text := 'SELECT * FROM resources WHERE ID = '+ Grid.Cells[0,Grid.Row];
+      Open;
+      fQuestionMatch.resourceId := FieldByName('ID').AsInteger;
+      fQuestionMatch.eTitle.Text := FieldByName('Title').AsString;
+      fQuestionMatch.cbAgeClass.ItemIndex := FieldByName('AgeClass').AsInteger;
+    end;
+  end;
 end;
 
 end.

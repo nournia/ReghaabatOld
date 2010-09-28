@@ -62,7 +62,6 @@ object fResource: TfResource
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    ExplicitHeight = 438
     FullHeight = 0
     object AdvGroupBox3: TAdvGroupBox
       Left = 0
@@ -71,7 +70,6 @@ object fResource: TfResource
       Height = 405
       Align = alClient
       TabOrder = 0
-      ExplicitHeight = 401
       object gAuthor: TAdvGroupBox
         Left = 2
         Top = 80
@@ -201,7 +199,6 @@ object fResource: TfResource
         BorderStyle = bsNone
         Align = alClient
         TabOrder = 3
-        ExplicitHeight = 238
         DesignSize = (
           755
           242)
@@ -257,10 +254,9 @@ object fResource: TfResource
           ParentFont = False
           ScrollBars = ssVertical
           TabOrder = 1
-          ExplicitHeight = 204
         end
       end
-      object AdvGroupBox1: TAdvGroupBox
+      object gProperties: TAdvGroupBox
         Left = 2
         Top = 3
         Width = 755
@@ -268,6 +264,7 @@ object fResource: TfResource
         BorderStyle = bsNone
         Align = alTop
         TabOrder = 0
+        ExplicitTop = 2
         DesignSize = (
           755
           77)
@@ -367,6 +364,29 @@ object fResource: TfResource
           ParentFont = False
           TabOrder = 2
         end
+        object clTags: TCheckListEdit
+          Left = 115
+          Top = 4
+          Width = 62
+          Height = 21
+          AutoDropWidthSize = False
+          EditorEnabled = False
+          TabOrder = 3
+          Visible = False
+          DropWidth = 121
+          DropHeight = 50
+          DropColumns = 2
+          DropFont.Charset = DEFAULT_CHARSET
+          DropFont.Color = clWindowText
+          DropFont.Height = -11
+          DropFont.Name = 'Tahoma'
+          DropFont.Style = []
+          DropSorted = True
+          TextDelimiter = ','
+          TextEndChar = ']'
+          TextStartChar = '['
+          Version = '1.3.6.0'
+        end
       end
     end
   end
@@ -416,7 +436,6 @@ object fResource: TfResource
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    ExplicitTop = 411
     FullHeight = 0
     object bApply: TAdvGlowButton
       Left = 9

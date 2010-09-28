@@ -9,76 +9,51 @@ uses
   AdvAppStyler, UnitMaster, clisted;
 
 type
-  TfDesignBC = class(TMaster)
+  TfQuestionMatch = class(TMaster)
     P_MatchEdit: TAdvPanel;
-    AdvGroupBox3: TAdvGroupBox;
-    Label7: TLabel;
+    gProperties: TAdvGroupBox;
     Label1: TLabel;
-    Edit5: TEdit;
-    Label5: TLabel;
-    Label9: TLabel;
+    eTitle: TEdit;
     Label10: TLabel;
-    MaskEdit1: TMaskEdit;
-    ComboBox2: TComboBox;
-    Label6: TLabel;
-    Label3: TLabel;
     P_Action: TAdvPanel;
-    BitBtn3: TAdvGlowButton;
-    BitBtn1: TAdvGlowButton;
-    BitBtn4: TAdvGlowButton;
+    bApply: TAdvGlowButton;
+    bPreview: TAdvGlowButton;
     fs: TAdvFormStyler;
-    MaskEdit2: TMaskEdit;
     ps: TAdvPanelStyler;
-    Edit1: TEdit;
-    Label8: TLabel;
-    Edit2: TEdit;
-    Label11: TLabel;
-    AdvGlowButton1: TAdvGlowButton;
-    AdvGroupBox1: TAdvGroupBox;
-    Label2: TLabel;
-    Label14: TLabel;
-    SpinEdit2: TAdvSpinEdit;
-    SpinEdit1: TAdvSpinEdit;
-    SpinEdit4: TAdvSpinEdit;
-    clTags: TCheckListEdit;
+    bEditor: TAdvGlowButton;
+    sQPPaper: TAdvSpinEdit;
     Grid: TAdvColumnGrid;
     pEditor: TAdvGroupBox;
     Label12: TLabel;
     Label13: TLabel;
     mQuestion: TEdit;
     mAnswer: TMemo;
-    procedure Edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure Edit2KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    Label3: TLabel;
+    cbAgeClass: TComboBox;
+
+    procedure refresh();
+    function validate() : boolean;
+    procedure loadData(id : integer);
+    procedure addQuestionMatch(id : integer);
+
     procedure GridResize(Sender: TObject);
-    procedure ComboBox2KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure GridEditingDone(Sender: TObject);
-    procedure BitBtn1Click(Sender: TObject);
-    procedure Edit5KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure SpinEdit4KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure MaskEdit2KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure SpinEdit2KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure SpinEdit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure BitBtn4Click(Sender: TObject);
-    procedure BitBtn3Click(Sender: TObject);
+    procedure bPreviewClick(Sender: TObject);
+    procedure bApplyClick(Sender: TObject);
     procedure MaskEdit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure AdvGlowButton1Click(Sender: TObject);
+    procedure bEditorClick(Sender: TObject);
     procedure mQuestionChange(Sender: TObject);
     procedure mAnswerChange(Sender: TObject);
     procedure GridSelectionChanged(Sender: TObject; ALeft, ATop, ARight, ABottom: Integer);
     procedure mQuestionKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-
-    procedure AddBCMatch(Code : string);
-    procedure FormCreate(Sender: TObject);
-    procedure clTagsClickBtn(Sender: TObject);
   private
     { Private declarations }
   public
-    CreateMode, bookMode, own : Boolean;
-    genuineID : String;
+    resourceId, designerId, matchId : integer;
   end;
 
 var
-  fDesignBC: TfDesignBC;
+  fQuestionMatch: TfQuestionMatch;
 
 implementation
 
@@ -86,54 +61,92 @@ uses UnitMain, UnitTDE;
 
 {$R *.dfm}
 
-procedure TfDesignBC.AddBCMatch(Code : string);
-var
-  i, q : Integer;
-  BookCode : String;
-  S, designer : String;
+procedure TfQuestionMatch.refresh();
 begin
-  if bookMode then S := '1' else S := '4';
-  if MaskEdit1.Text = '   -   ' then BookCode := '' else BookCode := MaskEdit1.Text;
-  if MaskEdit2.Text = '    ' then designer := 'NULL' else designer := MaskEdit2.Text;
+  fMain.fillComboWithQuery(cbAgeClass, 'SELECT CONCAT(Title, " - ", Description) FROM ageclasses ORDER BY ID');
+  eTitle.Text := '';
+  cbAgeClass.ItemIndex := 0;
+  resourceId := -1;
+  designerId := StrToInt(fMain.loginUserID);
+  matchId := -1;
+  sQPPaper.Value := 4;
+  mAnswer.Text := '';
+  mQuestion.Text := '';
+  Grid.RowCount := 2;
+  Grid.ClearRows(1,1);
+  Grid.Cells[0,1] := '1';
+  pEditor.Visible := false;
 
-  fMain.executeCommand('INSERT INTO Matches (ID, DesignerID, Title, MaxScore, Age, State, QPPaper, LibraryBookID, Tags, Author, Publication, GenuineID) '+
-  'VALUES ('+ Code +', '+ designer +', "'+ fMain.correctString(Edit5.Text) +'", '+ SpinEdit1.Text +', '+ SpinEdit4.Text +', '+ IntToStr(ComboBox2.ItemIndex) +', '+ SpinEdit2.Text +', "'+ BookCode +'", "'+ clTags.Text +'", "'+ fMain.correctString(Edit1.Text) +'", "'+ fMain.correctString(Edit2.Text) +'", '+ genuineID +')');
+  eTitle.SetFocus;
+end;
+function TfQuestionMatch.validate() : boolean;
+var i, j : integer;
+begin
+  Result := (eTitle.Text <> '');
+  if not Result then
+  begin
+    fMain.MyShowMessage('لطفا برای مسابقه یك عنوان مناسب انتخاب كنید');
+    exit;
+  end;
 
+  Result := Result and (not fMain.recordExists('SELECT matches.ID FROM matches INNER JOIN supports ON matches.ID = supports.MatchID WHERE supports.CurrentState = "active" AND matches.Title = "'+ fMain.correctString(eTitle.Text) +'" AND matches.ID <> '+ IntToStr(matchId)));
+  if not Result then
+  begin
+    fMain.MyShowMessage('عنوان این مسابقه، قبلا برای مسابقه‌ی دیگری انتخاب شده است. در یک رقابت دو مسابقه با عنوان مشابه نمی‌توانند فعال باشند.');
+    exit;
+  end;
+
+  j := 0; for i := 1 to Grid.RowCount-1 do if Grid.Cells[1,i] <> '' then j := j+1;
+  if j < sQPPaper.Value then sQPPaper.Value := j;
+end;
+procedure TfQuestionMatch.loadData(id : integer);
+var i : integer;
+begin
+  refresh;
+  matchId := id;
+  with fMain.myQuery do
+  begin
+    SQL.Text := 'SELECT Title, AgeClass, QPPaper, DesignerID, ResourceID FROM matches WHERE ID = '+ IntToStr(matchId);
+    Open;
+
+    eTitle.Text := FieldByName('Title').AsString;
+    cbAgeClass.ItemIndex := FieldByName('AgeClass').AsInteger;
+    designerId := FieldByName('DesignerID').AsInteger;
+    resourceId := FieldByName('ResourceID').AsInteger;
+
+    SQL.Text := 'SELECT * FROM questions WHERE MatchID = '+ IntToStr(matchId) +' ORDER BY ID';
+    Open;
+
+    for i := 1 to RecordCount do
+    begin
+      Grid.Cells[0,i] := FieldByName('ID').AsString;
+      Grid.Cells[1,i] := FieldByName('Question').AsString;
+      Grid.Cells[2,i] := FieldByName('Answer').AsString;
+      Grid.AddRow;
+      Next;
+    end;
+    Grid.Cells[0,RecordCount+1] := IntToStr(RecordCount+1);
+  end;
+end;
+procedure TfQuestionMatch.addQuestionMatch(id : integer);
+var i, q, tId : Integer; answer : string;
+begin
+  tId := fMain.InsertOrUpdate('matches', 'ID = '+ IntToStr(id), ['DesignerID', 'Title', 'AgeClass', 'ResourceID', 'QPPaper'], [designerId, fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex, resourceId, sQPPaper.Value]);
+  if tId <> -1 then id := tId;
+
+  fMain.executeCommand('DELETE FROM questions WHERE MatchID = '+ IntToStr(id));
   q := 1;
   for i := 1 to Grid.RowCount-1 do
   if Grid.Cells[1,i] <> '' then
   begin
-     fMain.executeCommand('INSERT INTO Questions (MatchID, ID, Question, Answer) VALUES ('+ Code +', '+ IntToStr(q) +',"'+ fMain.correctString(Grid.Cells[1,i]) +'", "'+ fMain.correctString(Grid.Cells[2,i]) +'")');
-     inc(q);
+    if Grid.Cells[2,i] <> '' then answer := '"'+ fMain.correctString(Grid.Cells[2,i]) +'"' else answer := 'NULL';
+    fMain.executeCommand('INSERT INTO Questions (MatchID, ID, Question, Answer) VALUES ('+ IntToStr(id) +', '+ IntToStr(q) +', "'+ fMain.correctString(Grid.Cells[1,i]) +'", '+ answer +')');
+    inc(q);
   end;
 end;
 
-procedure TfDesignBC.Edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if key = 13 then Edit2.SetFocus;
-end;
-
-procedure TfDesignBC.Edit2KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if key = 13 then Grid.SetFocus;
-end;
-
-procedure TfDesignBC.Edit5KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if key = 13 then Edit1.SetFocus;
-end;
-
-procedure TfDesignBC.FormCreate(Sender: TObject);
-begin
-  ComboBox2.Items.Clear;
-  ComboBox2.Items.Add(fMain.cStates[0]);
-  ComboBox2.Items.Add(fMain.cStates[1]);
-  ComboBox2.Items.Add(fMain.cStates[2]);
-  ComboBox2.ItemIndex := 0;
-  clTags.DropWidth := clTags.Width;
-end;
-
-procedure TfDesignBC.GridEditingDone(Sender: TObject);
+// GUI
+procedure TfQuestionMatch.GridEditingDone(Sender: TObject);
 begin
   mQuestion.Text := Grid.Cells[1,Grid.Row];
   mAnswer.Text := Grid.Cells[2,Grid.Row];
@@ -146,19 +159,19 @@ begin
   end;
 end;
 
-procedure TfDesignBC.GridResize(Sender: TObject);
+procedure TfQuestionMatch.GridResize(Sender: TObject);
 begin
   Grid.Columns[1].Width := Round( ( Grid.Width - Grid.Columns[0].Width )/2 ) - 11;
   Grid.Columns[2].Width := Grid.Columns[1].Width;
 end;
 
-procedure TfDesignBC.GridSelectionChanged(Sender: TObject; ALeft, ATop, ARight, ABottom: Integer);
+procedure TfQuestionMatch.GridSelectionChanged(Sender: TObject; ALeft, ATop, ARight, ABottom: Integer);
 begin
   mQuestion.Text := Grid.Cells[1,Grid.Row];
   mAnswer.Text := Grid.Cells[2,Grid.Row];
 end;
 
-procedure TfDesignBC.mAnswerChange(Sender: TObject);
+procedure TfQuestionMatch.mAnswerChange(Sender: TObject);
 begin
   Grid.Cells[2,Grid.Row] := mAnswer.Text;
 
@@ -169,92 +182,36 @@ begin
   end;
 end;
 
-procedure TfDesignBC.AdvGlowButton1Click(Sender: TObject);
+procedure TfQuestionMatch.bEditorClick(Sender: TObject);
 begin
+  mQuestion.Text := Grid.Cells[1,Grid.Row];
+  mAnswer.Text := Grid.Cells[2,Grid.Row];
   pEditor.Visible := not pEditor.Visible;
 end;
 
-procedure TfDesignBC.BitBtn1Click(Sender: TObject);
+procedure TfQuestionMatch.bPreviewClick(Sender: TObject);
 begin
+{x
   fMain.deleteMatch('310000');
   if Grid.RowCount-2 < SpinEdit2.Value then SpinEdit2.Value := Grid.RowCount - 2;
   AddBCMatch('310000');
   F_TDE.GetFastReport('0', '310000', 'Preview', False, True);
   fMain.deleteMatch('310000');
+}
 end;
 
-procedure TfDesignBC.BitBtn3Click(Sender: TObject);
-var
-  i, j : Integer; matchID : string;
+procedure TfQuestionMatch.bApplyClick(Sender: TObject);
 begin
-  matchID := fMain.StrToMatchID(Label2.Caption);
-  if Edit5.Text = '' then
+  if validate then
   begin
-    fMain.MyShowMessage('لطفا برای مسابقه یك عنوان مناسب انتخاب كنید');
-    Abort;
+    addQuestionMatch(matchId);
+    refresh;
   end;
-
-  fMain.qTmp.SQL.Text:='SELECT ID FROM Matches WHERE Title = "'+ fMain.correctString(Edit5.Text) +'" AND ID <> '+ matchID;
-  fMain.qTmp.Open;
-  if fMain.qTmp.RecordCount > 0 then
-  begin
-    fMain.MyShowMessage('مسابقه ' + fMain.qTmp.FieldByName('ID').AsString + ' با عنوان این مسابقه قبلا ثبت شده است و دو مسابقه نمی توانند عنوان یکسان داشته باشند');
-    Abort;
-  end;
-
-  if fMain.searchMatch(matchID) then fMain.deleteMatch(matchID);
-
-  j := 0; for i := 1 to Grid.RowCount-1 do if Grid.Cells[1,i] <> '' then j := j+1;
-  if j < SpinEdit2.Value then SpinEdit2.Value := j;
-
-  AddBCMatch(matchID);
-
-  BitBtn4.Click;
 end;
 
-procedure TfDesignBC.BitBtn4Click(Sender: TObject);
+procedure TfQuestionMatch.MaskEdit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if fMain.ICLibrary.Visible = True then
-  begin
-    MaskEdit1.Visible := True;
-    Label3.Visible := True;
-  end;
-
-  clTags.Text := '';
-  SpinEdit1.Value:=0;
-  SpinEdit2.Value:=4;
-  SpinEdit4.Value:=12;
-  Edit1.Text:='';
-  Edit2.Text:='';
-  Edit5.Text:='';
-  MaskEdit1.Text := '';
-  MaskEdit2.Text := '';
-  ComboBox2.ItemIndex := 0;
-  mAnswer.Text := '';
-  mQuestion.Text := '';
-  Own := True;
-
-  if bookMode then Label2.Caption := fMain.getNewMatchID(1) else Label2.Caption := fMain.getNewMatchID(4);
-
-  Grid.RowCount := 2;
-  Grid.ClearRows(1,1);
-  Grid.Cells[0,1] := '1';
-end;
-
-procedure TfDesignBC.clTagsClickBtn(Sender: TObject);
-begin
-  clTags.DropWidth := clTags.Width;
-end;
-
-procedure TfDesignBC.ComboBox2KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = 13 then
-    if MaskEdit1.Visible = True then MaskEdit1.SetFocus
-    else Edit5.SetFocus;
-end;
-
-procedure TfDesignBC.MaskEdit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
+{x
   if Key = 13 then
   begin
     if MaskEdit1.Text = '   -   ' then
@@ -287,14 +244,9 @@ begin
         MaskEdit1.SelectAll;
      end;
  end;
-end;
+}end;
 
-procedure TfDesignBC.MaskEdit2KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = 13 then SpinEdit2.SetFocus;
-end;
-
-procedure TfDesignBC.mQuestionChange(Sender: TObject);
+procedure TfQuestionMatch.mQuestionChange(Sender: TObject);
 begin
   Grid.Cells[1,Grid.Row] := mQuestion.Text;
 
@@ -305,24 +257,9 @@ begin
   end;
 end;
 
-procedure TfDesignBC.mQuestionKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TfQuestionMatch.mQuestionKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if key = 13 then mAnswer.SetFocus;
-end;
-
-procedure TfDesignBC.SpinEdit1KeyDown(Sender: TObject; var Key: Word;  Shift: TShiftState);
-begin
-  if key = 13 then MaskEdit2.SetFocus;
-end;
-
-procedure TfDesignBC.SpinEdit2KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if key = 13 then SpinEdit4.SetFocus;
-end;
-
-procedure TfDesignBC.SpinEdit4KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if key = 13 then ComboBox2.SetFocus;
 end;
 
 end.

@@ -18,7 +18,6 @@ object fUser: TfUser
   Visible = True
   WindowState = wsMaximized
   OnCreate = FormCreate
-  OnShow = bClearClick
   PixelsPerInch = 96
   TextHeight = 13
   object AdvPanel1: TAdvPanel
@@ -1150,7 +1149,7 @@ object fUser: TfUser
       758
       33)
     FullHeight = 0
-    object bClear: TAdvGlowButton
+    object bNewUser: TAdvGlowButton
       Left = 646
       Top = 4
       Width = 100
@@ -1167,7 +1166,7 @@ object fUser: TfUser
       NotesFont.Style = []
       Transparent = True
       TabOrder = 0
-      OnClick = bClearClick
+      OnClick = bNewUserClick
       Appearance.BorderColor = 14727579
       Appearance.BorderColorHot = 10079963
       Appearance.BorderColorDown = 4548219

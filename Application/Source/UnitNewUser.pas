@@ -28,7 +28,7 @@ type
     cbLogin: TComboBox;
     Label9: TLabel;
     gMenu: TAdvPanel;
-    bClear: TAdvGlowButton;
+    bNewUser: TAdvGlowButton;
     bAccounts: TAdvGlowButton;
     bEdit: TAdvGlowButton;
     bImportFromLibrary: TAdvGlowButton;
@@ -57,6 +57,11 @@ type
     ePhone: TEdit;
     meUserID: TMaskEdit;
     Label1: TLabel;
+
+    procedure refresh();
+    function validate() : boolean;
+    procedure loadData(id : integer);
+
     procedure Edit3KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ePasswordChange(Sender: TObject);
     procedure bAccountsClick(Sender: TObject);
@@ -65,13 +70,11 @@ type
     procedure Edit2KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure bApplyClick(Sender: TObject);
-    procedure bClearClick(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure meUserIDKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
     procedure ePasswordLeftButtonClick(Sender: TObject);
-    procedure loadUserFromMatch();
     procedure loadUserFromLibrary();
     procedure bImportFromLibraryClick(Sender: TObject);
     procedure bEditClick(Sender: TObject);
@@ -80,9 +83,11 @@ type
 
     procedure fillCBLogin(userID : string);
     procedure bLoginClick(Sender: TObject);
+    procedure bNewUserClick(Sender: TObject);
   private
     { Private declarations }
   public
+    userId : integer;
     imgChange : boolean;
   end;
 
@@ -95,13 +100,103 @@ uses UnitMain, uCryptography, UFaDate, UnitTypes;
 
 {$R *.dfm}
 
-function SuggestCode() : string;
-var code : integer;
+procedure TfUser.refresh();
 begin
-  Randomize;
-  code := 0;
-  while code < 1000 do code := Random(10000000) mod 10000;
-  Result := IntToStr(code);
+  userId := -1;
+
+  bAccounts.Visible := (fMain.P_LS.ImageIndex > 0);
+  gDescription.Visible := bAccounts.Visible;
+  bLogin.Down := False;
+
+  fillCBLogin('');
+  meUserID.Text := '';
+  imgChange := false;
+  cbLogin.ItemIndex := 0;
+  bLogin.Visible := True;
+  pLogin.Visible := true;
+  Edit1.Text := '';
+  Edit2.Text := '';
+  edtDescription.Text := '';
+  eNationalID.Text := '';
+  MaskEdit3.Text := '';
+  Edit7.Text := '';
+  ePhone.Text := '';
+  RG_S.ItemIndex := 0;
+  Image1.Picture := Nil;
+  gEdit.Visible := false;
+
+  ePassword.Text := '';
+  ePassword.PasswordChar := '*';
+  CheckBox4.Checked := True;
+
+  Edit1.SetFocus;
+end;
+function TfUser.validate() : boolean;
+begin
+  Result := (Edit1.Text <> '') and (Edit2.Text <> '') and (eNationalID.Text <> '') and (MaskEdit3.Text <> '    /  /  ');
+  if not Result then
+  begin
+    fMain.MyShowMessage('مقادیر نام، نام‌خانوادگی، شماره‌ی ملی و تاریخ تولد باید پر شوند');
+    exit;
+  end;
+
+  Result := Result and (StrToInt(LeftStr(MaskEdit3.Text, 4)) < 1800);
+  if not Result then
+  begin
+    fMain.MyShowMessage('مقدار تاریخ تولد معتبر نیست');
+    exit;
+  end;
+
+  fMain.myQuery.SQL.Text := 'SELECT ID FROM users WHERE NationalID = '+ eNationalID.Text;
+  fMain.myQuery.Open;
+  if (fMain.myQuery.RecordCount > 0) and (fMain.myQuery.Fields[0].AsInteger <> userId) then Result := false;
+  if not Result then
+  begin
+    fMain.MyShowMessage('این شماره ملی برای کاربر دیگری ثبت شده است');
+    exit;
+  end;
+end;
+procedure TfUser.loadData(id : integer);
+var dPermission, kind : String; pix : integer;
+begin
+  refresh;
+  userId := id;
+
+  with fMain.myQuery do
+  begin
+    SQL.Text := 'SELECT * FROM users LEFT JOIN permissions ON users.ID = permissions.UserID WHERE users.ID = '+ IntToStr(id);
+    Open;
+
+    if RecordCount = 0 then fMain.MyShowMessage('عضوی با این کد ثبت نشده است') else
+    begin
+      if not fMain.hasGenderPermission(FieldByName('Gender').AsString) then fMain.MyShowMessage('شما اجازه دسترسی به اطلاعات این عضو را ندارید') else
+      begin
+        Edit1.Text := FieldByName('FirstName').AsString;
+        Edit2.Text := FieldByName('LastName').AsString;
+        MaskEdit3.Text := TFaDate.Create(FieldByName('BirthDate').AsDateTime).ToDateString;
+        ePhone.Text := FieldByName('Phone').AsString;
+        Edit7.Text := FieldByName('Address').AsString;
+        edtDescription.Text := FieldByName('Description').AsString;
+        eNationalID.Text := FieldByName('NationalID').AsString;
+        if FieldByName('Gender').AsString = 'male' then RG_S.ItemIndex := 0 else RG_S.ItemIndex := 1;
+
+        fillCBLogin(FieldByName('ID').AsString);
+
+        pix := cbLogin.Items.IndexOf(UserToPersian(StringToUser(FieldByName('Permission').AsString)));
+        if (pix >= 0) or ((fMain.loginUser >= uManager) and (FieldByName('Permission').AsString = '')) then
+        begin
+          if FieldByName('Permission').AsString <> '' then cbLogin.ItemIndex := pix else cbLogin.ItemIndex := 0;
+          ePassword.Text := decrypt(FieldByName('UserPass').AsString);
+        end else
+        begin
+          bLogin.Visible := false;
+          pLogin.Visible := false;
+        end;
+
+        fMain.loadJpeg(FieldByName('ID').AsString, 'user', Image1, fMain.myQuery);
+      end;
+    end;
+  end;
 end;
 
 procedure TfUser.bImportFromLibraryClick(Sender: TObject);
@@ -112,6 +207,11 @@ end;
 procedure TfUser.bLoginClick(Sender: TObject);
 begin
   ePasswordChange(nil);
+end;
+
+procedure TfUser.bNewUserClick(Sender: TObject);
+begin
+  refresh;
 end;
 
 procedure TfUser.bAccountsClick(Sender: TObject);
@@ -143,6 +243,14 @@ begin
 end;
 
 procedure TfUser.ePasswordLeftButtonClick(Sender: TObject);
+  function SuggestCode() : string;
+  var code : integer;
+  begin
+    Randomize;
+    code := 0;
+    while code < 1000 do code := Random(10000000) mod 10000;
+    Result := IntToStr(code);
+  end;
 begin
   ePassword.Text := SuggestCode;
 end;
@@ -153,107 +261,49 @@ begin
 end;
 
 procedure TfUser.bApplyClick(Sender: TObject);
-var gender, user : string; tId, userId, i : Integer; j : TUser;
+var gender, user : string; tId, i : Integer; j : TUser;
 begin
-  if (Edit1.Text = '') or (Edit2.Text = '') or (eNationalID.Text = '') then
+  if validate then
   begin
-    fMain.MyShowMessage('لطفا نام، نام خانوادگی و شماره ملی را وارد کنید');
-    Abort;
-  end;
-  if (MaskEdit3.Text = '    /  /  ') or (StrToInt(LeftStr(MaskEdit3.Text, 4)) > 1800) then
-  begin
-    fMain.MyShowMessage('لطفا تاریخ تولد را به سال شمسی وارد کنید');
-    Abort;
-  end;
+    if RG_S.ItemIndex = 0 then gender := GenderToString(gMale) else gender := GenderToString(gFemale);
+    tId := fMain.InsertOrUpdate('users', 'ID = '+ IntToStr(userID),
+                                ['NationalID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Gender', 'RegisterTime', 'Description', 'UserPass'],
+                                [eNationalID.Text, Edit1.Text, Edit2.Text, TFaDate.CreateByPersianDate(MaskEdit3.Text).ToGregorianDate, Edit7.Text, ePhone.Text, gender, Now, edtDescription.Text, encrypt(ePassword.Text)]);
+    if tId <> -1 then userId := tId;
 
-  if meUserID.Text = '    ' then userID := -1 else userID := StrToInt(meUserID.Text);
+  //  Convert Image
+  //  if (Image1.Picture.Width <> 54) or (Image1.Picture.Height <> 72) then fMain.ScaleBmp(Image1.Picture.Bitmap);
+    if imgChange then
+      fMain.InsertOrUpdateJpeg(IntToStr(userID), 'user', Image1);
 
-  if RG_S.ItemIndex = 0 then gender := GenderToString(gMale) else gender := GenderToString(gFemale);
-  tId := fMain.InsertOrUpdate('users', 'ID = '+ IntToStr(userID),
-                              ['NationalID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Gender', 'RegisterTime', 'Description', 'UserPass'],
-                              [eNationalID.Text, Edit1.Text, Edit2.Text, TFaDate.CreateByPersianDate(MaskEdit3.Text).ToGregorianDate, Edit7.Text, ePhone.Text, gender, Now, edtDescription.Text, encrypt(ePassword.Text)]);
-  if tId <> -1 then userId := tId;
-
-//  Convert Image
-//  if (Image1.Picture.Width <> 54) or (Image1.Picture.Height <> 72) then fMain.ScaleBmp(Image1.Picture.Bitmap);
-  if imgChange then
-    fMain.InsertOrUpdateJpeg(IntToStr(userID), 'user', Image1);
-
-  if bLogin.Visible then
-  begin
-    for j := uUser to uAdmin do
-      if UserToPersian(j) = cbLogin.Text then
-      begin
-        user := UserToString(j);
-        break;
-      end;
-
-    fMain.InsertOrUpdate('permissions', 'TournamentID = 1 AND UserID = '+ IntToStr(userID),
-                        ['TournamentID', 'UserID', 'Permission', 'Accept'],
-                        [1, userID, user, 1]);
-  end;
-
-  if tId <> -1 then fMain.MyShowMessage('عضو جدید با کد '+ IntToStr(userID) +' ثبت شد');
-{
-  fMain.myQuery.SQL.Text := 'SELECT Permission FROM permissions WHERE Permission = "'+ fMain.UserToString(uAdmin) +'" OR Permission = "'+ fMain.UserToString(uMaster) +'"';
-  fMain.myQuery.Open;
-  if fMain.myQuery.RecordCount = 0  then
-  begin
-    fMain.executeCommand('UPDATE permissions SET Permission = "'+ fMain.UserToString(uMaster) +'" WHERE ID = 1111');
-    fMain.MyShowMessage('چون هیچ مدیر کلی وجود ندارد، کد "1111" با کلمه‌ی عبور "1" مدیر کل می‌شود');
-  end;
-}
-  if fMain.loginUser < uManager  then
-    fMain.P_Temp.Visible := true;
-  bClearClick(nil);
-end;
-
-procedure TfUser.bClearClick(Sender: TObject);
-begin
-  if fMain.loginUser < uManager then abort;
-
-  bAccounts.Visible := (fMain.P_LS.ImageIndex > 0);
-  gDescription.Visible := bAccounts.Visible;
-  bLogin.Down := False;
-
-  fillCBLogin('');
-  meUserID.Text := '';
-  imgChange := false;
-  cbLogin.ItemIndex := 0;
-  bLogin.Visible := True;
-  pLogin.Visible := true;
-  Edit1.Text := '';
-  Edit2.Text := '';
-  edtDescription.Text := '';
-  eNationalID.Text := '';
-  MaskEdit3.Text := '';
-  Edit7.Text := '';
-  ePhone.Text := '';
-  RG_S.ItemIndex := 0;
-  Image1.Picture := Nil;
-
-  ePassword.Text := '';
-  ePassword.PasswordChar := '*';
-  CheckBox4.Checked := True;
-
-  gEdit.Visible := false;
-  {
-  if fMain.ICMatch.Visible then
-  begin
-    fMain.qTmp.SQL.Text := 'SELECT ID FROM Users';
-    fMain.qTmp.Open;
-    if fMain.qTmp.RecordCount = 0 then Label5.Caption := fMain.options.Values['UserIdStart']
-    else
+    if bLogin.Visible then
     begin
-      fMain.qTmp.SQL.Text := 'SELECT Max(ID) FROM Users';
-      fMain.qTmp.Open;
-      if fMain.qTmp.Fields[0].AsInteger >= StrToInt(fMain.options.Values['UserIdStart']) then
-        Label5.Caption := IntToStr(fMain.qTmp.Fields[0].AsInteger + 1)
-      else Label5.Caption := fMain.options.Values['UserIdStart'];
+      for j := uUser to uAdmin do
+        if UserToPersian(j) = cbLogin.Text then
+        begin
+          user := UserToString(j);
+          break;
+        end;
+
+      fMain.InsertOrUpdate('permissions', 'TournamentID = 1 AND UserID = '+ IntToStr(userID),
+                          ['TournamentID', 'UserID', 'Permission', 'Accept'],
+                          [1, userID, user, 1]);
     end;
-  end;
+
+    if tId <> -1 then fMain.MyShowMessage('عضو جدید با کد '+ IntToStr(userID) +' ثبت شد');
+  {
+    fMain.myQuery.SQL.Text := 'SELECT Permission FROM permissions WHERE Permission = "'+ fMain.UserToString(uAdmin) +'" OR Permission = "'+ fMain.UserToString(uMaster) +'"';
+    fMain.myQuery.Open;
+    if fMain.myQuery.RecordCount = 0  then
+    begin
+      fMain.executeCommand('UPDATE permissions SET Permission = "'+ fMain.UserToString(uMaster) +'" WHERE ID = 1111');
+      fMain.MyShowMessage('چون هیچ مدیر کلی وجود ندارد، کد "1111" با کلمه‌ی عبور "1" مدیر کل می‌شود');
+    end;
   }
-  Edit1.SetFocus;
+    if fMain.loginUser < uManager  then
+      fMain.P_Temp.Visible := true;
+    refresh;
+  end;
 end;
 
 procedure TfUser.bEditClick(Sender: TObject);
@@ -323,59 +373,14 @@ begin
   cbLogin.Items.Add(UserToPersian(uUser));
   if fMain.loginUser >= uManager then
   begin
-    cbLogin.Items.Add(UserToPersian(uOperator));
     cbLogin.Items.Add(UserToPersian(uDesigner));
+    cbLogin.Items.Add(UserToPersian(uOperator));
     if fMain.loginUser >= uMaster then
       cbLogin.Items.Add(UserToPersian(uManager));
   end;
 
   if (userID <> '') and (fMain.loginUserID = userID) and (cbLogin.Items.IndexOf(UserToPersian(fMain.loginUser)) < 0) then
       cbLogin.Items.Add(UserToPersian(fMain.loginUser));
-end;
-
-procedure TfUser.loadUserFromMatch();
-var dPermission, kind : String; rgID, pix : integer;
-begin
-  fMain.qTmp.SQL.Text := 'SELECT * FROM users LEFT JOIN permissions ON users.ID = permissions.UserID WHERE users.ID = '+ meUserID.Text;
-  fMain.qTmp.Open;
-
-  if fMain.qTmp.RecordCount = 1 then
-  begin
-    if not fMain.hasGenderPermission(fMain.qTmp.FieldByName('Gender').AsString) then
-    begin
-      fMain.MyShowMessage('شما اجازه دسترسی به اطلاعات این عضو را ندارید');
-      bClear.Click;
-      Abort;
-    end;
-
-    Edit1.Text := fMain.qTmp.FieldByName('FirstName').AsString;
-    Edit2.Text := fMain.qTmp.FieldByName('LastName').AsString;
-    MaskEdit3.Text := TFaDate.Create(fMain.qTmp.FieldByName('BirthDate').AsDateTime).ToDateString;
-    ePhone.Text := fMain.qTmp.FieldByName('Phone').AsString;
-    Edit7.Text := fMain.qTmp.FieldByName('Address').AsString;
-    edtDescription.Text := fMain.qTmp.FieldByName('Description').AsString;
-    eNationalID.Text := fMain.qTmp.FieldByName('NationalID').AsString;
-    if fMain.qTmp.FieldByName('Gender').AsString = 'male' then RG_S.ItemIndex := 0 else RG_S.ItemIndex := 1;
-
-    fillCBLogin(fMain.qTmp.FieldByName('ID').AsString);
-
-    pix := cbLogin.Items.IndexOf(UserToPersian(StringToUser(fMain.qTmp.FieldByName('Permission').AsString)));
-    if (pix >= 0) or ((fMain.loginUser >= uManager) and (fMain.qTmp.FieldByName('Permission').AsString = '')) then
-    begin
-      if fMain.qTmp.FieldByName('Permission').AsString <> '' then cbLogin.ItemIndex := pix else cbLogin.ItemIndex := 0;
-      ePassword.Text := decrypt(fMain.qTmp.FieldByName('UserPass').AsString);
-    end else
-    begin
-      bLogin.Visible := false;
-      pLogin.Visible := false;
-    end;
-
-    fMain.loadJpeg(fMain.qTmp.FieldByName('ID').AsString, 'user', Image1, fMain.qTmp);
-  end else
-  begin
-    fMain.MyShowMessage('عضوی با این کد ثبت نشده است');
-    meUserID.SetFocus;
-  end;
 end;
 
 procedure TfUser.loadUserFromLibrary();
@@ -410,8 +415,15 @@ begin
 end;
 
 procedure TfUser.meUserIDKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+var tmp : string;
 begin
-  if key = 13 then loadUserFromMatch;
+  if key = 13 then
+  begin
+    tmp := meUserID.Text;
+    loadData(StrToInt(meUserID.Text));
+    gEdit.Visible := true;
+    meUserID.Text := tmp;
+  end;
 end;
 
 procedure TfUser.MaskEdit3KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

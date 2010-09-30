@@ -266,7 +266,6 @@ type
 
     function recordExists(sql : string) : boolean;
     procedure executeCommand(sql : String);
-    procedure deleteMatch(matchID : String; picture : boolean = true);
     function searchMatch( Str : String ) : Boolean;
 
     function loadJpeg(id, group : String; img: TImage; qry: TMyQuery) : Boolean;
@@ -938,7 +937,7 @@ begin
   begin
     Application.CreateForm(TfResource, fResource);
     fResource.cbKind.Items.Clear;
-    for rc := rBook to rWebPage do
+    for rc := rBook to rMultiMedia do
       fResource.cbKind.Items.Add(ResourceToPersian(rc));
     fResource.refresh;
   end;
@@ -1389,13 +1388,6 @@ begin
   MIDs.Clear;
   DeleteFile(sendFolderAddress + 'temp.match');
 }
-end;
-
-procedure TfMain.deleteMatch(MatchID : String; picture : boolean);
-begin
-  executeCommand('DELETE FROM Matches WHERE ID = '+ MatchID);
-  executeCommand('DELETE FROM Questions WHERE MatchID = '+ MatchID);
-  if picture then executeCommand('DELETE FROM Pictures WHERE ID = '+ MatchID);
 end;
 
 procedure TfMain.BB_DeleteClick(Sender: TObject);

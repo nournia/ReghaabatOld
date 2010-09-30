@@ -267,8 +267,8 @@ begin
   begin
     if RG_S.ItemIndex = 0 then gender := GenderToString(gMale) else gender := GenderToString(gFemale);
     tId := fMain.InsertOrUpdate('users', 'ID = '+ IntToStr(userID),
-                                ['NationalID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Gender', 'RegisterTime', 'Description', 'UserPass'],
-                                [eNationalID.Text, Edit1.Text, Edit2.Text, TFaDate.CreateByPersianDate(MaskEdit3.Text).ToGregorianDate, Edit7.Text, ePhone.Text, gender, Now, edtDescription.Text, encrypt(ePassword.Text)]);
+                                ['NationalID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Gender', 'RegisterTime', 'Description'],
+                                [eNationalID.Text, Edit1.Text, Edit2.Text, TFaDate.CreateByPersianDate(MaskEdit3.Text).ToGregorianDate, Edit7.Text, ePhone.Text, gender, Now, edtDescription.Text]);
     if tId <> -1 then userId := tId;
 
   //  Convert Image
@@ -278,6 +278,8 @@ begin
 
     if bLogin.Visible then
     begin
+      fMain.executeCommand('UPDATE users SET UserPass = "'+ encrypt(ePassword.Text) +'" WHERE ID = '+ IntToStr(userID));
+
       for j := uUser to uAdmin do
         if UserToPersian(j) = cbLogin.Text then
         begin

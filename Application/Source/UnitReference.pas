@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, AdvPanel, AdvAppStyler, StdCtrls, ComCtrls, AdvGroupBox,
-  AdvGlowButton, AdvEdit, UnitMaster, UnitTypes, StrUtils, clisted;
+  AdvGlowButton, AdvEdit, UnitMaster, UnitTypes, StrUtils, clisted, Mask,
+  AdvSpin;
 
 type
   TfResource = class(TMaster)
@@ -13,12 +14,7 @@ type
     ps: TAdvPanelStyler;
     AdvPanel1: TAdvPanel;
     AdvGroupBox3: TAdvGroupBox;
-    gAuthor: TAdvGroupBox;
-    Label8: TLabel;
-    Label11: TLabel;
-    cbAuthor: TComboBox;
-    cbPublication: TComboBox;
-    gFile: TAdvGroupBox;
+    gMultiMedia: TAdvGroupBox;
     Label4: TLabel;
     eFile: TButtonedEdit;
     gWebPage: TAdvGroupBox;
@@ -36,6 +32,16 @@ type
     AdvPanel2: TAdvPanel;
     bApply: TAdvGlowButton;
     clTags: TCheckListEdit;
+    Label5: TLabel;
+    gBook: TAdvGroupBox;
+    Label7: TLabel;
+    sPages: TAdvSpinEdit;
+    Label9: TLabel;
+    sDuration: TAdvSpinEdit;
+    Label8: TLabel;
+    cbAuthor: TComboBox;
+    cbPublication: TComboBox;
+    Label11: TLabel;
 
     procedure refresh();
     function validate() : boolean;
@@ -47,7 +53,7 @@ type
   private
     { Private declarations }
   public
-    kind : TResourceContent; resourceId, creatorId : integer;
+    kind : TResourceContent; resourceId, creatorId, entityId : integer;
   end;
 
 var
@@ -69,37 +75,56 @@ begin
   cbPublication.Text := '';
   eTitle.Text := '';
   cbAgeClass.ItemIndex := 0;
-  mContent.Text := '';
-  eLink.Text := '';
-  eFile.Text := '';
   cbKindChange(nil);
   resourceId := -1;
   creatorId := StrToInt(fMain.loginUserID);
 
+  sPages.Value := 0;
+
+  eFile.Text := '';
+  sDuration.Value := 0;
+
+  eLink.Text := '';
+  mContent.Text := '';
   cbKind.SetFocus;
 end;
 function TfResource.validate() : boolean;
 begin
   Result := (eTitle.Text <> '');
-  if kind <> rWebPage then
-  begin
-    Result := Result and (cbAuthor.Text <> '');
-    Result := Result and (cbPublication.Text <> '');
-  end;
-  if (kind = rAudio) or (kind = rVideo) then
-  begin
-    Result := Result and (FileExists(eFile.Text));
+{
+  Result := Result and (cbAuthor.Text <> '');
+  Result := Result and (cbPublication.Text <> '');
+}
+  case kind of
+    rBook:
+    begin
+      Result := Result and (sPages.Value <> 0);
+    end;
+
+    rMultiMedia:
+    begin
+      Result := Result and (sDuration.Value <> 0);
+      Result := Result and (FileExists(eFile.Text));
+    end;
+
+    rWebPage:
+    begin
+      Result := Result and (mContent.Text <> '');
+      Result := Result and (eLink.Text <> '');
+    end;
   end;
 
   if not Result then fMain.MyShowMessage('مقادیر وارد شده معتبر نیستند');
 end;
 procedure TfResource.loadData(id : integer);
+var k : string;
 begin
   refresh;
   resourceId := id;
   with fMain.myQuery do
   begin
-    SQL.Text := 'SELECT resources.Title AS Resource, authors.Title AS Author, publications.Title AS Publiation, resources.Kind, resources.AgeClass, resources.CreatorID, resources.Content, resources.Link, resources.FileType '+'FROM ((resources LEFT JOIN authors ON resources.AuthorID = authors.ID) LEFT JOIN publications ON resources.PublicationID = publications.ID) WHERE resources.ID = '+ IntToStr(resourceId);
+    SQL.Text := 'SELECT resources.Title AS Resource, authors.Title AS Author, publications.Title AS Publiation, resources.Kind, resources.AgeClass, resources.CreatorID, resources.EntityID FROM '+
+                '((resources LEFT JOIN authors ON resources.AuthorID = authors.ID) LEFT JOIN publications ON resources.PublicationID = publications.ID) WHERE resources.ID = '+ IntToStr(resourceId);
     Open;
 
     cbKind.ItemIndex := Ord(StringToResource(FieldByName('Kind').AsString));
@@ -107,11 +132,31 @@ begin
     cbPublication.Text := FieldByName('Publiation').AsString;
     eTitle.Text := FieldByName('Resource').AsString;
     cbAgeClass.ItemIndex := FieldByName('AgeClass').AsInteger;
-    mContent.Text := FieldByName('Content').AsString;
-    eLink.Text := FieldByName('Link').AsString;
-    if FieldByName('FileType').AsString <> '' then
-      eFile.Text := fMain.resourceAddress + IntToStr(resourceId) + '.' + FieldByName('FileType').AsString;
     creatorId := FieldByName('CreatorID').AsInteger;
+    entityId := FieldByName('EntityID').AsInteger;
+
+    k := FieldByName('Kind').AsString;
+    SQL.Text := 'SELECT * FROM '+ k +'s WHERE ID = '+ IntToStr(entityId);
+    Open;
+    case StringToResource(k) of
+      rBook:
+      begin
+        sPages.Value := FieldByName('Pages').AsInteger;
+      end;
+
+      rMultiMedia:
+      begin
+        sDuration.Value := FieldByName('Duration').AsInteger;
+        eFile.Text := fMain.resourceAddress + IntToStr(resourceId) + '.' + FieldByName('FileType').AsString;
+      end;
+
+      rWebPage:
+      begin
+        mContent.Text := FieldByName('Content').AsString;
+        eLink.Text := FieldByName('Link').AsString;
+      end;
+    end;
+
     cbKindChange(nil);
   end;
 end;
@@ -125,10 +170,9 @@ end;
 procedure TfResource.cbKindChange(Sender: TObject);
 begin
   kind := TResourceContent(cbKind.ItemIndex);
-
   gWebPage.Visible := kind = rWebPage;
-  gFile.Visible := (kind = rAudio) or (kind = rVideo);
-  gAuthor.Visible := kind <> rWebPage;
+  gBook.Visible := kind = rBook;
+  gMultiMedia.Visible := kind = rMultiMedia;
 end;
 
 procedure TfResource.bApplyClick(Sender: TObject);
@@ -138,47 +182,67 @@ begin
   begin
     with fMain do
     begin
-      myQuery.SQL.Text := 'SELECT ID FROM authors WHERE Title = "'+ fMain.correctString(cbAuthor.Text) +'"';
-      myQuery.Open;
-      if myQuery.RecordCount > 0 then authorId := myQuery.Fields[0].AsInteger
-      else
+      if cbAuthor.Text <> '' then
       begin
-        executeCommand('INSERT INTO authors (Title) VALUES ("'+ fMain.correctString(cbAuthor.Text) +'")');
-        authorId := myCommand.InsertId;
+        myQuery.SQL.Text := 'SELECT ID FROM authors WHERE Title = "'+ fMain.correctString(cbAuthor.Text) +'"';
+        myQuery.Open;
+        if myQuery.RecordCount > 0 then authorId := myQuery.Fields[0].AsInteger
+        else
+        begin
+          executeCommand('INSERT INTO authors (Title) VALUES ("'+ fMain.correctString(cbAuthor.Text) +'")');
+          authorId := myCommand.InsertId;
+        end;
+      end else authorId := -1;
+      if cbPublication.Text <> '' then
+      begin
+        myQuery.SQL.Text := 'SELECT ID FROM publications WHERE Title = "'+ fMain.correctString(cbPublication.Text) +'"';
+        myQuery.Open;
+        if myQuery.RecordCount > 0 then publicationId := myQuery.Fields[0].AsInteger
+        else
+        begin
+          executeCommand('INSERT INTO publications (Title) VALUES ("'+ fMain.correctString(cbPublication.Text) +'")');
+          publicationId := myCommand.InsertId;
+        end;
+      end else publicationId := -1;
+    end;
+
+    case kind of
+      rBook:
+      begin
+        tId := fMain.InsertOrUpdate('books', 'ID = '+ IntToStr(entityId),
+                                   ['Pages'],
+                                   [sPages.Value]);
       end;
 
-      myQuery.SQL.Text := 'SELECT ID FROM publications WHERE Title = "'+ fMain.correctString(cbPublication.Text) +'"';
-      myQuery.Open;
-      if myQuery.RecordCount > 0 then publicationId := myQuery.Fields[0].AsInteger
-      else
+      rMultiMedia:
       begin
-        executeCommand('INSERT INTO publications (Title) VALUES ("'+ fMain.correctString(cbPublication.Text) +'")');
-        publicationId := myCommand.InsertId;
+        filetype := ExtractFileExt(eFile.Text);
+        dest := fMain.resourceAddress + IntToStr(resourceId) + filetype;
+        if eFile.Text <> dest then
+          CopyFile(PWideChar(eFile.Text), PWideChar(dest), LongBool(0));
+
+
+        tId := fMain.InsertOrUpdate('multimedias', 'ID = '+ IntToStr(entityId),
+                                   ['FileType', 'Duration'],
+                                   [Copy(filetype, 2, Length(filetype)-1), sDuration.Value]);
+      end;
+
+      rWebPage:
+      begin
+        tId := fMain.InsertOrUpdate('webpages', 'ID = '+ IntToStr(entityId),
+                                   ['Link', 'Content', 'Words'],
+                                   [eLink.Text, fMain.correctString(mContent.Lines.Text), 0]);
       end;
     end;
+    if tId <> -1 then entityId := tId;
 
     tId := fMain.InsertOrUpdate('resources', 'ID = '+ IntToStr(resourceId),
-                                ['CreatorID', 'AuthorID', 'PublicationID', 'Kind', 'Content', 'Link', 'Title', 'AgeClass'],
-                                [creatorId, authorId, publicationId, ResourceToString(kind), fMain.correctString(mContent.Lines.Text), eLink.Text, fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex]);
+                               ['CreatorID', 'Kind', 'Title', 'AgeClass', 'EntityID'],
+                               [creatorId, ResourceToString(kind), fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex, entityId]);
     if tId <> -1 then resourceId := tId;
 
-    if (kind = rAudio) or (kind = rVideo) then
-    begin
-      filetype := ExtractFileExt(eFile.Text);
-      dest := fMain.resourceAddress + IntToStr(resourceId) + filetype;
-      if eFile.Text <> dest then
-        CopyFile(PWideChar(eFile.Text), PWideChar(dest), LongBool(0));
-      fMain.executeCommand('UPDATE resources SET FileType = "'+ Copy(filetype, 2, Length(filetype)-1) +'" WHERE ID = '+ IntToStr(resourceId));
-    end else
-    begin
-      fMain.myQuery.SQL.Text := 'SELECT FileType FROM resources WHERE ID = '+ IntToStr(resourceId);
-      fMain.myQuery.Open;
-      if fMain.myQuery.Fields[0].AsString <> '' then
-      begin
-        DeleteFile(fMain.resourceAddress + IntToStr(resourceId) + '.' + fMain.myQuery.Fields[0].AsString);
-        fMain.executeCommand('UPDATE resources SET FileType = NULL WHERE ID = '+ IntToStr(resourceId));
-      end;
-    end;
+    if authorId <> -1 then fMain.executeCommand('UPDATE resources SET AuthorID = '+ IntToStr(authorId) +' WHERE ID = '+ IntToStr(resourceId));
+    if publicationId <> -1 then fMain.executeCommand('UPDATE resources SET PublicationID = '+ IntToStr(publicationId) +' WHERE ID = '+ IntToStr(resourceId));
 
     refresh;
   end;

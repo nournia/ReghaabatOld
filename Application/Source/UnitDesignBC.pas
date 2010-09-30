@@ -34,7 +34,7 @@ type
     procedure refresh();
     function validate() : boolean;
     procedure loadData(id : integer);
-    procedure addQuestionMatch(id : integer);
+    function addQuestionMatch(id : integer) : integer;
 
     procedure GridResize(Sender: TObject);
     procedure GridEditingDone(Sender: TObject);
@@ -128,11 +128,11 @@ begin
     Grid.Cells[0,RecordCount+1] := IntToStr(RecordCount+1);
   end;
 end;
-procedure TfQuestionMatch.addQuestionMatch(id : integer);
-var i, q, tId : Integer; answer : string;
+function TfQuestionMatch.addQuestionMatch(id : integer) : integer;
+var i, q : Integer; answer : string;
 begin
-  tId := fMain.InsertOrUpdate('matches', 'ID = '+ IntToStr(id), ['DesignerID', 'Title', 'AgeClass', 'ResourceID', 'QPPaper'], [designerId, fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex, resourceId, sQPPaper.Value]);
-  if tId <> -1 then id := tId;
+  Result := fMain.InsertOrUpdate('matches', 'ID = '+ IntToStr(id), ['DesignerID', 'Title', 'AgeClass', 'ResourceID', 'QPPaper'], [designerId, fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex, resourceId, sQPPaper.Value]);
+  if Result <> -1 then id := Result;
 
   fMain.executeCommand('DELETE FROM questions WHERE MatchID = '+ IntToStr(id));
   q := 1;
@@ -140,7 +140,7 @@ begin
   if Grid.Cells[1,i] <> '' then
   begin
     if Grid.Cells[2,i] <> '' then answer := '"'+ fMain.correctString(Grid.Cells[2,i]) +'"' else answer := 'NULL';
-    fMain.executeCommand('INSERT INTO Questions (MatchID, ID, Question, Answer) VALUES ('+ IntToStr(id) +', '+ IntToStr(q) +', "'+ fMain.correctString(Grid.Cells[1,i]) +'", '+ answer +')');
+    fMain.executeCommand('INSERT INTO questions (MatchID, ID, Question, Answer) VALUES ('+ IntToStr(id) +', '+ IntToStr(q) +', "'+ fMain.correctString(Grid.Cells[1,i]) +'", '+ answer +')');
     inc(q);
   end;
 end;
@@ -190,13 +190,16 @@ begin
 end;
 
 procedure TfQuestionMatch.bPreviewClick(Sender: TObject);
+var id : integer;
 begin
-{x
-  fMain.deleteMatch('310000');
-  if Grid.RowCount-2 < SpinEdit2.Value then SpinEdit2.Value := Grid.RowCount - 2;
-  AddBCMatch('310000');
-  F_TDE.GetFastReport('0', '310000', 'Preview', False, True);
-  fMain.deleteMatch('310000');
+{
+  if validate then
+  begin
+    id := addQuestionMatch(-1);
+    F_TDE.GetFastReport('0', '310000', 'Preview', False, True);
+    fMain.executeCommand('DELETE FROM matches WHERE ID = '+ IntToStr(id));
+    fMain.executeCommand('DELETE FROM questions WHERE MatchID = '+ IntToStr(id));
+  end;
 }
 end;
 

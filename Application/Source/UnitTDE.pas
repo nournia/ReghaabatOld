@@ -130,6 +130,17 @@ uses UnitMain;
 
 {$R *.dfm}
 
+{
+procedure TfMain.showPaperMatch(userId, matchId : integer);
+begin
+  qfLibrary.Open;
+  qfUser.SQL.Text:= 'SELECT ID, FirstName, LastName, BirthDate FROM Users WHERE ID = '+ userID; qfUser.Open;
+  qfMatch.SQL.Text:='SELECT ID, DesignerID, Title, Age, MaxScore, State, QPPaper, Content, PictureConfiguration, Tags FROM Matches WHERE Matches.ID='+ MatchID; fMain.qfMatch.Open;
+  qfPicture.SQL.Text:= 'SELECT * FROM Pictures WHERE ID = '+ MatchID; fMain.qfPicture.Open;
+
+
+end;
+}
 procedure TF_TDE.GetFastReport(UserID, MatchID, Action : String; ForUser, NewPage : Boolean);
 var
   R, i, j, size, x, Counter, CS : word;

@@ -273,7 +273,7 @@ begin
       for rc := rBook to rWebPage do
         sql := sql + 'WHEN "'+ ResourceToString(rc) +'" THEN "'+ ResourceToPersian(rc) +'" ';
       sql := sql + 'END';
-      sql := 'SELECT resources.ID, resources.Title AS Resource, authors.Title AS Author, publications.Title AS Publiation, '+ sql +' AS Kind, ageclasses.Title AS AgeClass, CreatorID FROM ((resources LEFT JOIN authors ON resources.AuthorID = authors.ID) LEFT JOIN publications ON resources.PublicationID = publications.ID) LEFT JOIN ageclasses ON resources.AgeClass = ageclasses.ID';
+      sql := 'SELECT resources.ID, resources.Title AS Resource, authors.Title, publications.Title, '+ sql +' AS Kind, ageclasses.Title AS AgeClass, CreatorID FROM ((resources LEFT JOIN authors ON resources.AuthorID = authors.ID) LEFT JOIN publications ON resources.PublicationID = publications.ID) LEFT JOIN ageclasses ON resources.AgeClass = ageclasses.ID';
 
       if fMain.loginUser = uDesigner then sql := sql + ' WHERE resources.CreatorID = '+ fMain.loginUserID;
     end;
@@ -382,20 +382,21 @@ end;
 procedure TfMatchList.bNewQuestionMatchClick(Sender: TObject);
 var i : integer;
 begin
-  if state = lResource then
-  begin
-    fMain.showQuestionMatchForm;
-    fQuestionMatch.refresh;
-
-    with fMain.myQuery do
+  if Grid.Cells[0,Grid.Row] <> '' then
+    if state = lResource then
     begin
-      SQL.Text := 'SELECT * FROM resources WHERE ID = '+ Grid.Cells[0,Grid.Row];
-      Open;
-      fQuestionMatch.resourceId := FieldByName('ID').AsInteger;
-      fQuestionMatch.eTitle.Text := FieldByName('Title').AsString;
-      fQuestionMatch.cbAgeClass.ItemIndex := FieldByName('AgeClass').AsInteger;
+      fMain.showQuestionMatchForm;
+      fQuestionMatch.refresh;
+
+      with fMain.myQuery do
+      begin
+        SQL.Text := 'SELECT * FROM resources WHERE ID = '+ Grid.Cells[0,Grid.Row];
+        Open;
+        fQuestionMatch.resourceId := FieldByName('ID').AsInteger;
+        fQuestionMatch.eTitle.Text := FieldByName('Title').AsString;
+        fQuestionMatch.cbAgeClass.ItemIndex := FieldByName('AgeClass').AsInteger;
+      end;
     end;
-  end;
 end;
 
 end.

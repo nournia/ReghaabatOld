@@ -4,7 +4,7 @@ interface
 type
   TUser = (uUser = 0, uOperator, uDesigner, uManager, uMaster, uAdmin);
   TGender = (gMale = 0, gFemale);
-  TResourceContent = (rBook = 0, rAudio, rVideo, rWebPage);
+  TResourceContent = (rBook = 0, rMultiMedia, rWebPage);
   TListState = (lResource, lQuestionMatch, lInstructionMatch);
 
   function UserToString(u : TUser) : string;
@@ -58,16 +58,14 @@ function ResourceToString(r : TResourceContent) : string;
 begin
   case r of
     rBook: Result := 'book';
-    rAudio: Result := 'audio';
-    rVideo: Result := 'video';
+    rMultiMedia: Result := 'multimedia';
     rWebPage: Result := 'webpage';
   end;
 end;
 function StringToResource(r : string) : TResourceContent;
 begin
   if r = 'book' then Result := rBook else
-  if r = 'audio' then Result := rAudio else
-  if r = 'video' then Result := rVideo else
+  if r = 'multimedia' then Result := rMultiMedia else
   if r = 'webpage' then Result := rWebPage;
 end;
 
@@ -86,8 +84,7 @@ function ResourceToPersian(r : TResourceContent) : string;
 begin
   case r of
     rBook: Result := 'کتاب';
-    rAudio: Result := 'صوتی';
-    rVideo: Result := 'تصویری';
+    rMultiMedia: Result := 'چند رسانه‌ای';
     rWebPage: Result := 'صفحه وب';
   end;
 end;

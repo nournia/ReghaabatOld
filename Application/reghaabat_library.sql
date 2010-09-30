@@ -74,12 +74,14 @@ CREATE TABLE authors (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
 	Title VARCHAR(255) NOT NULL,
 	Quality FLOAT NOT NULL DEFAULT '1',
+	QWeight INT NOT NULL DEFAULT '0',
 	PRIMARY KEY (ID)
 );
 CREATE TABLE publications (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
 	Title VARCHAR(255) NOT NULL,
 	Quality FLOAT NOT NULL DEFAULT '1',
+	QWeight INT NOT NULL DEFAULT '0',
 	PRIMARY KEY (ID)
 );
 CREATE TABLE resources (
@@ -87,27 +89,38 @@ CREATE TABLE resources (
 	CreatorID INT(11) NOT NULL,
 	AuthorID INT(11) NULL DEFAULT NULL,
 	PublicationID INT(11) NULL DEFAULT NULL,
+	EntityID INT(11) NOT NULL,
 	Quality FLOAT NOT NULL DEFAULT '1',
-	Kind ENUM('book', 'audio', 'video', 'webpage') NOT NULL DEFAULT 'book',
+	QWeight INT NOT NULL DEFAULT '0',
+	Kind ENUM('book', 'multimedia', 'webpage') NOT NULL DEFAULT 'book',
 	Tags SET('') NULL DEFAULT NULL,
-
 	Title VARCHAR(255) NOT NULL,
 	AgeClass TINYINT(4) NULL DEFAULT NULL,
-
-	-- Audio & Video
-	FileType VARCHAR(5) NULL DEFAULT NULL COLLATE 'ascii_bin',
-	
-	-- WebPage
-	Content TEXT NULL,
-	Link varchar(1000) NULL DEFAULT NULL COLLATE 'ascii_bin',
-
 	PRIMARY KEY (ID)
 );
-
+CREATE TABLE books (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	Pages INT NULL DEFAULT NULL,
+	PRIMARY KEY (ID)
+);
+CREATE TABLE multimedias (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	FileType VARCHAR(5) NULL DEFAULT NULL COLLATE 'ascii_bin',
+	Duration INT NULL DEFAULT NULL COMMENT 'minutes',
+	PRIMARY KEY (ID)
+);
+CREATE TABLE webpages (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	Content TEXT NULL,
+	Link varchar(1000) NULL DEFAULT NULL COLLATE 'ascii_bin',
+	Words INT NULL DEFAULT NULL,
+	PRIMARY KEY (ID)
+);
 CREATE TABLE matches (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
 	DesignerID INT(11) NOT NULL,
 	Quality FLOAT NOT NULL DEFAULT '1',
+	QWeight INT NOT NULL DEFAULT '0',
 
 	Title VARCHAR(255) NOT NULL,
 	AgeClass TINYINT(4) NULL DEFAULT NULL,
@@ -139,6 +152,30 @@ CREATE TABLE choices (
 	PRIMARY KEY (MatchID, QuestionID, ID)
 );
 
+/* answers */
+CREATE TABLE answers (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	UserID INT(11) NOT NULL,
+	MatchID INT(11) NOT NULL,
+	DeliverTime DATETIME NULL DEFAULT NULL,
+	ReceiveTime DATETIME NULL DEFAULT NULL,
+	CorrectTime DATETIME NULL DEFAULT NULL,
+	Rate FLOAT NULL DEFAULT NULL,
+	Score SMALLINT(6) NULL DEFAULT NULL,
+	PRIMARY KEY (ID)
+);
+CREATE TABLE subanswers (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	AnswerID INT(11) NOT NULL,
+	Question VARCHAR(1000) NOT NULL,
+	Answer VARCHAR(1000) NOT NULL,
+	Rate FLOAT DEFAULT NULL,
+	Message TEXT COMMENT 'designer message to user',
+	Attachment BLOB,
+	PRIMARY KEY (ID)
+);
+
+/* tournaments */
 CREATE TABLE supports (
 	TournamentID INT(11) NOT NULL,
 	MatchID INT(11) NOT NULL,
@@ -147,7 +184,6 @@ CREATE TABLE supports (
 	PRIMARY KEY (TournamentID, MatchID)
 );
 
-
 /* data */
 INSERT INTO ageclasses	(ID, Title, Description, BeginAge, EndAge) VALUES 
 						(0, 'الف', 'آمادگی و سال اول دبستان', 6, 7), 
@@ -155,10 +191,15 @@ INSERT INTO ageclasses	(ID, Title, Description, BeginAge, EndAge) VALUES
 						(2, 'ج', 'سال‌های چهارم و پنجم دبستان', 10, 11), 
 						(3, 'د', 'سال‌های راهنمایی', 12, 14), 
 						(4, 'ه', 'سال‌های دبیرستان', 15, 18);
-						
+					
 INSERT INTO categories 	(ID, Title) VALUES 
 						(0, 'نقاشی'), 
 						(1, 'رنگ‌آمیزی'), 
 						(2, 'تحقیق'), 
 						(3, 'آزمایش'), 
 						(4, 'کاردستی');
+
+INSERT INTO tags	 	(ID, Title) VALUES 
+						(0, 'داستانی'), 
+						(1, 'تاریخی'), 
+						(2, 'علمی');

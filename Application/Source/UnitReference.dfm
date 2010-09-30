@@ -70,98 +70,21 @@ object fResource: TfResource
       Height = 405
       Align = alClient
       TabOrder = 0
-      object gAuthor: TAdvGroupBox
+      object gMultiMedia: TAdvGroupBox
         Left = 2
-        Top = 80
+        Top = 157
         Width = 755
-        Height = 53
-        BorderStyle = bsNone
-        Align = alTop
-        TabOrder = 1
-        DesignSize = (
-          755
-          53)
-        object Label8: TLabel
-          Left = 696
-          Top = 9
-          Width = 51
-          Height = 13
-          Anchors = [akTop, akRight]
-          Caption = #1662#1583#1610#1583' '#1570#1608#1585#1606#1583#1607':'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = 7485192
-          Font.Height = -11
-          Font.Name = 'Library'
-          Font.Style = []
-          ParentFont = False
-          Transparent = True
-        end
-        object Label11: TLabel
-          Left = 699
-          Top = 34
-          Width = 48
-          Height = 13
-          Anchors = [akTop, akRight]
-          Caption = #1605#1585#1705#1586' '#1606#1588#1585':'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = 7485192
-          Font.Height = -11
-          Font.Name = 'Library'
-          Font.Style = []
-          ParentFont = False
-          Transparent = True
-        end
-        object cbAuthor: TComboBox
-          Left = 500
-          Top = 5
-          Width = 194
-          Height = 21
-          Style = csSimple
-          Anchors = [akTop, akRight]
-          Ctl3D = True
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Library'
-          Font.Style = []
-          ParentCtl3D = False
-          ParentFont = False
-          TabOrder = 0
-          TextHint = #1605#1575#1606#1606#1583': '#1605#1591#1607#1585#1740#1548' '#1605#1585#1578#1590#1740
-        end
-        object cbPublication: TComboBox
-          Left = 500
-          Top = 30
-          Width = 194
-          Height = 21
-          Style = csSimple
-          Anchors = [akTop, akRight]
-          Ctl3D = True
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Library'
-          Font.Style = []
-          ParentCtl3D = False
-          ParentFont = False
-          TabOrder = 1
-          TextHint = #1605#1575#1606#1606#1583': '#1587#1608#1585#1607' '#1605#1607#1585
-        end
-      end
-      object gFile: TAdvGroupBox
-        Left = 2
-        Top = 133
-        Width = 755
-        Height = 28
+        Height = 46
         BorderStyle = bsNone
         Align = alTop
         TabOrder = 2
+        ExplicitTop = 159
         DesignSize = (
           755
-          28)
+          46)
         object Label4: TLabel
           Left = 724
-          Top = 8
+          Top = 4
           Width = 23
           Height = 13
           Anchors = [akTop, akRight]
@@ -174,9 +97,24 @@ object fResource: TfResource
           ParentFont = False
           Transparent = True
         end
+        object Label9: TLabel
+          Left = 717
+          Top = 29
+          Width = 30
+          Height = 13
+          Anchors = [akTop, akRight]
+          Caption = #1583#1602#1740#1602#1607':'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = 7485192
+          Font.Height = -11
+          Font.Name = 'Library'
+          Font.Style = []
+          ParentFont = False
+          Transparent = True
+        end
         object eFile: TButtonedEdit
           Left = 7
-          Top = 4
+          Top = 0
           Width = 687
           Height = 21
           Anchors = [akLeft, akTop, akRight]
@@ -190,18 +128,51 @@ object fResource: TfResource
           TabOrder = 0
           OnRightButtonClick = eFileRightButtonClick
         end
+        object sDuration: TAdvSpinEdit
+          Left = 640
+          Top = 24
+          Width = 54
+          Height = 22
+          Value = 0
+          DateValue = 40451.619980925930000000
+          HexValue = 0
+          Anchors = [akTop, akRight]
+          Ctl3D = True
+          Enabled = True
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = 7485192
+          Font.Height = -11
+          Font.Name = 'Library'
+          Font.Style = []
+          IncrementFloat = 0.100000000000000000
+          IncrementFloatPage = 1.000000000000000000
+          LabelFont.Charset = DEFAULT_CHARSET
+          LabelFont.Color = clWindowText
+          LabelFont.Height = -11
+          LabelFont.Name = 'Tahoma'
+          LabelFont.Style = []
+          MaxValue = 10000
+          ParentCtl3D = False
+          ParentFont = False
+          TabOrder = 1
+          Visible = True
+          Version = '1.4.5.1'
+        end
       end
       object gWebPage: TAdvGroupBox
         Left = 2
-        Top = 161
+        Top = 203
         Width = 755
-        Height = 242
+        Height = 200
         BorderStyle = bsNone
         Align = alClient
         TabOrder = 3
+        ExplicitLeft = 1
+        ExplicitTop = 211
+        ExplicitHeight = 191
         DesignSize = (
           755
-          242)
+          200)
         object Label2: TLabel
           Left = 722
           Top = 7
@@ -240,7 +211,7 @@ object fResource: TfResource
           Left = 7
           Top = 30
           Width = 740
-          Height = 208
+          Height = 166
           Margins.Left = 5
           Margins.Right = 5
           Anchors = [akLeft, akTop, akRight, akBottom]
@@ -254,20 +225,20 @@ object fResource: TfResource
           ParentFont = False
           ScrollBars = ssVertical
           TabOrder = 1
+          ExplicitHeight = 208
         end
       end
       object gProperties: TAdvGroupBox
         Left = 2
         Top = 3
         Width = 755
-        Height = 77
+        Height = 127
         BorderStyle = bsNone
         Align = alTop
         TabOrder = 0
-        ExplicitTop = 2
         DesignSize = (
           755
-          77)
+          127)
         object Label6: TLabel
           Left = 728
           Top = 11
@@ -313,10 +284,56 @@ object fResource: TfResource
           ParentFont = False
           Transparent = True
         end
+        object Label5: TLabel
+          Left = 319
+          Top = 60
+          Width = 44
+          Height = 13
+          Anchors = [akTop, akRight]
+          Caption = #1576#1585#1670#1587#1576#1607#1575':'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = 7485192
+          Font.Height = -11
+          Font.Name = 'Library'
+          Font.Style = []
+          ParentFont = False
+          Transparent = True
+          Visible = False
+        end
+        object Label8: TLabel
+          Left = 696
+          Top = 84
+          Width = 51
+          Height = 13
+          Anchors = [akTop, akRight]
+          Caption = #1662#1583#1610#1583' '#1570#1608#1585#1606#1583#1607':'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = 7485192
+          Font.Height = -11
+          Font.Name = 'Library'
+          Font.Style = []
+          ParentFont = False
+          Transparent = True
+        end
+        object Label11: TLabel
+          Left = 699
+          Top = 109
+          Width = 48
+          Height = 13
+          Anchors = [akTop, akRight]
+          Caption = #1605#1585#1705#1586' '#1606#1588#1585':'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = 7485192
+          Font.Height = -11
+          Font.Name = 'Library'
+          Font.Style = []
+          ParentFont = False
+          Transparent = True
+        end
         object cbKind: TComboBox
-          Left = 624
+          Left = 600
           Top = 7
-          Width = 70
+          Width = 94
           Height = 21
           Style = csDropDownList
           Anchors = [akTop, akRight]
@@ -365,12 +382,14 @@ object fResource: TfResource
           TabOrder = 2
         end
         object clTags: TCheckListEdit
-          Left = 115
-          Top = 4
-          Width = 62
-          Height = 21
+          Left = 116
+          Top = 55
+          Width = 194
+          Height = 22
           AutoDropWidthSize = False
+          Ctl3D = True
           EditorEnabled = False
+          ParentCtl3D = False
           TabOrder = 3
           Visible = False
           DropWidth = 121
@@ -386,6 +405,100 @@ object fResource: TfResource
           TextEndChar = ']'
           TextStartChar = '['
           Version = '1.3.6.0'
+        end
+        object cbAuthor: TComboBox
+          Left = 500
+          Top = 80
+          Width = 194
+          Height = 21
+          Style = csSimple
+          Anchors = [akTop, akRight]
+          Ctl3D = True
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Library'
+          Font.Style = []
+          ParentCtl3D = False
+          ParentFont = False
+          TabOrder = 4
+          TextHint = #1605#1575#1606#1606#1583': '#1605#1591#1607#1585#1740#1548' '#1605#1585#1578#1590#1740
+        end
+        object cbPublication: TComboBox
+          Left = 500
+          Top = 105
+          Width = 194
+          Height = 21
+          Style = csSimple
+          Anchors = [akTop, akRight]
+          Ctl3D = True
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Library'
+          Font.Style = []
+          ParentCtl3D = False
+          ParentFont = False
+          TabOrder = 5
+          TextHint = #1605#1575#1606#1606#1583': '#1587#1608#1585#1607' '#1605#1607#1585
+        end
+      end
+      object gBook: TAdvGroupBox
+        Left = 2
+        Top = 130
+        Width = 755
+        Height = 27
+        BorderStyle = bsNone
+        Align = alTop
+        TabOrder = 1
+        ExplicitTop = 132
+        DesignSize = (
+          755
+          27)
+        object Label7: TLabel
+          Left = 704
+          Top = 7
+          Width = 43
+          Height = 13
+          Anchors = [akTop, akRight]
+          Caption = #1589#1601#1581#1607#8204#1607#1575':'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = 7485192
+          Font.Height = -11
+          Font.Name = 'Library'
+          Font.Style = []
+          ParentFont = False
+          Transparent = True
+        end
+        object sPages: TAdvSpinEdit
+          Left = 640
+          Top = 2
+          Width = 54
+          Height = 22
+          Value = 0
+          DateValue = 40451.619980937500000000
+          HexValue = 0
+          Anchors = [akTop, akRight]
+          Ctl3D = True
+          Enabled = True
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = 7485192
+          Font.Height = -11
+          Font.Name = 'Library'
+          Font.Style = []
+          IncrementFloat = 0.100000000000000000
+          IncrementFloatPage = 1.000000000000000000
+          LabelFont.Charset = DEFAULT_CHARSET
+          LabelFont.Color = clWindowText
+          LabelFont.Height = -11
+          LabelFont.Name = 'Tahoma'
+          LabelFont.Style = []
+          MaxValue = 10000
+          ParentCtl3D = False
+          ParentFont = False
+          TabOrder = 0
+          Visible = True
+          Version = '1.4.5.1'
         end
       end
     end

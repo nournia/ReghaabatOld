@@ -294,6 +294,7 @@ end;
 procedure TfImport.bReplaceAllClick(Sender: TObject);
 var i, count, other : integer;
 begin
+{
   count := 0;
   for i := 1 to gOther.RowCount-1 do
     if MatchKind[StrToInt(gOther.Cells[3, i])] < 0 then inc(count);
@@ -314,6 +315,7 @@ begin
     end;
   end;
   fMain.ProgressEnd('تعداد ' + IntToStr(count) + 'مسابقه جایگزین شدند');
+}
 end;
 
 function TfImport.Add(otherMatchID, mainMatchID : string) : boolean; // from other to main

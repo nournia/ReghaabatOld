@@ -27,7 +27,9 @@ uses
   UFaDate in 'UFaDate.pas',
   uShamsiDate in 'uShamsiDate.pas',
   UnitReference in 'UnitReference.pas' {fResource},
-  UnitTypes in 'UnitTypes.pas';
+  UnitTypes in 'UnitTypes.pas',
+  UnitDeliver in 'UnitDeliver.pas' {fDeliver},
+  UnitReceive in 'UnitReceive.pas' {fReceive};
 
 {Master}
 
@@ -37,7 +39,7 @@ begin
   Application.Initialize;
   Application.Title := 'Reghaabat';
   Application.CreateForm(TfMain, fMain);
-  Application.CreateForm(TF_TDE, F_TDE);
+  Application.CreateForm(TfMatchList, fMatchList);
   //	fMain.SplashScreen.ProgressBar.Position := 100;
 {
   Application.CreateForm(TfReference, fReference);

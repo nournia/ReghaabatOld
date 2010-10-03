@@ -50,7 +50,7 @@ begin
   gbAll.Enabled := true;
 
   qDesigner.SQL.Text := 'SELECT ID, Title, LibraryBookID, State, CountOfQuestion, CountOfAnswer, IIf(State=0, "'+ fMain.cStates[0] +'", IIf(State=1, "'+ fMain.cStates[1]+ '", IIf(State=2,"'+ fMain.cStates[2] +'", ""))) AS tState '+
-                        'FROM Matches INNER JOIN (SELECT MatchID, Count(Question) AS CountOfQuestion, Count(Answer) AS CountOfAnswer FROM Questions GROUP BY MatchID) AS qs ON Matches.ID = qs.MatchID WHERE DesignerID = '+ fMain.userID +' ORDER BY ID';
+                        'FROM Matches INNER JOIN (SELECT MatchID, Count(Question) AS CountOfQuestion, Count(Answer) AS CountOfAnswer FROM Questions GROUP BY MatchID) AS qs ON Matches.ID = qs.MatchID WHERE DesignerID = '+ fMain.selectedUserId +' ORDER BY ID';
   qDesigner.Open;
 
   for i := 1 to qDesigner.RecordCount do
@@ -94,7 +94,7 @@ begin
     if i = SpinEdit1.Value then x := true else x := false;
     qDesigner.RecNo := i;
     try
-      F_TDE.GetFastReport(fMain.userID, qDesigner.FieldByName('ID').AsString, 'Prepare', False, x);
+      F_TDE.GetFastReport(fMain.selectedUserId, qDesigner.FieldByName('ID').AsString, 'Prepare', False, x);
     except on E: Exception do
     end;
   end;
@@ -104,7 +104,7 @@ end;
 procedure TfDesigner.AdvGlowButton3Click(Sender: TObject);
 begin
   gDesigner.PrintSettings.RowSpacing := -20;
-  gDesigner.PrintSettings.TitleText := 'لیست مسابقات طراحی شده توسط ' + fMain.LName.Caption + ' ' + fMain.LFamily.Caption;
+  gDesigner.PrintSettings.TitleText := 'لیست مسابقات طراحی شده توسط ' + fMain.lFirstName.Caption + ' ' + fMain.lLastName.Caption;
   PreviewGrid.Execute;
 end;
 

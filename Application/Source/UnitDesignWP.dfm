@@ -64,7 +64,6 @@ object fInstructionMatch: TfInstructionMatch
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    ExplicitWidth = 740
     FullHeight = 0
     object bApply: TAdvGlowButton
       Left = 8
@@ -209,23 +208,22 @@ object fInstructionMatch: TfInstructionMatch
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    ExplicitWidth = 740
     FullHeight = 0
     object gProperties: TAdvGroupBox
       AlignWithMargins = True
       Left = 3
       Top = 3
       Width = 760
-      Height = 116
+      Height = 124
       Align = alTop
       ParentCtl3D = True
       TabOrder = 0
       DesignSize = (
         760
-        116)
+        124)
       object Label6: TLabel
         Left = 720
-        Top = 37
+        Top = 34
         Width = 30
         Height = 13
         Anchors = [akTop, akRight]
@@ -237,7 +235,6 @@ object fInstructionMatch: TfInstructionMatch
         Font.Style = []
         ParentFont = False
         Transparent = True
-        ExplicitLeft = 694
       end
       object Label1: TLabel
         Left = 726
@@ -257,7 +254,7 @@ object fInstructionMatch: TfInstructionMatch
       end
       object Label3: TLabel
         Left = 703
-        Top = 63
+        Top = 57
         Width = 47
         Height = 13
         Anchors = [akTop, akRight]
@@ -269,11 +266,42 @@ object fInstructionMatch: TfInstructionMatch
         Font.Style = []
         ParentFont = False
         Transparent = True
-        ExplicitLeft = 677
+      end
+      object Label2: TLabel
+        Left = 714
+        Top = 80
+        Width = 38
+        Height = 13
+        Anchors = [akTop, akRight]
+        Caption = #1608#1590#1593#1740#1578':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 7485192
+        Font.Height = -11
+        Font.Name = 'Library'
+        Font.Style = []
+        ParentFont = False
+        Transparent = True
+      end
+      object Label5: TLabel
+        Left = 719
+        Top = 103
+        Width = 34
+        Height = 13
+        Anchors = [akTop, akRight]
+        BiDiMode = bdRightToLeft
+        Caption = #1605#1589#1581#1581':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 7485192
+        Font.Height = -11
+        Font.Name = 'Library'
+        Font.Style = []
+        ParentBiDiMode = False
+        ParentFont = False
+        Transparent = True
       end
       object eTitle: TEdit
         Left = 226
-        Top = 33
+        Top = 30
         Width = 473
         Height = 21
         Anchors = [akLeft, akTop, akRight]
@@ -286,7 +314,6 @@ object fInstructionMatch: TfInstructionMatch
         ParentCtl3D = False
         ParentFont = False
         TabOrder = 1
-        ExplicitWidth = 447
       end
       object cbCategory: TComboBox
         Left = 629
@@ -304,11 +331,10 @@ object fInstructionMatch: TfInstructionMatch
         ParentCtl3D = False
         ParentFont = False
         TabOrder = 0
-        ExplicitLeft = 603
       end
       object cbAgeClass: TComboBox
         Left = 505
-        Top = 59
+        Top = 53
         Width = 194
         Height = 21
         Style = csDropDownList
@@ -322,17 +348,20 @@ object fInstructionMatch: TfInstructionMatch
         ParentCtl3D = False
         ParentFont = False
         TabOrder = 2
-        ExplicitLeft = 479
       end
       object AdvGroupBox1: TAdvGroupBox
+        AlignWithMargins = True
         Left = 3
-        Top = 3
+        Top = 7
         Width = 219
         Height = 110
+        Margins.Left = 0
+        Margins.Top = 4
+        Margins.Bottom = 4
         Align = alLeft
         ParentCtl3D = True
-        TabOrder = 3
-        ExplicitHeight = 113
+        TabOrder = 5
+        ExplicitTop = 3
         object gContent: TAdvGroupBox
           Left = 3
           Top = 3
@@ -342,7 +371,6 @@ object fInstructionMatch: TfInstructionMatch
           Align = alLeft
           ParentCtl3D = True
           TabOrder = 1
-          ExplicitHeight = 107
           object AdvGroupBox3: TAdvGroupBox
             Left = 2
             Top = 3
@@ -350,8 +378,6 @@ object fInstructionMatch: TfInstructionMatch
             Height = 99
             Align = alClient
             TabOrder = 0
-            ExplicitWidth = 93
-            ExplicitHeight = 102
             object AdvGroupBox4: TAdvGroupBox
               Left = 3
               Top = 4
@@ -385,8 +411,6 @@ object fInstructionMatch: TfInstructionMatch
           Align = alLeft
           ParentCtl3D = True
           TabOrder = 0
-          ExplicitLeft = 89
-          ExplicitHeight = 108
           DesignSize = (
             90
             104)
@@ -458,7 +482,7 @@ object fInstructionMatch: TfInstructionMatch
             TabStop = False
             SpinType = sptFloat
             Value = 0
-            DateValue = 40449.429823738430000000
+            DateValue = 40452.819566180560000000
             HexValue = 0
             SpinFlat = True
             Anchors = [akTop, akRight]
@@ -492,7 +516,7 @@ object fInstructionMatch: TfInstructionMatch
             TabStop = False
             SpinType = sptFloat
             Value = 0
-            DateValue = 40449.429823750000000000
+            DateValue = 40452.819566180560000000
             HexValue = 0
             SpinFlat = True
             Anchors = [akTop, akRight]
@@ -526,7 +550,7 @@ object fInstructionMatch: TfInstructionMatch
             TabStop = False
             SpinType = sptFloat
             Value = 0
-            DateValue = 40449.429823750000000000
+            DateValue = 40452.819566180560000000
             HexValue = 0
             SpinFlat = True
             Anchors = [akTop, akRight]
@@ -560,7 +584,7 @@ object fInstructionMatch: TfInstructionMatch
             TabStop = False
             SpinType = sptFloat
             Value = 0
-            DateValue = 40449.429823750000000000
+            DateValue = 40452.819566180560000000
             HexValue = 0
             SpinFlat = True
             Anchors = [akTop, akRight]
@@ -596,8 +620,6 @@ object fInstructionMatch: TfInstructionMatch
           Align = alRight
           ParentCtl3D = True
           TabOrder = 2
-          ExplicitLeft = 180
-          ExplicitHeight = 109
           DesignSize = (
             30
             104)
@@ -796,13 +818,51 @@ object fInstructionMatch: TfInstructionMatch
           end
         end
       end
+      object cbState: TComboBox
+        Left = 620
+        Top = 76
+        Width = 79
+        Height = 21
+        Style = csDropDownList
+        Anchors = [akTop, akRight]
+        Ctl3D = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Library'
+        Font.Style = []
+        ParentCtl3D = False
+        ParentFont = False
+        TabOrder = 3
+      end
+      object meCorrectorId: TMaskEdit
+        Left = 665
+        Top = 98
+        Width = 34
+        Height = 22
+        Anchors = [akTop, akRight]
+        BiDiMode = bdLeftToRight
+        Ctl3D = True
+        EditMask = '0000;1;_'
+        Font.Charset = ARABIC_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'Library'
+        Font.Style = []
+        MaxLength = 4
+        ParentBiDiMode = False
+        ParentCtl3D = False
+        ParentFont = False
+        TabOrder = 4
+        Text = '    '
+      end
     end
     object mContent: TMemo
       AlignWithMargins = True
       Left = 5
-      Top = 125
+      Top = 133
       Width = 756
-      Height = 293
+      Height = 285
       Margins.Left = 5
       Margins.Right = 5
       Align = alClient
@@ -814,9 +874,8 @@ object fInstructionMatch: TfInstructionMatch
       ParentFont = False
       ScrollBars = ssVertical
       TabOrder = 1
-      ExplicitTop = 130
-      ExplicitWidth = 730
-      ExplicitHeight = 288
+      ExplicitTop = 125
+      ExplicitHeight = 293
     end
   end
   object fs: TAdvFormStyler

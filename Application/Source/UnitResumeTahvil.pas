@@ -102,12 +102,12 @@ begin
     Abort;
   end;
 
-  fMain.qTmp.SQL.Text := 'SELECT ID FROM FreeScores WHERE Title = "'+ fMain.correctString(Edit1.Text) +'" AND UserID = '+ fMain.userID;
+  fMain.qTmp.SQL.Text := 'SELECT ID FROM FreeScores WHERE Title = "'+ fMain.correctString(Edit1.Text) +'" AND UserID = '+ fMain.selectedUserId;
   fMain.qTmp.Open;
   if fMain.qTmp.RecordCount = 0 then
   begin
     fMain.executeCommand('INSERT INTO FreeScores (UserID, GroupID, Title, Score, ScoreDate, OperatorID) '+
-                          'VALUES ('+ fMain.userID +', '+ IntToStr(1 + CB_Kind.ItemIndex) +', "'+ fMain.correctString(Edit1.Text) +'", '+ SpinEdit1.Text +', "'+ fMain.getShamsiDate +'", '+ fMain.loginUserID +')');
+                          'VALUES ('+ fMain.selectedUserId +', '+ IntToStr(1 + CB_Kind.ItemIndex) +', "'+ fMain.correctString(Edit1.Text) +'", '+ SpinEdit1.Text +', "'+ fMain.getShamsiDate +'", '+ fMain.loginUserID +')');
     FillGrid;
 
     if MaskEdit2.Visible = true then MaskEdit2.SetFocus else Edit1.SetFocus;
@@ -123,7 +123,7 @@ var
   i : integer;
 begin
   fMain.qTmp.SQL.Text := 'SELECT FreeScores.*, Caption FROM FreeScores LEFT JOIN Groups ON FreeScores.GroupID = Groups.ID ' +
-                          'WHERE Groups.Kind = 0 AND UserID = '+ fMain.userID +' AND ScoreDate >= "'+ fMain.options.Values['BeginDate'] +'" ORDER BY FreeScores.ID DESC';
+                          'WHERE Groups.Kind = 0 AND UserID = '+ fMain.selectedUserId +' AND ScoreDate >= "'+ fMain.options.Values['BeginDate'] +'" ORDER BY FreeScores.ID DESC';
   fMain.qTmp.Open;
 
   gFreeScore.RowCount := 2;

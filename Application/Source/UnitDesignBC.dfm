@@ -15,6 +15,7 @@ object fQuestionMatch: TfQuestionMatch
   ParentBiDiMode = False
   Visible = True
   WindowState = wsMaximized
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object P_MatchEdit: TAdvPanel
@@ -63,13 +64,14 @@ object fQuestionMatch: TfQuestionMatch
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
+    ExplicitTop = -3
     FullHeight = 140
     object gProperties: TAdvGroupBox
       AlignWithMargins = True
       Left = 3
       Top = 3
       Width = 767
-      Height = 59
+      Height = 107
       Align = alTop
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 7485192
@@ -79,10 +81,11 @@ object fQuestionMatch: TfQuestionMatch
       ParentCtl3D = True
       ParentFont = False
       TabOrder = 0
-      ExplicitLeft = 4
+      ExplicitLeft = 9
+      ExplicitTop = 19
       DesignSize = (
         767
-        59)
+        107)
       object Label1: TLabel
         Left = 728
         Top = 12
@@ -90,21 +93,6 @@ object fQuestionMatch: TfQuestionMatch
         Height = 13
         Anchors = [akTop, akRight]
         Caption = #1593#1606#1608#1575#1606':'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 7485192
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        ParentFont = False
-        Transparent = True
-      end
-      object Label10: TLabel
-        Left = 395
-        Top = 36
-        Width = 73
-        Height = 13
-        Anchors = [akTop, akRight]
-        Caption = #1587#1608#1575#1604' '#1583#1585' '#1589#1601#1581#1607':'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = 7485192
         Font.Height = -11
@@ -128,6 +116,38 @@ object fQuestionMatch: TfQuestionMatch
         ParentFont = False
         Transparent = True
       end
+      object Label2: TLabel
+        Left = 718
+        Top = 60
+        Width = 38
+        Height = 13
+        Anchors = [akTop, akRight]
+        Caption = #1608#1590#1593#1740#1578':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 7485192
+        Font.Height = -11
+        Font.Name = 'Library'
+        Font.Style = []
+        ParentFont = False
+        Transparent = True
+      end
+      object Label5: TLabel
+        Left = 723
+        Top = 85
+        Width = 34
+        Height = 13
+        Anchors = [akTop, akRight]
+        BiDiMode = bdRightToLeft
+        Caption = #1605#1589#1581#1581':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 7485192
+        Font.Height = -11
+        Font.Name = 'Library'
+        Font.Style = []
+        ParentBiDiMode = False
+        ParentFont = False
+        Transparent = True
+      end
       object eTitle: TEdit
         Left = 3
         Top = 8
@@ -143,35 +163,6 @@ object fQuestionMatch: TfQuestionMatch
         ParentCtl3D = False
         ParentFont = False
         TabOrder = 0
-      end
-      object sQPPaper: TAdvSpinEdit
-        Left = 350
-        Top = 31
-        Width = 39
-        Height = 22
-        Value = 4
-        FloatValue = 4.000000000000000000
-        TimeValue = 0.166666666666666700
-        HexValue = 0
-        Anchors = [akTop, akRight]
-        Enabled = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 7485192
-        Font.Height = -11
-        Font.Name = 'Library'
-        Font.Style = []
-        IncrementFloat = 0.100000000000000000
-        IncrementFloatPage = 1.000000000000000000
-        LabelFont.Charset = DEFAULT_CHARSET
-        LabelFont.Color = clWindowText
-        LabelFont.Height = -11
-        LabelFont.Name = 'Tahoma'
-        LabelFont.Style = []
-        MaxValue = 100
-        ParentFont = False
-        TabOrder = 2
-        Visible = True
-        Version = '1.4.5.1'
       end
       object cbAgeClass: TComboBox
         Left = 509
@@ -190,13 +181,51 @@ object fQuestionMatch: TfQuestionMatch
         ParentFont = False
         TabOrder = 1
       end
+      object cbState: TComboBox
+        Left = 624
+        Top = 56
+        Width = 79
+        Height = 21
+        Style = csDropDownList
+        Anchors = [akTop, akRight]
+        Ctl3D = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Library'
+        Font.Style = []
+        ParentCtl3D = False
+        ParentFont = False
+        TabOrder = 2
+      end
+      object meCorrectorId: TMaskEdit
+        Left = 669
+        Top = 80
+        Width = 34
+        Height = 22
+        Anchors = [akTop, akRight]
+        BiDiMode = bdLeftToRight
+        Ctl3D = True
+        EditMask = '0000;1;_'
+        Font.Charset = ARABIC_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'Library'
+        Font.Style = []
+        MaxLength = 4
+        ParentBiDiMode = False
+        ParentCtl3D = False
+        ParentFont = False
+        TabOrder = 3
+        Text = '    '
+      end
     end
     object Grid: TAdvColumnGrid
       AlignWithMargins = True
       Left = 3
-      Top = 65
+      Top = 113
       Width = 767
-      Height = 373
+      Height = 325
       Cursor = crDefault
       Margins.Top = 0
       Margins.Bottom = 0
@@ -516,9 +545,8 @@ object fQuestionMatch: TfQuestionMatch
           Tag = 0
           Width = 200
         end>
-      ExplicitLeft = -8
-      ExplicitTop = 58
-      ExplicitHeight = 367
+      ExplicitLeft = -85
+      ExplicitTop = 361
       ColWidths = (
         25
         487
@@ -537,6 +565,8 @@ object fQuestionMatch: TfQuestionMatch
       Align = alBottom
       TabOrder = 2
       Visible = False
+      ExplicitLeft = -134
+      ExplicitTop = 312
       DesignSize = (
         769
         62)

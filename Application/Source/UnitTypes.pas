@@ -6,18 +6,24 @@ type
   TGender = (gMale = 0, gFemale);
   TResourceContent = (rBook = 0, rMultiMedia, rWebPage);
   TListState = (lResource, lQuestionMatch, lInstructionMatch);
+  TMatchState = (mActive, mDisabled, mImported);
 
   function UserToString(u : TUser) : string;
-  function StringToUser(u : string) : TUser;
+  function StringToUser(s : string) : TUser;
 
   function GenderToString(g : TGender) : string;
-  function StringToGender(g : string) : TGender;
+  function StringToGender(s : string) : TGender;
 
   function ResourceToString(r : TResourceContent) : string;
-  function StringToResource(r : string) : TResourceContent;
+  function StringToResource(s : string) : TResourceContent;
 
+  function StateToString(s : TMatchState) : string;
+  function StringToState(s : string) : TMatchState;
+
+  // translate
   function UserToPersian(u : TUser) : string;
   function ResourceToPersian(r : TResourceContent) : string;
+  function StateToPersian(s : TMatchState) : string;
 implementation
 
 function UserToString(u : TUser) : string;
@@ -31,14 +37,14 @@ begin
     uAdmin: Result := 'admin';
   end;
 end;
-function StringToUser(u : string) : TUser;
+function StringToUser(s : string) : TUser;
 begin
-  if (u = 'user') or (u = '') then Result := uUser else
-  if u = 'operator' then Result := uOperator else
-  if u = 'designer' then Result := uDesigner else
-  if u = 'manager' then Result := uManager else
-  if u = 'master' then Result := uMaster else
-  if u = 'admin' then Result := uAdmin;
+  if (s = 'user') or (s = '') then Result := uUser else
+  if s = 'operator' then Result := uOperator else
+  if s = 'designer' then Result := uDesigner else
+  if s = 'manager' then Result := uManager else
+  if s = 'master' then Result := uMaster else
+  if s = 'admin' then Result := uAdmin;
 end;
 
 function GenderToString(g : TGender) : string;
@@ -48,10 +54,10 @@ begin
     gFemale: Result := 'female';
   end;
 end;
-function StringToGender(g : string) : TGender;
+function StringToGender(s : string) : TGender;
 begin
-  if g = 'male' then Result := gMale else
-  if g = 'female' then Result := gFemale;
+  if s = 'male' then Result := gMale else
+  if s = 'female' then Result := gFemale;
 end;
 
 function ResourceToString(r : TResourceContent) : string;
@@ -62,11 +68,26 @@ begin
     rWebPage: Result := 'webpage';
   end;
 end;
-function StringToResource(r : string) : TResourceContent;
+function StringToResource(s : string) : TResourceContent;
 begin
-  if r = 'book' then Result := rBook else
-  if r = 'multimedia' then Result := rMultiMedia else
-  if r = 'webpage' then Result := rWebPage;
+  if s = 'book' then Result := rBook else
+  if s = 'multimedia' then Result := rMultiMedia else
+  if s = 'webpage' then Result := rWebPage;
+end;
+
+function StateToString(s : TMatchState) : string;
+begin
+  case s of
+    mActive: Result := 'active';
+    mDisabled: Result := 'disabled';
+    mImported: Result := 'imported';
+  end;
+end;
+function StringToState(s : string) : TMatchState;
+begin
+  if s = 'active' then Result := mActive else
+  if s = 'disabled' then Result := mDisabled else
+  if s = 'imported' then Result := mImported;
 end;
 
 function UserToPersian(u : TUser) : string;
@@ -86,6 +107,14 @@ begin
     rBook: Result := 'کتاب';
     rMultiMedia: Result := 'چند رسانه‌ای';
     rWebPage: Result := 'صفحه وب';
+  end;
+end;
+function StateToPersian(s : TMatchState) : string;
+begin
+  case s of
+    mActive: Result := 'فعال';
+    mDisabled: Result := 'غیر فعال';
+    mImported: Result := 'وارد شده';
   end;
 end;
 

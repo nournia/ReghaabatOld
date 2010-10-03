@@ -50,6 +50,7 @@ type
     procedure cbKindChange(Sender: TObject);
     procedure eFileRightButtonClick(Sender: TObject);
     procedure bApplyClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -167,6 +168,14 @@ begin
   odMultiMeida.FileName := eFile.Text;
   if odMultiMeida.Execute then eFile.Text := odMultiMeida.FileName;
 end;
+procedure TfResource.FormCreate(Sender: TObject);
+var rc : TResourceContent;
+begin
+  cbKind.Items.Clear;
+  for rc := rBook to rMultiMedia do
+    cbKind.Items.Add(ResourceToPersian(rc));
+end;
+
 procedure TfResource.cbKindChange(Sender: TObject);
 begin
   kind := TResourceContent(cbKind.ItemIndex);

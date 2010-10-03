@@ -85,6 +85,7 @@ type
     Label14: TLabel;
     qGroup: TMyQuery;
     AdvGlowButton11: TAdvGlowButton;
+    T_CheckBoxLibrary: TAdvOfficeCheckBox;
     procedure edt1Click(Sender: TObject);
     procedure edt2Click(Sender: TObject);
     procedure AdvGlowButton5Click(Sender: TObject);

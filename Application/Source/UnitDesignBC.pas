@@ -14,14 +14,12 @@ type
     gProperties: TAdvGroupBox;
     Label1: TLabel;
     eTitle: TEdit;
-    Label10: TLabel;
     P_Action: TAdvPanel;
     bApply: TAdvGlowButton;
     bPreview: TAdvGlowButton;
     fs: TAdvFormStyler;
     ps: TAdvPanelStyler;
     bEditor: TAdvGlowButton;
-    sQPPaper: TAdvSpinEdit;
     Grid: TAdvColumnGrid;
     pEditor: TAdvGroupBox;
     Label12: TLabel;
@@ -30,11 +28,15 @@ type
     mAnswer: TMemo;
     Label3: TLabel;
     cbAgeClass: TComboBox;
+    Label2: TLabel;
+    cbState: TComboBox;
+    meCorrectorId: TMaskEdit;
+    Label5: TLabel;
 
     procedure refresh();
     function validate() : boolean;
     procedure loadData(id : integer);
-    function addQuestionMatch(id : integer) : integer;
+    function addQuestionMatch(id : integer; test : boolean = false) : integer;
 
     procedure GridResize(Sender: TObject);
     procedure GridEditingDone(Sender: TObject);
@@ -46,6 +48,7 @@ type
     procedure mAnswerChange(Sender: TObject);
     procedure GridSelectionChanged(Sender: TObject; ALeft, ATop, ARight, ABottom: Integer);
     procedure mQuestionKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -57,7 +60,7 @@ var
 
 implementation
 
-uses UnitMain, UnitTDE;
+uses UnitMain, UnitTDE, UnitTypes;
 
 {$R *.dfm}
 
@@ -69,9 +72,11 @@ begin
   resourceId := -1;
   designerId := StrToInt(fMain.loginUserID);
   matchId := -1;
-  sQPPaper.Value := 4;
   mAnswer.Text := '';
   mQuestion.Text := '';
+  cbState.ItemIndex := 0;
+  meCorrectorId.Text := '';
+
   Grid.RowCount := 2;
   Grid.ClearRows(1,1);
   Grid.Cells[0,1] := '1';
@@ -80,12 +85,19 @@ begin
   eTitle.SetFocus;
 end;
 function TfQuestionMatch.validate() : boolean;
-var i, j : integer;
 begin
   Result := (eTitle.Text <> '');
   if not Result then
   begin
     fMain.MyShowMessage('لطفا برای مسابقه یك عنوان مناسب انتخاب كنید');
+    exit;
+  end;
+
+  Result := Result and (meCorrectorId.Text <> '    ');
+  Result := Result and (fMain.recordExists('SELECT * FROM users WHERE ID = '+ meCorrectorId.Text));
+  if not Result then
+  begin
+    fMain.MyShowMessage('تصحیح کننده معتبر نیست');
     exit;
   end;
 
@@ -95,9 +107,6 @@ begin
     fMain.MyShowMessage('عنوان این مسابقه، قبلا برای مسابقه‌ی دیگری انتخاب شده است. در یک رقابت دو مسابقه با عنوان مشابه نمی‌توانند فعال باشند.');
     exit;
   end;
-
-  j := 0; for i := 1 to Grid.RowCount-1 do if Grid.Cells[1,i] <> '' then j := j+1;
-  if j < sQPPaper.Value then sQPPaper.Value := j;
 end;
 procedure TfQuestionMatch.loadData(id : integer);
 var i : integer;
@@ -106,11 +115,14 @@ begin
   matchId := id;
   with fMain.myQuery do
   begin
-    SQL.Text := 'SELECT Title, AgeClass, QPPaper, DesignerID, ResourceID FROM matches WHERE ID = '+ IntToStr(matchId);
+    SQL.Text := 'SELECT Title, AgeClass, DesignerID, ResourceID, CorrectorID, CurrentState FROM matches INNER JOIN supports ON matches.ID = supports.MatchID WHERE matches.ID = '+ IntToStr(matchId);
     Open;
 
     eTitle.Text := FieldByName('Title').AsString;
     cbAgeClass.ItemIndex := FieldByName('AgeClass').AsInteger;
+    cbState.ItemIndex := ord(StringToState(FieldByName('CurrentState').AsString));
+    meCorrectorId.Text := FieldByName('CorrectorID').AsString;
+
     designerId := FieldByName('DesignerID').AsInteger;
     resourceId := FieldByName('ResourceID').AsInteger;
 
@@ -128,10 +140,10 @@ begin
     Grid.Cells[0,RecordCount+1] := IntToStr(RecordCount+1);
   end;
 end;
-function TfQuestionMatch.addQuestionMatch(id : integer) : integer;
+function TfQuestionMatch.addQuestionMatch(id : integer; test : boolean) : integer;
 var i, q : Integer; answer : string;
 begin
-  Result := fMain.InsertOrUpdate('matches', 'ID = '+ IntToStr(id), ['DesignerID', 'Title', 'AgeClass', 'ResourceID', 'QPPaper'], [designerId, fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex, resourceId, sQPPaper.Value]);
+  Result := fMain.InsertOrUpdate('matches', 'ID = '+ IntToStr(id), ['DesignerID', 'Title', 'AgeClass', 'ResourceID'], [designerId, fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex, resourceId]);
   if Result <> -1 then id := Result;
 
   fMain.executeCommand('DELETE FROM questions WHERE MatchID = '+ IntToStr(id));
@@ -143,6 +155,9 @@ begin
     fMain.executeCommand('INSERT INTO questions (MatchID, ID, Question, Answer) VALUES ('+ IntToStr(id) +', '+ IntToStr(q) +', "'+ fMain.correctString(Grid.Cells[1,i]) +'", '+ answer +')');
     inc(q);
   end;
+
+  if not test then
+    fMain.InsertOrUpdate('supports', 'TournamentID = 1 AND MatchID = '+ IntToStr(id), ['TournamentID', 'MatchID', 'CorrectorID', 'CurrentState'], [1, id, meCorrectorId.Text, StateToString(TMatchState(cbState.ItemIndex))]);
 end;
 
 // GUI
@@ -195,12 +210,20 @@ begin
 {
   if validate then
   begin
-    id := addQuestionMatch(-1);
+    id := addQuestionMatch(-1, true);
     F_TDE.GetFastReport('0', '310000', 'Preview', False, True);
     fMain.executeCommand('DELETE FROM matches WHERE ID = '+ IntToStr(id));
     fMain.executeCommand('DELETE FROM questions WHERE MatchID = '+ IntToStr(id));
   end;
 }
+end;
+
+procedure TfQuestionMatch.FormCreate(Sender: TObject);
+var sc : TMatchState;
+begin
+  cbState.Items.Clear;
+  for sc := mActive to mImported do
+    cbState.Items.Add(StateToPersian(sc));
 end;
 
 procedure TfQuestionMatch.bApplyClick(Sender: TObject);

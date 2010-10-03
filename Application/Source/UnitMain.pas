@@ -20,7 +20,7 @@ type
     pStatus: TAdvOfficeStatusBar;
     osbs: TAdvOfficeStatusBarOfficeStyler;
     ps: TAdvPanelStyler;
-    P_User: TAdvPanel;
+    pUser: TAdvPanel;
     apps: TAdvAppStyler;
     AdvToolBarPager: TAdvToolBarPager;
     AdvPage1: TAdvPage;
@@ -44,14 +44,14 @@ type
     otbs: TAdvOfficeTabSetOfficeStyler;
     fs: TAdvFormStyler;
     Label5: TLabel;
-    ME_Code: TMaskEdit;
+    meUserId: TMaskEdit;
     Label6: TLabel;
     Label7: TLabel;
-    LFamily: TLabel;
+    lLastName: TLabel;
     Label9: TLabel;
-    LAge: TLabel;
-    LName: TLabel;
-    B_Refresh: TAdvGlowButton;
+    lAge: TLabel;
+    lFirstName: TLabel;
+    bRefresh: TAdvGlowButton;
     cLibrary: TADOConnection;
     cMatch: TADOConnection;
     pmMatchPath: TAdvPopupMenu;
@@ -70,11 +70,7 @@ type
     M_TarrahReport1: TMenuItem;
     M_TarrahReport2: TMenuItem;
     M_TarrahReport3: TMenuItem;
-    P_MatchEdit: TAdvPanel;
-    AdvGroupBox3: TAdvGroupBox;
-    MaskEdit4: TMaskEdit;
     adoCommand: TADOCommand;
-    Label10: TLabel;
     P_Temp: TAdvPanel;
     pmStyle: TAdvPopupMenu;
     thmBrown: TMenuItem;
@@ -104,7 +100,6 @@ type
     nDesigner: TAdvGlowButton;
     AdvToolBar9: TAdvToolBar;
     nImport: TAdvGlowButton;
-    aqTemp: TADOQuery;
     nPay: TAdvGlowButton;
     AdvPage6: TAdvPage;
     AdvToolBar11: TAdvToolBar;
@@ -117,12 +112,10 @@ type
     P_SearchUser: TAdvPanel;
     GroupBox: TAdvGroupBox;
     gUser: TAdvColumnGrid;
-    B_SearchUser: TAdvGlowButton;
+    bSearchUser: TAdvGlowButton;
     lLicense: TLabel;
-    Label2: TLabel;
-    LDescription: TLabel;
-    BB_Modify: TAdvGlowButton;
-    BB_Delete: TAdvGlowButton;
+    laDescription: TLabel;
+    lDescription: TLabel;
     SplashScreen: TAdvSmoothSplashScreen;
     ilMenu: TImageList;
     ilLogin: TImageList;
@@ -137,7 +130,6 @@ type
     AdvToolBar13: TAdvToolBar;
     nMessage: TAdvGlowButton;
     nUser: TAdvGlowButton;
-    aqTemp2: TADOQuery;
     thmWhite: TMenuItem;
     ilEditButton: TImageList;
     msgProgress: TAdvSmoothMessageDialog;
@@ -151,17 +143,15 @@ type
     nFreeScore: TAdvGlowButton;
     sdJPEG: TSavePictureDialog;
     qTmpImport: TADOQuery;
-    aqTemp4: TADOQuery;
-    aqTemp3: TADOQuery;
     odReghaabat: TOpenDialog;
     iEditButtonOff: TImageList;
     pLogin: TAdvGroupBox;
     pInnerLogin: TAdvGroupBox;
     Label4: TLabel;
     Label3: TLabel;
-    PassWordEdit: TEdit;
+    ePassword: TEdit;
     bLogin: TAdvGlowButton;
-    ME_Login: TMaskEdit;
+    meLogin: TMaskEdit;
     cMyLocal: TMyConnection;
     myGlobalCommand: TMyCommand;
     bSync: TAdvGlowButton;
@@ -178,7 +168,7 @@ type
     qfPicture: TMyQuery;
     cMyGlobal: TMyConnection;
     myQueryTmp: TMyQuery;
-    procedure B_SearchUserClick(Sender: TObject);
+    procedure bSearchUserClick(Sender: TObject);
     procedure nUploadClick(Sender: TObject);
     procedure nAboutClick(Sender: TObject);
     procedure nLabelClick(Sender: TObject);
@@ -192,12 +182,9 @@ type
     procedure nChartClick(Sender: TObject);
     procedure nTotalReportClick(Sender: TObject);
     procedure nLogClick(Sender: TObject);
-    procedure BB_DeleteClick(Sender: TObject);
-    procedure BB_ModifyClick(Sender: TObject);
     procedure nInstructionMatchesClick(Sender: TObject);
     procedure nQuestionMatchesClick(Sender: TObject);
     procedure nResourcesClick(Sender: TObject);
-    procedure MaskEdit4KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure nMatchListClick(Sender: TObject);
     procedure nFreeScoreClick(Sender: TObject);
     procedure nDesignerClick(Sender: TObject);
@@ -207,14 +194,14 @@ type
     procedure M_UserMatchScore3Click(Sender: TObject);
     procedure M_UserMatchScore2Click(Sender: TObject);
     procedure M_UserMatchScore1Click(Sender: TObject);
-    procedure ME_CodeClick(Sender: TObject);
-    procedure B_RefreshClick(Sender: TObject);
+    procedure meUserIdClick(Sender: TObject);
+    procedure bRefreshClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure bLoginClick(Sender: TObject);
-    procedure PassWordEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure ME_LoginKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure ePasswordKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure meLoginKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
-    procedure ME_CodeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure meUserIdKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure nConnectLibraryClick(Sender: TObject);
     procedure nConnectMatchClick(Sender: TObject);
     procedure M_ConnectPathLibraryClick(Sender: TObject);
@@ -224,6 +211,8 @@ type
     procedure presetMenu();
     procedure postsetMenu(title : string; form : TForm);
     procedure fillComboWithQuery(cb : TComboBox; isql : string);
+    procedure fillGridWithQuery(grid : TAdvColumnGrid; isql : string);
+    procedure clearGrid(grid : TAdvColumnGrid);
     procedure showResourceForm();
     procedure showQuestionMatchForm();
     procedure showInstructionMatchForm();
@@ -289,7 +278,7 @@ type
     resourceAddress : string;
     loginUser : TUser;
     loginGender : TGender;
-    loginUserID, userID : String;
+    loginUserID, selectedUserId : String;
     options : TStringList;
 
     cStates : array[0..2] of string;
@@ -310,7 +299,7 @@ uses UnitTDE, UnitSetScore, uCryptography,
   UnitTarrahReport, UnitResumeTahvil, UnitMatchReport, UnitDesignBC,
   UnitDesignWP, UnitLog, UnitTotalReport, UnitChart, UnitNewUser, AdvStyleIF,
   UnitOptions, UnitSentence, UnitExImport, UnitForm, UnitAbout, UnitWeb, UnitMessage,
-  UFaDate, uShamsiDate, UnitReference;
+  UFaDate, uShamsiDate, UnitReference, UnitDeliver, UnitReceive;
 
 {$R *.dfm}
 
@@ -636,7 +625,7 @@ begin
   lLicense.Caption := '';
 
   pLogin.Visible := true;
-  ME_Login.SetFocus;
+  meLogin.SetFocus;
 end;
 
 procedure TfMain.MyShowMessage(str : String; desktop : boolean );
@@ -651,7 +640,7 @@ end;
 procedure TfMain.ELUser( Cascade : Boolean );
 begin
   pLogin.Visible := false;
-  PassWordEdit.Text:='';
+  ePassword.Text:='';
   bDeLogin.ImageIndex := 0;
   bDeLogin.Hint := 'خروج از حساب کاربر';
   pStatus.Visible := true;
@@ -672,8 +661,8 @@ begin
   begin
     nUser.Enabled:=True;
 //x    nMessage.Enabled:=True;
-//x    nDeliver.Enabled:=True;
-//x    nReceive.Enabled:=True;
+    nDeliver.Enabled:=True;
+    nReceive.Enabled:=True;
 //x    nScoreList.Enabled:=True;
 //x    nDeliverClick(nil);
   end;
@@ -685,8 +674,6 @@ begin
 
   pStatus.Visible := true;
   bDeLogin.Visible := pStatus.Visible;
-
-  BB_Delete.Enabled := True;
 
   nResources.Enabled := True;
   nQuestionMatches.Enabled := True;
@@ -730,10 +717,7 @@ end;
 procedure TfMain.EAF(Low : Boolean);
 begin
   P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := False;
-
-  BB_Delete.Enabled := False;
+  pUser.Visible := False;
 
   if not Low then
   begin
@@ -888,8 +872,7 @@ begin
   with fMain do
   begin
     P_Temp.Visible := True;
-    P_User.Visible := False;
-    P_MatchEdit.Visible := False;
+    pUser.Visible := False;
     P_SearchUser.Visible := False;
   end;
 end;
@@ -908,37 +891,13 @@ begin
   end;
 end;
 
-procedure TfMain.fillComboWithQuery(cb : TComboBox; isql : string);
-var i : integer;
-begin
-  with myQueryTmp do
-  begin
-    SQL.Text := isql;
-    Open;
-    if cb.Items.Count <> RecordCount then
-    begin
-      cb.Items.Clear;
-      for i := 1 to RecordCount do
-      begin
-        cb.Items.Add(Fields[0].AsString);
-        next;
-      end;
-    end;
-  end;
-  cb.ItemIndex := 0;
-end;
-
 procedure TfMain.showResourceForm();
-var rc : TResourceContent;
 begin
   presetMenu;
 
   if fResource = nil then
   begin
     Application.CreateForm(TfResource, fResource);
-    fResource.cbKind.Items.Clear;
-    for rc := rBook to rMultiMedia do
-      fResource.cbKind.Items.Add(ResourceToPersian(rc));
     fResource.refresh;
   end;
 
@@ -1019,9 +978,9 @@ begin
     end else
     begin
     }
-      ME_Login.Text := '';
-      PassWordEdit.Text := '';
-      ME_Login.SetFocus;
+      meLogin.Text := '';
+      ePassword.Text := '';
+      meLogin.SetFocus;
     //xend;
   end;
 end;
@@ -1086,8 +1045,7 @@ begin
   AdvToolBarPager.Caption.Caption := 'برچسبها';
 
   P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := False;
+  pUser.Visible := False;
   P_SearchUser.Visible := False;
 
   if F_Form = nil then
@@ -1153,8 +1111,7 @@ var
   line, sentence, person : String;
 begin
   P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := False;
+  pUser.Visible := False;
   P_SearchUser.Visible := False;
 
   odDatabase.FileName := '';
@@ -1390,28 +1347,6 @@ begin
 }
 end;
 
-procedure TfMain.BB_DeleteClick(Sender: TObject);
-var str : string;
-begin
-{x
-  str := StrToMatchID(MaskEdit4.Text);
-  if SearchMatch(str) then
-  begin
-    if msgDelete.ExecuteDialog = mrYes then
-    begin
-      deleteMatch(str);
-
-      case StrToInt(LeftStr(str, 2)) of
-        31 : nDesignBook.Click;
-        34 : nDesignMultiMedia.Click;
-        32 : nDesignWork.Click;
-        33 : nDesignArt.Click;
-      end;
-    end;
-  end else MyShowMessage('چنین مسابقه‌ای وجود ندارد');
-}
-end;
-
 procedure SetComboItem(cb : TComboBox; str : String);
 var
   i : integer;
@@ -1427,102 +1362,72 @@ begin
   else Result := 0;
 end;
 
-procedure TfMain.BB_ModifyClick(Sender: TObject);
+// GUI
+procedure addGridColumns(grid : TAdvColumnGrid; columns : array of string; strech : integer);
 var
-  Str : String;
-  isBookMatch : Boolean;
-  i, tokpos : Integer;
+  i : integer;
 begin
-{x
-  isBookMatch := False;
-  Str := StrToMatchID(MaskEdit4.Text);
-  if SearchMatch(Str) then
+  grid.ColumnSize.Stretch := false;
+  grid.Columns.Clear;
+  for i := 0 to Length(columns)-1 do
   begin
-  case StrToInt(LeftStr(Str , 2)) of
-    31 :
-    begin
-      nDesignBook.Click;
-      isBookMatch := True;
-    end;
-    34 :
-    begin
-      nDesignMultiMedia.Click;
-      isBookMatch := True;
-    end;
-    32 : nDesignWork.Click;
-    33 : nDesignArt.Click;
+    grid.Columns.Add;
+    grid.Columns[i].Header := columns[i];
+    grid.Columns[i].Font.Name := 'B Nazanin';
+    grid.Columns[i].Font.Size := 9;
+    grid.Columns[i].Font.Style := [fsBold];
+    grid.Columns[i].Alignment := taCenter;
+    grid.Columns[i].HeaderFont.Name := 'B Nazanin';
+    grid.Columns[i].HeaderFont.Size := 8;
+    grid.Columns[i].HeaderFont.Style := [fsBold];
+    grid.Columns[i].HeaderAlignment := taCenter;
+    grid.Columns[i].ReadOnly := true;
   end;
+  grid.Columns[strech].Alignment := taLeftJustify;
+  grid.Columns[strech].HeaderAlignment := taLeftJustify;
+  grid.ColumnSize.StretchColumn := strech;
+  grid.ColumnSize.Stretch := true;
+  grid.Options := [goRowSelect, goHorzLine];
+end;
 
-// Book ------------------------------------------------------------------------
-  if isBookMatch then
+procedure TfMain.fillGridWithQuery(grid : TAdvColumnGrid; isql : string);
+var i, j : integer;
+begin
+  myQuery.SQL.Text := isql;
+  myQuery.Open;
+
+  clearGrid(grid);
+  for i := 1 to myQuery.RecordCount do
   begin
-    qTmp.SQL.Text := 'SELECT * FROM Matches WHERE ID = '+ Str;
-    qTmp.Open;
-
-    with fDesignBC do
+    if i <> myQuery.RecordCount then grid.AddRow;
+    for j := 0 to myQuery.FieldCount - 1 do
+      grid.Cells[j, i] := myQuery.Fields[j].AsString;
+    myQuery.Next;
+  end;
+end;
+procedure TfMain.clearGrid(grid : TAdvColumnGrid);
+begin
+  grid.RemoveRows(2, grid.RowCount-2);
+  grid.ClearRows(1, 1);
+end;
+procedure TfMain.fillComboWithQuery(cb : TComboBox; isql : string);
+var i : integer;
+begin
+  with myQueryTmp do
+  begin
+    SQL.Text := isql;
+    Open;
+    if cb.Items.Count <> RecordCount then
     begin
-      Label2.Caption := MatchIDToStr(qTmp.FieldByName('ID').AsString);
-      MaskEdit1.Text := qTmp.FieldByName('LibraryBookID').AsString;
-      MaskEdit2.Text := qTmp.FieldByName('DesignerID').AsString;
-      SpinEdit1.Text := qTmp.FieldByName('MaxScore').AsString;
-      SpinEdit2.Text := qTmp.FieldByName('QPPaper').AsString;
-      Edit5.Text := qTmp.FieldByName('Title').AsString;
-      SpinEdit4.Text := qTmp.FieldByName('Age').AsString;
-      ComboBox2.ItemIndex := qTmp.FieldByName('State').AsInteger;
-      Edit1.Text := qTmp.FieldByName('Author').AsString;
-      Edit2.Text := qTmp.FieldByName('Publication').AsString;
-      clTags.Text := qTmp.FieldByName('Tags').AsString;
-      genuineID := qTmp.FieldByName('GenuineID').AsString;
-
-      qTmp.SQL.Text := 'SELECT * FROM Questions WHERE MatchID = '+ Str +' ORDER BY ID';
-      qTmp.Open;
-
-      for i := 1 to qTmp.RecordCount do
+      cb.Items.Clear;
+      for i := 1 to RecordCount do
       begin
-        Grid.Cells[0,i] := qTmp.FieldByName('ID').AsString;
-        Grid.Cells[1,i] := qTmp.FieldByName('Question').AsString;
-        Grid.Cells[2,i] := qTmp.FieldByName('Answer').AsString;
-        Grid.AddRow;
-        qTmp.Next;
+        cb.Items.Add(Fields[0].AsString);
+        next;
       end;
-      Grid.Cells[0,qTmp.RecordCount+1] := IntToStr(qTmp.RecordCount+1);
-
-      mQuestion.Text := Grid.Cells[1,1];
-      mAnswer.Text := Grid.Cells[2,1];
     end;
   end;
-
-// Paint Or Work ---------------------------------------------------------------
-  if not(isBookMatch) then
-  begin
-    qTmp.SQL.Text := 'SELECT * FROM Matches WHERE ID = '+ Str;
-    qTmp.Open;
-
-    with fDesignWP do
-    begin
-      Label2.Caption := MatchIDToStr(qTmp.FieldByName('ID').AsString);
-      MaskEdit2.Text := qTmp.FieldByName('DesignerID').AsString;
-      SpinEdit1.Text := qTmp.FieldByName('MaxScore').AsString;
-      Edit5.Text := qTmp.FieldByName('Title').AsString;
-      SpinEdit4.Text := qTmp.FieldByName('Age').AsString;
-      ComboBox2.ItemIndex := qTmp.FieldByName('State').AsInteger;
-      genuineID := qTmp.FieldByName('GenuineID').AsString;
-      Memo1.Text := qTmp.FieldByName('Content').AsString;
-      clTags.Text := qTmp.FieldByName('Tags').AsString;
-      genuineID := qTmp.FieldByName('GenuineID').AsString;
-
-      tokpos := 1;
-      SE_Height.Text := getNextToken(qTmp.FieldByName('PictureConfiguration').AsString, ' ', tokpos);
-      SE_Width.Text := getNextToken(qTmp.FieldByName('PictureConfiguration').AsString, ' ', tokpos);
-      SE_Top.Text := getNextToken(qTmp.FieldByName('PictureConfiguration').AsString, ' ', tokpos);
-      SE_Left.Text := getNextToken(qTmp.FieldByName('PictureConfiguration').AsString, ' ', tokpos);
-
-      loadJpeg(qTmp.FieldByName('ID').AsString, 'match', fDesignWP.Image1, qTmp);
-    end;
-  end;
-
-  end else MyShowMessage('چنین مسابقه‌ای وجود ندارد');
-}
+  cb.ItemIndex := 0;
 end;
 
 procedure TfMain.nOptionsClick(Sender: TObject);
@@ -1530,8 +1435,7 @@ begin
   AdvToolBarPager.Caption.Caption := 'تنظیمات';
 
   P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := False;
+  pUser.Visible := False;
   P_SearchUser.Visible := False;
 
   if fOptions = nil then
@@ -1595,8 +1499,7 @@ begin
   AdvToolBarPager.Caption.Caption := 'ارسال اطلاعات';
 
   P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := False;
+  pUser.Visible := False;
   P_SearchUser.Visible := False;
 
   if F_Web = nil then
@@ -1624,8 +1527,7 @@ begin
   AdvToolBarPager.Caption.Caption := 'جملات قصار';
 
   P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := False;
+  pUser.Visible := False;
   P_SearchUser.Visible := False;
 
   if F_Sentence = nil then
@@ -1673,8 +1575,7 @@ begin
   AdvToolBarPager.Caption.Caption := 'گزارش جامع امتیازات';
 
   P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := False;
+  pUser.Visible := False;
   P_SearchUser.Visible := False;
 
   if fLog = nil then
@@ -1739,11 +1640,11 @@ procedure TfMain.nChartClick(Sender: TObject);
 var
   i : integer;
 begin
+{
   AdvToolBarPager.Caption.Caption := 'نمودارها';
 
   P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := False;
+  pUser.Visible := False;
   P_SearchUser.Visible := False;
 
   if fChart = nil then
@@ -1767,6 +1668,7 @@ begin
 
   fChart.BringToFront;
   P_Temp.Visible := False;
+}
 end;
 
 procedure TfMain.bDeLoginClick(Sender: TObject);
@@ -1788,18 +1690,18 @@ end;
 procedure TfMain.bLoginClick(Sender: TObject);
 var dPermission, kind : String;
 begin
-  qTmp1.SQL.Text := 'SELECT * FROM users LEFT JOIN permissions ON users.ID = permissions.UserID WHERE users.ID = '+ ME_Login.Text;
-  qTmp1.Open;
+  myQuery.SQL.Text := 'SELECT * FROM users LEFT JOIN permissions ON users.ID = permissions.UserID WHERE users.ID = '+ meLogin.Text;
+  myQuery.Open;
 
-  if (qTmp1.RecordCount = 0) or (encrypt(PassWordEdit.Text) <> qTmp1.FieldByName('UserPass').AsString) then
+  if (myQuery.RecordCount = 0) or (encrypt(ePassword.Text) <> myQuery.FieldByName('UserPass').AsString) then
   begin
     MyShowMessage('کد عضویت و یا کلمه عبور  معتبر نیست');
-    PassWordEdit.SelectAll;
+    ePassword.SelectAll;
   end else
   begin
-    loginUser := StringToUser(qTmp1.FieldByName('Permission').AsString);
-    loginGender := StringToGender(qTmp1.FieldByName('Gender').AsString);
-    loginUserID := ME_Login.Text;
+    loginUser := StringToUser(myQuery.FieldByName('Permission').AsString);
+    loginGender := StringToGender(myQuery.FieldByName('Gender').AsString);
+    loginUserID := meLogin.Text;
 
     if isSuperUser then ELAdmin else
     if loginUser = uManager then ELManager(False) else
@@ -1808,15 +1710,15 @@ begin
     P_LS.ImageIndex := ord(loginUser);
     L_LS.Caption := UserToPersian(loginUser);
 
-    lLogin.Caption := qTmp1.FieldByName('FirstName').AsString + ' ' + qTmp1.FieldByName('LastName').AsString;
+    lLogin.Caption := myQuery.FieldByName('FirstName').AsString + ' ' + myQuery.FieldByName('LastName').AsString;
 
     {x
-    qTmp1.SQL.Text := 'SELECT * FROM Messages WHERE Viewed = False AND DestinationID = '+ loginUserID;
-    qTmp1.Open;
-    if qTmp1.RecordCount > 0 then nMessage.ImageIndex := 2 else nMessage.ImageIndex := 1;
+    myQuery.SQL.Text := 'SELECT * FROM Messages WHERE Viewed = False AND DestinationID = '+ loginUserID;
+    myQuery.Open;
+    if myQuery.RecordCount > 0 then nMessage.ImageIndex := 2 else nMessage.ImageIndex := 1;
     }
 
-    //x if P_User.Visible then B_Refresh.Click;
+    bRefresh.Click;
   end;
 end;
 
@@ -1863,63 +1765,51 @@ begin
   if ICMatch.Visible then
     if StrToBool(options.Values['AutoConnectLibrary']) then nConnectLibraryClick(nil);
 
-  if pLogin.Visible then ME_Login.SetFocus;
+  if pLogin.Visible then meLogin.SetFocus;
 end;
 
-procedure TfMain.ME_LoginKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TfMain.meLoginKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if key = 13 then PassWordEdit.SetFocus;
+  if key = 13 then ePassword.SetFocus;
 end;
 
-procedure TfMain.MaskEdit4KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TfMain.meUserIdClick(Sender: TObject);
 begin
-  if ( Key = 13 )and( MaskEdit4.Text <> '   -   ' ) then BB_Modify.Click;
-  MaskEdit4.SetFocus;
+  meUserId.SelectAll;
 end;
 
-procedure TfMain.ME_CodeClick(Sender: TObject);
+procedure TfMain.meUserIdKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+var valid : boolean; i : Integer; F: array[1..4] of Integer;
 begin
-  ME_Code.SelectAll;
-end;
-
-procedure TfMain.ME_CodeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-var
-  i : Integer; F: array[1..4] of Integer;
-begin
-  if (Key = 13) and (ME_Code.Text <> '    ') then
+  if Key = 13 then
   begin
-    qTmp.SQL.Text := 'SELECT * FROM Users WHERE ID=' + ME_Code.Text;
-    qTmp.Open;
-    if qTmp.RecordCount < 1 then
+    valid := false;
+    myQuery.SQL.Text := 'SELECT users.FirstName, users.LastName, users.Gender, users.Description, ageclasses.Title AS AgeClass FROM users INNER JOIN ageclasses ON getAgeClass(BirthDate) = ageclasses.ID WHERE users.ID = '+ meUserId.Text;
+    myQuery.Open;
+
+    if myQuery.RecordCount = 0 then MyShowMessage('عضوی با این کد ثبت نشده است')
+    else if not hasGenderPermission(myQuery.FieldByName('Gender').AsString) then MyShowMessage('شما اجازه دسترسی به اطلاعات این عضو را ندارید')
+    else valid := true;
+    if not valid then
     begin
-      MyShowMessage('چنین عضوی وجود ندارد');
-      userID := '';
-      ME_Code.SetFocus;
-      ME_Code.SelectAll;
-      Abort;
+      meUserId.SetFocus;
+      meUserId.SelectAll;
+      exit;
     end;
 
-    if not hasGenderPermission(qTmp.FieldByName('Gender').AsString) then
-    begin
-      MyShowMessage('شما اجازه‌ی دسترسی به این پرونده را ندارید');
-      userID := '';
-      ME_Code.SetFocus;
-      ME_Code.SelectAll;
-      Abort;
-    end;
+    meUserId.Enabled := False;
+    selectedUserId := meUserId.Text;
+    lFirstName.Caption:= myQuery.FieldByName('FirstName').AsString;
+    lLastName.Caption:= myQuery.FieldByName('LastName').AsString;
+    lDescription.Caption:= myQuery.FieldByName('Description').AsString;
+    lAge.Caption:= myQuery.FieldByName('AgeClass').AsString;
+    laDescription.Visible := lDescription.Caption <> '';
+    uPicture.Visible := not loadJpeg(selectedUserId, 'user', Picture, myQuery);
 
-    ME_Code.Enabled := False;
+    if fDeliver <> nil then fDeliver.selectFrame;
+    if fReceive <> nil then fReceive.selectFrame;
 
-    LName.Caption:= qTmp.FieldByName('FirstName').AsString;
-    LFamily.Caption:= qTmp.FieldByName('LastName').AsString;
-    LDescription.Caption:= qTmp.FieldByName('Description').AsString;
-    LAge.Caption:= IntToStr(StrToInt(Copy(getShamsiDate, 1, 4)) - StrToInt(Copy(qTmp.FieldByName('BirthDate').AsString, 1, 4)));
-    userID := ME_Code.Text;
-
-    if LDescription.Caption <> '' then Label2.Visible := True;
-
-    uPicture.Visible := not loadJpeg(userID, 'user', Picture, qTmp);
-
+{
 // TDE Code --------------------------------------------------------------------
   if F_TDE <> nil then
   with F_TDE do
@@ -1968,7 +1858,8 @@ begin
   if fSetScore <> nil then fSetScore.selectFrame;
   if fFreeScore <> nil then fFreeScore.selectFrame;
   if fDesigner <> nil then fDesigner.selectFrame;
-  end; // if end
+  }
+  end;
 end;
 
 procedure TfMain.M_ConnectPathLibraryClick(Sender: TObject);
@@ -2041,24 +1932,24 @@ begin
   GetUserMatchScore(2);
 end;
 
-procedure TfMain.B_RefreshClick(Sender: TObject);
+procedure TfMain.bRefreshClick(Sender: TObject);
 begin
   uPicture.ImageIndex := ord(loginGender);
   if isSuperUser then uPicture.ImageIndex := 2;
   Picture.Picture.Bitmap := nil;
   uPicture.Visible := true;
 
-  LName.Caption := '';
+  lFirstName.Caption := '';
+  lLastName.Caption := '';
+  lAge.Caption := '';
   LDescription.Caption := '';
-  Label2.Visible := False;
-  LAge.Caption := '';
-  LFamily.Caption := '';
+  laDescription.Visible := False;
 
-  ME_Code.Enabled := True;
-  userID := '';
+  meUserId.Enabled := True;
+  selectedUserId := '';
 
   Picture.Refresh;
-
+{
   if F_TDE <> nil then
   begin
 // TDE Code --------------------------------------------------------------------
@@ -2116,21 +2007,23 @@ begin
     LCPaint.Font.Color := clBlue;
     LCCD.Font.Color := clBlue;
   end;
-
+}
 // other forms
+  if fDeliver <> nil then fDeliver.deselectFrame;
+  if fReceive <> nil then fReceive.deselectFrame;
+{
   if fSetScore <> nil then fSetScore.deselectFrame;
   if fFreeScore <> nil then fFreeScore.deselectFrame;
   if fDesigner <> nil then fDesigner.deselectFrame;
-  end; // end if
-
-  if P_User.Visible then
+}
+  if pUser.Visible then
   begin
-    ME_Code.SetFocus;
-    ME_Code.SelectAll;
+    meUserId.SetFocus;
+    meUserId.SelectAll;
   end;
 end;
 
-procedure TfMain.B_SearchUserClick(Sender: TObject);
+procedure TfMain.bSearchUserClick(Sender: TObject);
 var
   i : Integer;
   F : String;
@@ -2168,8 +2061,7 @@ begin
   AdvToolBarPager.Caption.Caption := 'ثبت مسابقه آزاد';
 
   P_Temp.Visible := True;
-  P_User.Visible := True;
-  P_MatchEdit.Visible := False;
+  pUser.Visible := True;
   P_SearchUser.Visible := False;
 
   if fFreeScore = nil then
@@ -2199,85 +2091,44 @@ begin
     CB_Kind.ItemIndex := 0;
   end;
 
-  if userID <> '' then
+  if selectedUserId <> '' then
     fFreeScore.selectFrame
-  else ME_Code.SetFocus;
+  else meUserId.SetFocus;
 
   fFreeScore.BringToFront;
   P_Temp.Visible := False;
 end;
 
 procedure TfMain.nDeliverClick(Sender: TObject);
-var
-  b : Boolean;
 begin
   presetMenu;
-  P_User.Visible := True;
+  pUser.Visible := True;
 
-  if F_TDE = nil then
+  if fDeliver = nil then Application.CreateForm(TfDeliver, fDeliver);
+  with fDeliver do
   begin
-    Application.CreateForm( TF_TDE, F_TDE );
-    F_TDE.AdvOfficePager.Enabled := False;
+    addGridColumns(gDeliver, ['', 'عنوان'], 1);
+    gDeliver.Columns[0].Width := 0;
   end;
 
-  if ICLibrary.Visible then
-  begin
-    F_TDE.Label14.Visible := True;
-    F_TDE.MaskEdit3.Visible := True;
-    F_TDE.T_CheckBoxLibrary.Visible := True;
-
-    F_TDE.Label26.Visible := True;
-    F_TDE.MaskEdit5.Visible := True;
-
-    F_TDE.D_CheckBoxLibrary.Visible := True;
-  end;
-
-  postsetMenu('تحویل مسابقه', F_TDE);
-
-  b := F_TDE.AdvOfficePager.Enabled;
-  F_TDE.AdvOfficePager.Enabled := True;
-  F_TDE.AdvOfficePager.ActivePageIndex := 0;
-  F_TDE.AdvOfficePager.Enabled := b;
-  if userID = '' then ME_Code.SetFocus;
+  postsetMenu('تحویل مسابقه', fDeliver);
+  if selectedUserId <> '' then fDeliver.selectFrame else meUserId.SetFocus;
 end;
 
 procedure TfMain.nReceiveClick(Sender: TObject);
-var
-  b : Boolean;
 begin
-  AdvToolBarPager.Caption.Caption := 'دریافت مسابقه';
+  presetMenu;
+  pUser.Visible := True;
 
-  P_Temp.Visible := True;
-  P_User.Visible := True;
-  P_MatchEdit.Visible := False;
-  P_SearchUser.Visible := False;
-
-  if F_TDE = nil then
+  if fReceive = nil then Application.CreateForm(TfReceive, fReceive);
+  with fReceive do
   begin
-    Application.CreateForm( TF_TDE, F_TDE );
-    F_TDE.AdvOfficePager.Enabled := False;
+    addGridColumns(gReceive, ['', 'عنوان'], 1);
+    gReceive.Columns[0].Width := 0;
   end;
 
-  if ICLibrary.Visible then
-  begin
-    F_TDE.Label14.Visible := True;
-    F_TDE.MaskEdit3.Visible := True;
-    F_TDE.T_CheckBoxLibrary.Visible := True;
-
-    F_TDE.Label26.Visible := True;
-    F_TDE.MaskEdit5.Visible := True;
-
-    F_TDE.D_CheckBoxLibrary.Visible := True;
-  end;
-
-  F_TDE.BringToFront;
-  P_Temp.Visible := False;
-
-  b := F_TDE.AdvOfficePager.Enabled;
-  F_TDE.AdvOfficePager.Enabled := True;
-  F_TDE.AdvOfficePager.ActivePageIndex := 1;
-  F_TDE.AdvOfficePager.Enabled := b;
-  if userID = '' then ME_Code.SetFocus;
+  postsetMenu('دریافت مسابقه', fReceive);
+  if selectedUserId <> '' then fReceive.selectFrame else meUserId.SetFocus;
 end;
 
 procedure TfMain.nPayClick(Sender: TObject);
@@ -2287,8 +2138,7 @@ begin
   AdvToolBarPager.Caption.Caption := 'پرداخت امتیاز';
 
   P_Temp.Visible := True;
-  P_User.Visible := True;
-  P_MatchEdit.Visible := False;
+  pUser.Visible := True;
   P_SearchUser.Visible := False;
 
   if F_TDE = nil then
@@ -2316,7 +2166,7 @@ begin
   F_TDE.AdvOfficePager.Enabled := True;
   F_TDE.AdvOfficePager.ActivePageIndex := 2;
   F_TDE.AdvOfficePager.Enabled := b;
-  if userID = '' then ME_Code.SetFocus;
+  if selectedUserId = '' then meUserId.SetFocus;
 end;
 
 procedure TfMain.nSetScoreClick(Sender: TObject);
@@ -2324,16 +2174,15 @@ begin
   AdvToolBarPager.Caption.Caption := 'تعیین امتیاز مسابقات';
 
   P_Temp.Visible := True;
-  P_User.Visible := True;
-  P_MatchEdit.Visible := False;
+  pUser.Visible := True;
   P_SearchUser.Visible := False;
 
   if fSetScore = nil then
     Application.CreateForm( TfSetScore, fSetScore );
 
-  if userID <> '' then
+  if selectedUserId <> '' then
     fSetScore.selectFrame
-  else ME_Code.SetFocus;
+  else meUserId.SetFocus;
 
   fSetScore.BringToFront;
   P_Temp.Visible :=  False;
@@ -2344,16 +2193,15 @@ begin
   AdvToolBarPager.Caption.Caption := 'طراحان مسابقه کتاب';
 
   P_Temp.Visible := True;
-  P_User.Visible := True;
-  P_MatchEdit.Visible := False;
+  pUser.Visible := True;
   P_SearchUser.Visible := False;
 
   if fDesigner = nil then
     Application.CreateForm(TfDesigner, fDesigner);
 
-  if userID <> '' then
+  if selectedUserId <> '' then
     fDesigner.selectFrame
-  else ME_Code.SetFocus;
+  else meUserId.SetFocus;
 
   fDesigner.BringToFront;
   P_Temp.Visible := False;
@@ -2365,7 +2213,7 @@ begin
   AdvToolBarPager.Caption.Caption := 'لیست مسابقات';
 
   P_Temp.Visible := True;
-  P_User.Visible := False;
+  pUser.Visible := False;
   P_MatchEdit.Visible := False;
   P_SearchUser.Visible := False;
 
@@ -2413,37 +2261,9 @@ begin
   postsetMenu('پیامها', fMessage);
 end;
 
-procedure addGridColumns(grid : TAdvColumnGrid; columns : array of string; strech : integer);
-var
-  i : integer;
-begin
-  grid.ColumnSize.Stretch := false;
-  grid.Columns.Clear;
-  for i := 0 to Length(columns)-1 do
-  begin
-    grid.Columns.Add;
-    grid.Columns[i].Header := columns[i];
-    grid.Columns[i].Font.Name := 'B Nazanin';
-    grid.Columns[i].Font.Size := 9;
-    grid.Columns[i].Font.Style := [fsBold];
-    grid.Columns[i].Alignment := taCenter;
-    grid.Columns[i].HeaderFont.Name := 'B Nazanin';
-    grid.Columns[i].HeaderFont.Size := 8;
-    grid.Columns[i].HeaderFont.Style := [fsBold];
-    grid.Columns[i].HeaderAlignment := taCenter;
-    grid.Columns[i].ReadOnly := true;
-  end;
-  grid.Columns[strech].Alignment := taLeftJustify;
-  grid.Columns[strech].HeaderAlignment := taLeftJustify;
-  grid.ColumnSize.StretchColumn := strech;
-  grid.ColumnSize.Stretch := true;
-end;
 procedure TfMain.nResourcesClick(Sender: TObject);
 begin
   presetMenu;
-
-  if fMatchList = nil then
-    Application.CreateForm(TfMatchList, fMatchList);
 
   with fMatchList do
   begin
@@ -2468,12 +2288,9 @@ procedure TfMain.nQuestionMatchesClick(Sender: TObject);
 begin
   presetMenu;
 
-  if fMatchList = nil then
-    Application.CreateForm(TfMatchList, fMatchList);
-
   with fMatchList do
   begin
-    addGridColumns(Grid, ['', 'عنوان', 'رده سنی', 'سوال در صفحه', 'طراح', 'سوالها', 'پاسخها'], 1);
+    addGridColumns(Grid, ['', 'عنوان', 'رده سنی', 'طراح', 'سوالها', 'پاسخها'], 1);
     Grid.Columns[0].Width := 0;
     state := lQuestionMatch;
     MakeQuery(false, true);
@@ -2492,9 +2309,6 @@ var
   i : Integer;
 begin
   presetMenu;
-
-  if fMatchList = nil then
-    Application.CreateForm(TfMatchList, fMatchList);
 
   with fMatchList do
   begin
@@ -2518,8 +2332,7 @@ begin
   AdvToolBarPager.Caption.Caption := 'صدور کارنامه';
 
   P_Temp.Visible := True;
-  P_User.Visible := False;
-  P_MatchEdit.Visible := False;
+  pUser.Visible := False;
   P_SearchUser.Visible := False;
 
   if fLog = nil then
@@ -2530,7 +2343,7 @@ begin
   P_Temp.Visible := False;
 end;
 
-procedure TfMain.PassWordEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TfMain.ePasswordKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if key = 13 then bLogin.Click;
 end;

@@ -138,7 +138,6 @@ begin
   qfMatch.SQL.Text:='SELECT ID, DesignerID, Title, Age, MaxScore, State, QPPaper, Content, PictureConfiguration, Tags FROM Matches WHERE Matches.ID='+ MatchID; fMain.qfMatch.Open;
   qfPicture.SQL.Text:= 'SELECT * FROM Pictures WHERE ID = '+ MatchID; fMain.qfPicture.Open;
 
-
 end;
 }
 procedure TF_TDE.GetFastReport(UserID, MatchID, Action : String; ForUser, NewPage : Boolean);
@@ -289,11 +288,11 @@ procedure TF_TDE.ShowScore();
 var
   Score, K : Integer;
 begin
-  fMain.qTmp.SQL.Text := 'SELECT ScoreSum FROM '+ fMain.sqlUserScores(fMain.userID) +' WHERE ID='+ fMain.userID;
+  fMain.qTmp.SQL.Text := 'SELECT ScoreSum FROM '+ fMain.sqlUserScores(fMain.selectedUserId) +' WHERE ID='+ fMain.selectedUserId;
   fMain.qTmp.Open;
   S_Label2.Caption := IntToStr(fMain.qTmp.Fields[0].AsInteger);
 
-  fMain.qTmp.SQL.Text := 'SELECT Round(Sum(Score)) FROM Payments WHERE UserID='+ fMain.userID +' AND ScoreDate >= "' + fMain.options.Values['BeginDate'] +'"';
+  fMain.qTmp.SQL.Text := 'SELECT Round(Sum(Score)) FROM Payments WHERE UserID='+ fMain.selectedUserId +' AND ScoreDate >= "' + fMain.options.Values['BeginDate'] +'"';
   fMain.qTmp.Open;
   S_Label4.Caption := IntToStr(fMain.qTmp.Fields[0].AsInteger);
 
@@ -335,7 +334,7 @@ var
 begin
   if AdvOfficeTabSet.ActiveTabIndex = 0 then
   begin
-    qScore.SQL.Text := 'SELECT OperatorID, Score, ScoreDate AS Title, "" AS MatchID FROM Payments WHERE ScoreDate >= "'+ fMain.options.Values['BeginDate'] +'" AND UserID='+ fMain.userID;
+    qScore.SQL.Text := 'SELECT OperatorID, Score, ScoreDate AS Title, "" AS MatchID FROM Payments WHERE ScoreDate >= "'+ fMain.options.Values['BeginDate'] +'" AND UserID='+ fMain.selectedUserId;
     qScore.Open;
 
     if fMain.isSuperUser then gScore.Options := gScore.Options + [goEditing];
@@ -345,8 +344,8 @@ begin
   end else
   if AdvOfficeTabSet.ActiveTabIndex = 1 then
   begin
-    qScore.SQL.Text := '(SELECT OperatorID, ROUND(RealScores.RealScore) AS Score, Matches.Title, Left(MatchID,3)+"-"+Right(MatchID,3) AS MatchID FROM '+ fMain.sqlRealScores(fMain.userID) +' INNER JOIN Matches ON RealScores.MatchID = Matches.ID) ' +
-                       'UNION (SELECT OperatorID, Score, Title, Caption AS MatchID FROM FreeScores LEFT JOIN Groups ON FreeScores.GroupID = Groups.ID WHERE Groups.Kind = 0 AND UserID='+ fMain.userID +' AND ScoreDate >= "' + fMain.options.Values['BeginDate'] + '")';
+    qScore.SQL.Text := '(SELECT OperatorID, ROUND(RealScores.RealScore) AS Score, Matches.Title, Left(MatchID,3)+"-"+Right(MatchID,3) AS MatchID FROM '+ fMain.sqlRealScores(fMain.selectedUserId) +' INNER JOIN Matches ON RealScores.MatchID = Matches.ID) ' +
+                       'UNION (SELECT OperatorID, Score, Title, Caption AS MatchID FROM FreeScores LEFT JOIN Groups ON FreeScores.GroupID = Groups.ID WHERE Groups.Kind = 0 AND UserID='+ fMain.selectedUserId +' AND ScoreDate >= "' + fMain.options.Values['BeginDate'] + '")';
     qScore.Open;
 
     gScore.Columns[2].Header := 'عنوان';
@@ -395,7 +394,7 @@ begin
   B_Ok.Enabled := False;
   B_Preview.Enabled := False;
 
-  fMain.executeCommand('INSERT INTO Transactions (UserID, MatchID, DeliverDate) VALUES ('+ fMain.userID +', '+ ExCode +', "'+ fMain.getShamsiDate +'")');
+  fMain.executeCommand('INSERT INTO Transactions (UserID, MatchID, DeliverDate) VALUES ('+ fMain.selectedUserId +', '+ ExCode +', "'+ fMain.getShamsiDate +'")');
 
   if fMain.ICLibrary.Visible then
   begin
@@ -405,7 +404,7 @@ begin
     begin
       fMain.qTmpLibrary.SQL.Text := ('SELECT * FROM Cash');
       fMain.qTmpLibrary.Open;
-      fMain.qTmpLibrary.AppendRecord([ fMain.userID, MaskEdit3.Text, fMain.getShamsiDate, Null, Null, fMain.loginUserID ]);
+      fMain.qTmpLibrary.AppendRecord([ fMain.selectedUserId, MaskEdit3.Text, fMain.getShamsiDate, Null, Null, fMain.loginUserID ]);
     end;
     if pgMatch.ActivePageIndex = 3 then
     if T_CheckBoxLibrary.Checked  then
@@ -413,20 +412,20 @@ begin
     begin
       fMain.qTmpLibrary.SQL.Text := ('SELECT * FROM Cash');
       fMain.qTmpLibrary.Open;
-      fMain.qTmpLibrary.AppendRecord([ fMain.userID, MaskEdit5.Text, fMain.getShamsiDate, Null, Null, fMain.loginUserID ]);
+      fMain.qTmpLibrary.AppendRecord([ fMain.selectedUserId, MaskEdit5.Text, fMain.getShamsiDate, Null, Null, fMain.loginUserID ]);
     end;
   end;
 
-  if ok then GetFastReport(fMain.userID, ExCode, 'Print', True, True);
+  if ok then GetFastReport(fMain.selectedUserId, ExCode, 'Print', True, True);
 
-  fMain.B_Refresh.Click;
+  fMain.bRefresh.Click;
 end;
 
 procedure TF_TDE.B_PayClick(Sender: TObject);
 begin
   if SpinEdit1.Value = 0 then Abort;
 
-  fMain.executeCommand('INSERT INTO Payments (UserID, Score, ScoreDate, OperatorID) VALUES ('+ fMain.userID +', '+ SpinEdit1.Text +', "'+ fMain.getShamsiDate +'", '+ fMain.loginUserID +')');
+  fMain.executeCommand('INSERT INTO Payments (UserID, Score, ScoreDate, OperatorID) VALUES ('+ fMain.selectedUserId +', '+ SpinEdit1.Text +', "'+ fMain.getShamsiDate +'", '+ fMain.loginUserID +')');
   SpinEdit1.Value := 0;
   ShowScore;
   AdvOfficeTabSet.OnChange(AdvOfficeTabSet);
@@ -444,7 +443,7 @@ begin
   end;
 
   ExName := fMain.StrToMatchID(ExName);
-  GetFastReport(fMain.userID, ExName, 'Preview', True, True);
+  GetFastReport(fMain.selectedUserId, ExName, 'Preview', True, True);
 end;
 
 procedure TF_TDE.pgMatchChange(Sender: TObject);
@@ -479,7 +478,7 @@ begin
     gReceive.GetCheckBoxState(0,i, state);
     if state then
     begin
-      fMain.executeCommand('UPDATE Transactions SET ReceiveDate="'+ fMain.getShamsiDate +'" WHERE UserID = '+ fMain.userID +' AND MatchID = ' + gReceive.Cells[2, i]);
+      fMain.executeCommand('UPDATE Transactions SET ReceiveDate="'+ fMain.getShamsiDate +'" WHERE UserID = '+ fMain.selectedUserId +' AND MatchID = ' + gReceive.Cells[2, i]);
       if fMain.ICLibrary.Visible then
       begin
         if D_CheckBoxLibrary.Checked then
@@ -488,7 +487,7 @@ begin
           fMain.qTmp.Open;
 
           fMain.qTmpLibrary.SQL.Text := 'SELECT Cash.UserID, Cash.ObjectID, Cash.Date_Bargasht, Cash.Login_of_Bargasht FROM Cash '+
-            'WHERE (((Cash.UserID)="'+ fMain.userID +'") AND ((Cash.ObjectID)="'+ fMain.qTmp.Fields[0].AsString +'") AND ((Cash.Date_Bargasht) Is Null)); ';
+            'WHERE (((Cash.UserID)="'+ fMain.selectedUserId +'") AND ((Cash.ObjectID)="'+ fMain.qTmp.Fields[0].AsString +'") AND ((Cash.Date_Bargasht) Is Null)); ';
           fMain.qTmpLibrary.Open;
 
           if fMain.qTmpLibrary.RecordCount <> 0 then
@@ -503,7 +502,7 @@ begin
 
     end;
   end;
-   fMain.B_Refresh.Click;
+   fMain.BRefresh.Click;
 end;
 
 procedure TF_TDE.gReceiveCanEditCell(Sender: TObject; ARow, ACol: Integer; var CanEdit: Boolean);
@@ -650,7 +649,7 @@ begin
 
     B_Preview.Enabled := True;
 
-    fMain.qTmp.SQL.Text:= 'SELECT UserID, MatchID FROM Transactions WHERE UserID='+ fMain.userID +' AND MatchID='+ ExCode;
+    fMain.qTmp.SQL.Text:= 'SELECT UserID, MatchID FROM Transactions WHERE UserID='+ fMain.selectedUserId +' AND MatchID='+ ExCode;
     fMain.qTmp.Open;
     if fMain.qTmp.RecordCount <> 0 then
     begin
@@ -681,7 +680,7 @@ begin
     end;
 
 {
-    fMain.qTmp.SQL.Text:='SELECT Cash.[Examin Code] FROM Cash WHERE (((Cash.[Student Code])="'+ fMain.userID +'") AND ((Cash.[Examin Code]) Like "3'+ IntToStr( AdvOfficePager2.ActivePageIndex +1 ) +'%") AND ((Cash.D_Raft)="'+ShamsiDate( Date, 0 )+'"));';
+    fMain.qTmp.SQL.Text:='SELECT Cash.[Examin Code] FROM Cash WHERE (((Cash.[Student Code])="'+ fMain.selectedUserId +'") AND ((Cash.[Examin Code]) Like "3'+ IntToStr( AdvOfficePager2.ActivePageIndex +1 ) +'%") AND ((Cash.D_Raft)="'+ShamsiDate( Date, 0 )+'"));';
     fMain.qTmp.Open;
 
     if fMain.qTmp.RecordCount >= 2 then

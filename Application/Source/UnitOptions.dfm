@@ -120,7 +120,7 @@ object fOptions: TfOptions
     Height = 381
     AdvOfficePagerStyler = fMain.pagers
     Align = alClient
-    ActivePage = AdvOfficePage1
+    ActivePage = advfcpg2
     AntiAlias = aaAntiAlias
     ButtonSettings.CloseButtonPicture.Data = {
       424DA20400000000000036040000280000000900000009000000010008000000
@@ -809,6 +809,20 @@ object fOptions: TfOptions
             TabOrder = 5
             Items.Strings = (
               '')
+          end
+          object T_CheckBoxLibrary: TAdvOfficeCheckBox
+            Left = 64
+            Top = 55
+            Width = 113
+            Height = 20
+            Enabled = False
+            TabOrder = 6
+            Visible = False
+            Alignment = taLeftJustify
+            Caption = #1579#1576#1578' '#1603#1578#1575#1576' '#1583#1585' '#1603#1578#1575#1576#1582#1575#1606#1607
+            Ellipsis = True
+            ReturnIsTab = False
+            Version = '1.2.4.1'
           end
         end
         object AdvGroupBox2: TAdvGroupBox

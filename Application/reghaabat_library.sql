@@ -127,7 +127,6 @@ CREATE TABLE matches (
 	
 	-- Question
 	ResourceID INT(11) NULL DEFAULT NULL,
-	QPPaper TINYINT(4) NULL DEFAULT NULL,
 	
 	-- Instruction
 	CategoryID TINYINT(4) NULL DEFAULT NULL,
@@ -161,7 +160,7 @@ CREATE TABLE answers (
 	ReceiveTime DATETIME NULL DEFAULT NULL,
 	CorrectTime DATETIME NULL DEFAULT NULL,
 	Rate FLOAT NULL DEFAULT NULL,
-	Score SMALLINT(6) NULL DEFAULT NULL,
+	Score SMALLINT(6) NULL DEFAULT NULL COMMENT 'rate * current_score',
 	PRIMARY KEY (ID)
 );
 CREATE TABLE subanswers (
@@ -203,3 +202,31 @@ INSERT INTO tags	 	(ID, Title) VALUES
 						(0, 'داستانی'), 
 						(1, 'تاریخی'), 
 						(2, 'علمی');
+
+DELIMITER $$
+/* functions */
+
+CREATE FUNCTION getAgeClass(birth DATE) RETURNS INT(11) DETERMINISTIC
+BEGIN
+	DECLARE i, b, e INT;
+	DECLARE y INT DEFAULT TIMESTAMPDIFF(YEAR, birth, NOW());
+	DECLARE r INT DEFAULT -1;
+
+	DECLARE done INT DEFAULT 0;
+	DECLARE cur CURSOR FOR SELECT ID, BeginAge, EndAge FROM ageclasses;
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+	OPEN cur;
+	
+	age_loop: LOOP
+		FETCH cur INTO i, b, e;
+		IF done THEN
+			LEAVE age_loop;
+		ELSEIF y >= b AND y <= e THEN
+			SET r = i;
+			LEAVE age_loop;
+		END IF;
+	END LOOP;
+
+	CLOSE cur;	
+	RETURN r;
+END$$

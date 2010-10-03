@@ -43,11 +43,15 @@ type
     AdvGroupBox3: TAdvGroupBox;
     AdvGroupBox4: TAdvGroupBox;
     iContent: TImage;
+    Label2: TLabel;
+    cbState: TComboBox;
+    meCorrectorId: TMaskEdit;
+    Label5: TLabel;
 
     procedure refresh();
     function validate() : boolean;
     procedure loadData(id : integer);
-    procedure addInstructionMatch(id : integer);
+    procedure addInstructionMatch(id : integer; test : boolean = false);
 
     procedure bPreviewClick(Sender: TObject);
     procedure sLeftChange(Sender: TObject);
@@ -76,7 +80,7 @@ var
 
 implementation
 
-uses UnitMain, UnitTDE;
+uses UnitMain, UnitTDE, UnitTypes;
 
 {$R *.dfm}
 
@@ -104,6 +108,8 @@ begin
   cbCategory.ItemIndex := 0;
   designerId := StrToInt(fMain.loginUserID);
   mContent.Text := '';
+  cbState.ItemIndex := 0;
+  meCorrectorId.Text := '';
 
   bFit.Down := False;
   if bFit.Down then bFit.ImageIndex := 24 else bFit.ImageIndex := 28;
@@ -114,12 +120,19 @@ begin
   cbCategory.SetFocus;
 end;
 function TfInstructionMatch.validate() : boolean;
-var i, j : integer;
 begin
   Result := (eTitle.Text <> '');
   if not Result then
   begin
     fMain.MyShowMessage('لطفا برای مسابقه یك عنوان مناسب انتخاب كنید');
+    exit;
+  end;
+
+  Result := Result and (meCorrectorId.Text <> '    ');
+  Result := Result and (fMain.recordExists('SELECT * FROM users WHERE ID = '+ meCorrectorId.Text));
+  if not Result then
+  begin
+    fMain.MyShowMessage('تصحیح کننده معتبر نیست');
     exit;
   end;
 
@@ -137,13 +150,16 @@ begin
   matchId := id;
   with fMain.myQuery do
   begin
-    SQL.Text := 'SELECT Title, AgeClass, Content, Configuration, DesignerID, CategoryID FROM matches WHERE ID = '+ IntToStr(matchId);
+    SQL.Text := 'SELECT Title, AgeClass, Content, Configuration, DesignerID, CategoryID, CorrectorID, CurrentState FROM matches INNER JOIN supports ON matches.ID = supports.MatchID WHERE matches.ID = '+ IntToStr(matchId);
     Open;
 
     eTitle.Text := FieldByName('Title').AsString;
     cbAgeClass.ItemIndex := FieldByName('AgeClass').AsInteger;
     cbCategory.ItemIndex := FieldByName('CategoryID').AsInteger;
     mContent.Text := FieldByName('Content').AsString;
+    cbState.ItemIndex := ord(StringToState(FieldByName('CurrentState').AsString));
+    meCorrectorId.Text := FieldByName('CorrectorID').AsString;
+
     designerId := FieldByName('DesignerID').AsInteger;
 
     tokpos := 1;
@@ -154,12 +170,15 @@ begin
   end;
   fMain.loadJpeg(IntToStr(matchId), 'match', iContent, fMain.myQuery);
 end;
-procedure TfInstructionMatch.addInstructionMatch(id : integer);
+procedure TfInstructionMatch.addInstructionMatch(id : integer; test : boolean);
 var i, q, tId : Integer; answer : string;
 begin
   tId := fMain.InsertOrUpdate('matches', 'ID = '+ IntToStr(id), ['DesignerID', 'Title', 'AgeClass', 'CategoryID', 'Content', 'Configuration'], [designerId, fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex, cbCategory.ItemIndex, fMain.correctString(mContent.Lines.Text), sHeight.Text +' '+ sWidth.Text +' '+ sTop.Text +' '+ sLeft.Text]);
   if tId <> -1 then id := tId;
   if imgChange then fMain.InsertOrUpdateJpeg(IntToStr(id), 'match', iContent);
+
+  if not test then
+  fMain.InsertOrUpdate('supports', 'TournamentID = 1 AND MatchID = '+ IntToStr(id), ['TournamentID', 'MatchID', 'CorrectorID', 'CurrentState'], [1, id, meCorrectorId.Text, StateToString(TMatchState(cbState.ItemIndex))]);
 end;
 
 // GUI
@@ -209,9 +228,14 @@ begin
 end;
 
 procedure TfInstructionMatch.FormCreate(Sender: TObject);
+var sc : TMatchState;
 begin
   iContent.Top := 0;
   iContent.Left := 0;
+
+  cbState.Items.Clear;
+  for sc := mActive to mImported do
+    cbState.Items.Add(StateToPersian(sc));
 end;
 
 procedure TfInstructionMatch.iContentMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

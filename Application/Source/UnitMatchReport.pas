@@ -280,7 +280,7 @@ begin
 
     lQuestionMatch:
     begin
-      sql := 'SELECT matches.ID, matches.Title, ageclasses.Title AS AgeClass, matches.QPPaper, matches.DesignerID, QuestionCount, AnswerCount FROM (matches LEFT JOIN ageclasses ON matches.AgeClass = ageclasses.ID) '+
+      sql := 'SELECT matches.ID, matches.Title, ageclasses.Title AS AgeClass, matches.DesignerID, QuestionCount, AnswerCount FROM (matches LEFT JOIN ageclasses ON matches.AgeClass = ageclasses.ID) '+
              'LEFT JOIN (SELECT MatchID, COUNT(Question) AS QuestionCount, COUNT(Answer) AS AnswerCount FROM questions GROUP BY MatchID) AS qs ON matches.ID = qs.MatchID WHERE matches.ResourceID IS NOT NULL';
 
       if fMain.loginUser = uDesigner then sql := sql + ' AND matches.DesignerID = '+ fMain.loginUserID;
@@ -294,21 +294,7 @@ begin
     end;
   end;
 
-  with fMain do
-  begin
-    myQuery.SQL.Text := sql;
-    myQuery.Open;
-
-    Grid.RemoveRows(2, Grid.RowCount-2);
-    Grid.ClearRows(1, 1);
-    for i := 1 to myQuery.RecordCount do
-    begin
-      if i <> myQuery.RecordCount then Grid.AddRow;
-      for j := 0 to myQuery.FieldCount - 1 do
-        Grid.Cells[j, i] := myQuery.Fields[j].AsString;
-      myQuery.Next;
-    end;
-  end;
+  fMain.fillGridWithQuery(Grid, sql);
 {x
   CB_Sort.ItemIndex := 9 - Grid.SortSettings.Column;
   if Grid.SortSettings.Direction = sdAscending then CB_SortDir.ItemIndex := 0 else  CB_SortDir.ItemIndex := 1;

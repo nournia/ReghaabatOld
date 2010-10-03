@@ -116,6 +116,8 @@ object fMatchList: TfMatchList
       Appearance.GradientDown = ggVertical
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
+      Enabled = False
+      Layout = blGlyphRight
       Style = bsCheck
     end
     object BitBtn5: TAdvGlowButton
@@ -164,6 +166,7 @@ object fMatchList: TfMatchList
       Appearance.GradientDown = ggVertical
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
+      Layout = blGlyphRight
     end
     object BitBtn2: TAdvGlowButton
       Left = 8
@@ -212,6 +215,7 @@ object fMatchList: TfMatchList
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
       Enabled = False
+      Layout = blGlyphRight
     end
     object AdvGroupBox1: TAdvGroupBox
       Left = 232
@@ -460,7 +464,7 @@ object fMatchList: TfMatchList
       Width = 43
       Height = 22
       Value = 0
-      DateValue = 40449.407502013890000000
+      DateValue = 40452.742680636580000000
       HexValue = 0
       Anchors = [akTop, akRight]
       Enabled = True
@@ -705,6 +709,8 @@ object fMatchList: TfMatchList
     SearchFooter.HintHighlight = 'Highlight occurences'
     SearchFooter.MatchCaseCaption = 'Match case'
     SearchFooter.ShowClose = False
+    SearchFooter.ShowFindNext = False
+    SearchFooter.ShowFindPrev = False
     SearchFooter.ShowHighLight = False
     SearchFooter.ShowMatchCase = False
     SearchFooter.Visible = True

@@ -90,7 +90,7 @@ begin
   for i := 1 to gSetScore.RowCount do
     if gSetScore.Cells[1,i] <> '' then
       fMain.executeCommand('UPDATE Transactions SET ScoreDate = "'+ fMain.getShamsiDate +'", Score = '+ gSetScore.Cells[1,i] +', OperatorID = '+ fMain.loginUserID +' WHERE UserID = '+ gSetScore.Cells[6,i] +' AND MatchID = '+ gSetScore.Cells[4,i]);
-  fMain.B_Refresh.Click;
+  fMain.bRefresh.Click;
 end;
 
 procedure TfSetScore.BitBtn4Click(Sender: TObject);
@@ -100,7 +100,7 @@ begin
   DRa := ''; DBa := '';
   matchID := fMain.StrToMatchID(ME_Position.Text);
 
-  fMain.qTmp.SQL.Text := 'SELECT * FROM Transactions WHERE UserID = '+ fMain.userID +' AND MatchID = '+ matchID;
+  fMain.qTmp.SQL.Text := 'SELECT * FROM Transactions WHERE UserID = '+ fMain.selectedUserId +' AND MatchID = '+ matchID;
   fMain.qTmp.Open;
   if fMain.qTmp.RecordCount > 0 then
   begin
@@ -110,10 +110,10 @@ begin
   if DRa = '' then DRa := fMain.getShamsiDate;
   if DBa = '' then DBa := fMain.getShamsiDate;
 
-  fMain.executeCommand('DELETE FROM Transactions WHERE UserID = '+ fMain.userID +' AND MatchID = '+ matchID);
-  fMain.executeCommand('INSERT INTO Transactions (UserID, MatchID, DeliverDate, ReceiveDate) VALUES ('+ fMain.userID +', '+ matchID +', "'+ DRa +'", "'+ DBa +'")');
+  fMain.executeCommand('DELETE FROM Transactions WHERE UserID = '+ fMain.selectedUserId +' AND MatchID = '+ matchID);
+  fMain.executeCommand('INSERT INTO Transactions (UserID, MatchID, DeliverDate, ReceiveDate) VALUES ('+ fMain.selectedUserId +', '+ matchID +', "'+ DRa +'", "'+ DBa +'")');
 
-  fMain.B_Refresh.Click;
+  fMain.bRefresh.Click;
 end;
 
 procedure TfSetScore.gSetScoreEditingDone(Sender: TObject);
@@ -153,12 +153,12 @@ var
 begin
   if key = 13 then
   begin
-    if fMain.userID = '' then abort;
+    if fMain.selectedUserId = '' then abort;
 
     ME_Position.SelectAll;
 
     Code := fMain.StrToMatchID(ME_Position.Text);
-    User := fMain.userID;
+    User := fMain.selectedUserId;
     L_Position.Caption := '';
 
     fMain.qTmp.SQL.Text:='SELECT ID FROM Matches WHERE ID = '+ Code;
@@ -201,9 +201,9 @@ begin
   gSetScore.RowCount := 2;
   gSetScore.ClearRows(1,1);
 
-  if fMain.userID <> '' then
+  if fMain.selectedUserId <> '' then
   begin
-  if RG_TS.ItemIndex = 0 then cond := ' AND DesignerID = '+ fMain.userID else cond := ' AND UserID = '+ fMain.userID;
+  if RG_TS.ItemIndex = 0 then cond := ' AND DesignerID = '+ fMain.selectedUserId else cond := ' AND UserID = '+ fMain.selectedUserId;
   fMain.qTmp.SQL.Text := 'SELECT UserID, LastName, MatchID, Title, MaxScore FROM Transactions, Matches, Users WHERE Transactions.UserID = Users.ID AND Transactions.MatchID = Matches.ID AND '+
                           'ReceiveDate Is Not Null AND DeliverDate Is Not Null AND ScoreDate Is Null AND ReceiveDate >= "'+ fMain.options.Values['BeginDate'] + '"' + cond;
   fMain.qTmp.Open;

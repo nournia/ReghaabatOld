@@ -14,13 +14,14 @@ object fResource: TfResource
   OldCreateOrder = False
   ParentBiDiMode = False
   Visible = True
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object AdvPanel1: TAdvPanel
     Left = 0
     Top = 0
     Width = 759
-    Height = 405
+    Height = 404
     Align = alClient
     BevelOuter = bvNone
     Color = 16445929
@@ -67,7 +68,7 @@ object fResource: TfResource
       Left = 0
       Top = 0
       Width = 759
-      Height = 405
+      Height = 404
       Align = alClient
       TabOrder = 0
       object gMultiMedia: TAdvGroupBox
@@ -78,7 +79,6 @@ object fResource: TfResource
         BorderStyle = bsNone
         Align = alTop
         TabOrder = 2
-        ExplicitTop = 159
         DesignSize = (
           755
           46)
@@ -134,7 +134,7 @@ object fResource: TfResource
           Width = 54
           Height = 22
           Value = 0
-          DateValue = 40451.619980925930000000
+          DateValue = 40452.749770370370000000
           HexValue = 0
           Anchors = [akTop, akRight]
           Ctl3D = True
@@ -163,16 +163,13 @@ object fResource: TfResource
         Left = 2
         Top = 203
         Width = 755
-        Height = 200
+        Height = 199
         BorderStyle = bsNone
         Align = alClient
         TabOrder = 3
-        ExplicitLeft = 1
-        ExplicitTop = 211
-        ExplicitHeight = 191
         DesignSize = (
           755
-          200)
+          199)
         object Label2: TLabel
           Left = 722
           Top = 7
@@ -211,7 +208,7 @@ object fResource: TfResource
           Left = 7
           Top = 30
           Width = 740
-          Height = 166
+          Height = 165
           Margins.Left = 5
           Margins.Right = 5
           Anchors = [akLeft, akTop, akRight, akBottom]
@@ -225,7 +222,6 @@ object fResource: TfResource
           ParentFont = False
           ScrollBars = ssVertical
           TabOrder = 1
-          ExplicitHeight = 208
         end
       end
       object gProperties: TAdvGroupBox
@@ -385,7 +381,7 @@ object fResource: TfResource
           Left = 116
           Top = 55
           Width = 194
-          Height = 22
+          Height = 21
           AutoDropWidthSize = False
           Ctl3D = True
           EditorEnabled = False
@@ -451,7 +447,6 @@ object fResource: TfResource
         BorderStyle = bsNone
         Align = alTop
         TabOrder = 1
-        ExplicitTop = 132
         DesignSize = (
           755
           27)
@@ -476,7 +471,7 @@ object fResource: TfResource
           Width = 54
           Height = 22
           Value = 0
-          DateValue = 40451.619980937500000000
+          DateValue = 40452.749770381950000000
           HexValue = 0
           Anchors = [akTop, akRight]
           Ctl3D = True
@@ -505,9 +500,9 @@ object fResource: TfResource
   end
   object AdvPanel2: TAdvPanel
     Left = 0
-    Top = 405
+    Top = 404
     Width = 759
-    Height = 33
+    Height = 34
     Align = alBottom
     BevelOuter = bvNone
     Color = 16445929
@@ -552,7 +547,7 @@ object fResource: TfResource
     FullHeight = 0
     object bApply: TAdvGlowButton
       Left = 9
-      Top = 3
+      Top = 4
       Width = 100
       Height = 26
       Caption = #1578#1575#1610#1610#1583

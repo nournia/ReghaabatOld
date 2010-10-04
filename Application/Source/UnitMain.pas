@@ -96,7 +96,7 @@ type
     nReceive: TAdvGlowButton;
     AdvToolBar10: TAdvToolBar;
     nMatchList: TAdvGlowButton;
-    nSetScore: TAdvGlowButton;
+    nCorrect: TAdvGlowButton;
     nDesigner: TAdvGlowButton;
     AdvToolBar9: TAdvToolBar;
     nImport: TAdvGlowButton;
@@ -206,7 +206,7 @@ type
     procedure nConnectMatchClick(Sender: TObject);
     procedure M_ConnectPathLibraryClick(Sender: TObject);
     procedure M_ConnectPathMatchClick(Sender: TObject);
-    procedure nSetScoreClick(Sender: TObject);
+    procedure nCorrectClick(Sender: TObject);
 
     procedure presetMenu();
     procedure postsetMenu(title : string; form : TForm);
@@ -696,7 +696,7 @@ begin
   begin
 //x    nPay.Enabled:=True;
 //x    nFreeScore.Enabled:=True;
-//x    nSetScore.Enabled:=True;
+    nCorrect.Enabled:=True;
 //x    nTotalReport.Enabled:=True;
 //x    nDesigner.Enabled:=True;
 //x    nLog.Enabled:=True;
@@ -733,7 +733,7 @@ begin
   nQuestionMatches.Enabled := False;
   nInstructionMatches.Enabled := False;
   nPay.Enabled:=False;
-  nSetScore.Enabled:=False;
+  nCorrect.Enabled:=False;
   nTotalReport.Enabled:=False;
   nLog.Enabled:=False;
   nOptions.Enabled:=False;
@@ -1387,6 +1387,7 @@ begin
   grid.Columns[strech].HeaderAlignment := taLeftJustify;
   grid.ColumnSize.StretchColumn := strech;
   grid.ColumnSize.Stretch := true;
+  grid.FixedCols := 1;
   grid.Options := [goRowSelect, goHorzLine];
 end;
 
@@ -1808,6 +1809,7 @@ begin
 
     if fDeliver <> nil then fDeliver.selectFrame;
     if fReceive <> nil then fReceive.selectFrame;
+    if fCorrect <> nil then fCorrect.selectFrame;
 
 {
 // TDE Code --------------------------------------------------------------------
@@ -1855,7 +1857,6 @@ begin
   end;
 
 // other forms
-  if fSetScore <> nil then fSetScore.selectFrame;
   if fFreeScore <> nil then fFreeScore.selectFrame;
   if fDesigner <> nil then fDesigner.selectFrame;
   }
@@ -1949,70 +1950,11 @@ begin
   selectedUserId := '';
 
   Picture.Refresh;
-{
-  if F_TDE <> nil then
-  begin
-// TDE Code --------------------------------------------------------------------
-  if F_TDE <> nil then
-  with F_TDE do
-  begin
-  AdvOfficePager.Enabled := False;
 
-  // Dariaft
-    qReceive.Close;
-
-  // Score
-    S_Label10.Caption := '0';
-    S_Label4.Caption := '0';
-    S_Label2.Caption := '0';
-    SpinEdit1.Value := 0;
-    qScore.Close;
-    gScore.Options := gScore.Options - [goEditing];
-
-  // Tahveel
-    gDeliver.RowCount := 2;
-    gDeliver.ClearRows(1,1);
-    qDeliver.Close;
-
-    B_Ok.Enabled := False;
-    B_Preview.Enabled := False;
-    T_CheckBoxLibrary.Enabled := False;
-    T_CheckBoxLibrary.Checked := False;
-
-    Label13.Caption := '';
-    Label10.Caption := '';
-    Label11.Caption := '';
-    Label16.Caption := '';
-    Label19.Caption := '';
-    Label17.Caption := '';
-    Label30.Caption := '';
-    Label31.Caption := '';
-    LCBook.Caption := '0';
-    LCPaint.Caption := '0';
-    LCWork.Caption := '0';
-    LCCD.Caption := '0';
-
-    MaskEdit1.Text := '';
-    MaskEdit2.Text := '';
-    MaskEdit4.Text := '';
-    MaskEdit6.Text := '';
-    if fMain.ICLibrary.Visible then
-    begin
-      MaskEdit3.Text := '';
-      MaskEdit5.Text := '';
-    end;
-
-    LCBook.Font.Color := clBlue;
-    LCWork.Font.Color := clBlue;
-    LCPaint.Font.Color := clBlue;
-    LCCD.Font.Color := clBlue;
-  end;
-}
-// other forms
   if fDeliver <> nil then fDeliver.deselectFrame;
   if fReceive <> nil then fReceive.deselectFrame;
+  if fCorrect <> nil then fCorrect.deselectFrame;
 {
-  if fSetScore <> nil then fSetScore.deselectFrame;
   if fFreeScore <> nil then fFreeScore.deselectFrame;
   if fDesigner <> nil then fDesigner.deselectFrame;
 }
@@ -2107,7 +2049,7 @@ begin
   if fDeliver = nil then Application.CreateForm(TfDeliver, fDeliver);
   with fDeliver do
   begin
-    addGridColumns(gDeliver, ['', 'عنوان'], 1);
+    addGridColumns(gDeliver, ['', 'عنوان', 'امتیاز'], 1);
     gDeliver.Columns[0].Width := 0;
   end;
 
@@ -2169,23 +2111,25 @@ begin
   if selectedUserId = '' then meUserId.SetFocus;
 end;
 
-procedure TfMain.nSetScoreClick(Sender: TObject);
+procedure TfMain.nCorrectClick(Sender: TObject);
 begin
-  AdvToolBarPager.Caption.Caption := 'تعیین امتیاز مسابقات';
-
-  P_Temp.Visible := True;
+  presetMenu;
   pUser.Visible := True;
-  P_SearchUser.Visible := False;
 
-  if fSetScore = nil then
-    Application.CreateForm( TfSetScore, fSetScore );
+  if fCorrect = nil then Application.CreateForm(TfCorrect, fCorrect);
+  with fCorrect do
+  begin
+    addGridColumns(gCorrect, ['', '', 'شرکت کننده', 'عنوان', 'کیفیت (0 تا 2)'], 3);
+    gCorrect.FixedCols := 2;
+    gCorrect.Columns[0].Width := 0;
+    gCorrect.Columns[1].Width := 0;
+    gCorrect.Columns[4].ReadOnly := false;
+    gCorrect.Columns[4].Editor := edFloat;
+    gCorrect.Options := gCorrect.Options - [goRowSelect] + [goVertLine];
+  end;
 
-  if selectedUserId <> '' then
-    fSetScore.selectFrame
-  else meUserId.SetFocus;
-
-  fSetScore.BringToFront;
-  P_Temp.Visible :=  False;
+  postsetMenu('تعیین امتیاز مسابقات', fCorrect);
+  if selectedUserId <> '' then fDeliver.selectFrame else meUserId.SetFocus;
 end;
 
 procedure TfMain.nDesignerClick(Sender: TObject);

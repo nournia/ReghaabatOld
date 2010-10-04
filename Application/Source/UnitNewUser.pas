@@ -14,7 +14,6 @@ type
     AdvPanel1: TAdvPanel;
     AdvPanel2: TAdvPanel;
     bApply: TAdvGlowButton;
-    bLogin: TAdvGlowButton;
     AdvGroupBox1: TAdvGroupBox;
     fs: TAdvFormStyler;
     ps: TAdvPanelStyler;
@@ -61,14 +60,10 @@ type
     procedure refresh();
     function validate() : boolean;
     procedure loadData(id : integer);
-
-    procedure Edit3KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ePasswordChange(Sender: TObject);
     procedure bAccountsClick(Sender: TObject);
     procedure CheckBox4Click(Sender: TObject);
     procedure MaskEdit3KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure Edit2KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure Edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure bApplyClick(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
@@ -78,7 +73,6 @@ type
     procedure loadUserFromLibrary();
     procedure bImportFromLibraryClick(Sender: TObject);
     procedure bEditClick(Sender: TObject);
-    procedure eNationalIDKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ePhoneKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
     procedure fillCBLogin(userID : string);
@@ -106,13 +100,12 @@ begin
 
   bAccounts.Visible := (fMain.P_LS.ImageIndex > 0);
   gDescription.Visible := bAccounts.Visible;
-  bLogin.Down := False;
+  pLogin.ImageIndex := -1;
 
   fillCBLogin('');
   meUserID.Text := '';
   imgChange := false;
   cbLogin.ItemIndex := 0;
-  bLogin.Visible := True;
   pLogin.Visible := true;
   Edit1.Text := '';
   Edit2.Text := '';
@@ -188,10 +181,7 @@ begin
           if FieldByName('Permission').AsString <> '' then cbLogin.ItemIndex := pix else cbLogin.ItemIndex := 0;
           ePassword.Text := decrypt(FieldByName('UserPass').AsString);
         end else
-        begin
-          bLogin.Visible := false;
           pLogin.Visible := false;
-        end;
 
         fMain.loadJpeg(FieldByName('ID').AsString, 'user', Image1, fMain.myQuery);
       end;
@@ -276,7 +266,7 @@ begin
     if imgChange then
       fMain.InsertOrUpdateJpeg(IntToStr(userID), 'user', Image1);
 
-    if bLogin.Visible then
+    if pLogin.Visible then
     begin
       fMain.executeCommand('UPDATE users SET UserPass = "'+ encrypt(ePassword.Text) +'" WHERE ID = '+ IntToStr(userID));
 
@@ -292,7 +282,14 @@ begin
                           [1, userID, user, 1]);
     end;
 
-    if tId <> -1 then fMain.MyShowMessage('عضو جدید با کد '+ IntToStr(userID) +' ثبت شد');
+    if tId <> -1 then
+    begin
+      fMain.InsertOrUpdate('scores', 'TournamentID = 1 AND UserID = '+ IntToStr(userID),
+                          ['TournamentID', 'UserID', 'ParticipateTime'],
+                          [1, userID, Now]);
+
+      fMain.MyShowMessage('عضو جدید با کد '+ IntToStr(userID) +' ثبت شد');
+    end;
   {
     fMain.myQuery.SQL.Text := 'SELECT Permission FROM permissions WHERE Permission = "'+ fMain.UserToString(uAdmin) +'" OR Permission = "'+ fMain.UserToString(uMaster) +'"';
     fMain.myQuery.Open;
@@ -321,29 +318,9 @@ begin
   else ePassword.PasswordChar := #0;
 end;
 
-procedure TfUser.Edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = 13 then Edit2.SetFocus;
-end;
-
-procedure TfUser.Edit2KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = 13 then eNationalID.SetFocus;
-end;
-
-procedure TfUser.Edit3KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = 13 then bApply.SetFocus;
-end;
-
-procedure TfUser.eNationalIDKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if key = 13 then MaskEdit3.SetFocus;
-end;
-
 procedure TfUser.ePasswordChange(Sender: TObject);
 begin
-  if ePassword.Text = '' then bLogin.Down := False else bLogin.Down := True;
+  if ePassword.Text = '' then pLogin.ImageIndex := -1 else pLogin.ImageIndex := 0;
 end;
 
 procedure TfUser.SpeedButton1Click(Sender: TObject);

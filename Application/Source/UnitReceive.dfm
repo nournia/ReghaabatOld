@@ -305,14 +305,16 @@ object fReceive: TfReceive
       StatusBar.ColorTo = 16109747
       StatusBar.GradientDirection = gdVertical
       Styler = ps
+      ExplicitLeft = 1
+      ExplicitTop = 368
       FullHeight = 0
       object bApply: TAdvGlowButton
         Left = 9
-        Top = 3
+        Top = 4
         Width = 100
         Height = 26
         Caption = #1583#1585#1740#1575#1601#1578
-        ImageIndex = 13
+        ImageIndex = 0
         Images = fMain.ilButton
         DisabledImages = fMain.ilButtonOff
         NotesFont.Charset = DEFAULT_CHARSET
@@ -353,10 +355,11 @@ object fReceive: TfReceive
         Appearance.GradientDown = ggVertical
         Appearance.GradientMirrorDown = ggVertical
         Appearance.GradientChecked = ggVertical
+        Layout = blGlyphRight
       end
-      object AdvGlowButton1: TAdvGlowButton
-        Left = 116
-        Top = 3
+      object bRemove: TAdvGlowButton
+        Left = 115
+        Top = 4
         Width = 100
         Height = 26
         Caption = #1581#1584#1601
@@ -371,7 +374,7 @@ object fReceive: TfReceive
         Transparent = True
         TabOrder = 1
         TabStop = True
-        OnClick = AdvGlowButton1Click
+        OnClick = bRemoveClick
         Appearance.BorderColor = 14727579
         Appearance.BorderColorHot = 10079963
         Appearance.BorderColorDown = 4548219
@@ -401,6 +404,7 @@ object fReceive: TfReceive
         Appearance.GradientDown = ggVertical
         Appearance.GradientMirrorDown = ggVertical
         Appearance.GradientChecked = ggVertical
+        Layout = blGlyphRight
       end
     end
   end

@@ -2,7 +2,6 @@ object fDeliver: TfDeliver
   Left = 0
   Top = 0
   BiDiMode = bdRightToLeft
-  Caption = '0'
   ClientHeight = 343
   ClientWidth = 774
   Color = clBtnFace
@@ -306,13 +305,14 @@ object fDeliver: TfDeliver
       StatusBar.ColorTo = 16109747
       StatusBar.GradientDirection = gdVertical
       Styler = ps
+      ExplicitTop = 306
       DesignSize = (
         770
         34)
       FullHeight = 0
       object bPreview: TAdvGlowButton
         Left = 660
-        Top = 3
+        Top = 4
         Width = 100
         Height = 26
         Anchors = [akTop, akRight]
@@ -361,7 +361,7 @@ object fDeliver: TfDeliver
       end
       object chPrint: TAdvOfficeCheckBox
         Left = 121
-        Top = 6
+        Top = 7
         Width = 49
         Height = 20
         Checked = True
@@ -375,11 +375,11 @@ object fDeliver: TfDeliver
       end
       object bApply: TAdvGlowButton
         Left = 9
-        Top = 3
+        Top = 4
         Width = 100
         Height = 26
         Caption = #1578#1581#1608#1740#1604
-        ImageIndex = 12
+        ImageIndex = 0
         Images = fMain.ilButton
         DisabledImages = fMain.ilButtonOff
         NotesFont.Charset = DEFAULT_CHARSET
@@ -420,6 +420,7 @@ object fDeliver: TfDeliver
         Appearance.GradientDown = ggVertical
         Appearance.GradientMirrorDown = ggVertical
         Appearance.GradientChecked = ggVertical
+        Layout = blGlyphRight
       end
     end
   end

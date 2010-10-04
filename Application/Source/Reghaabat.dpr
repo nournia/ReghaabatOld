@@ -4,7 +4,7 @@ uses
   Forms,
   UnitMain in 'UnitMain.pas' {fMain},
   UnitTDE in 'UnitTDE.pas' {F_TDE},
-  UnitSetScore in 'UnitSetScore.pas' {fSetScore},
+  UnitSetScore in 'UnitSetScore.pas' {fCorrect},
   uCryptography in 'uCryptography.pas',
   UnitTarrahReport in 'UnitTarrahReport.pas' {fDesigner},
   UnitResumeTahvil in 'UnitResumeTahvil.pas' {fFreeScore},

@@ -38,7 +38,13 @@ uses UnitMain;
 
 procedure TfDeliver.selectFrame();
 begin
-  fMain.fillGridWithQuery(gDeliver, 'SELECT ID, Title FROM matches INNER JOIN supports ON matches.ID = supports.MatchID WHERE supports.TournamentID = 1 AND matches.ID NOT IN (SELECT MatchID FROM answers WHERE UserID = '+ fMain.selectedUserId +')');
+  with fMain do
+  begin
+    executeCommand('CALL prepareUserMatchScores('+ fMain.selectedUserId +')');
+    fillGridWithQuery(gDeliver, 'SELECT matches.ID, matches.Title, MAX(userMatchScores.UserScore) AS Score FROM userMatchScores INNER JOIN matches ON userMatchScores.MatchID = matches.ID WHERE matches.ID NOT IN (SELECT MatchID FROM answers WHERE UserID = '+ fMain.selectedUserId +') GROUP BY matches.ID, matches.Title ORDER BY UserScore DESC');
+    executeCommand('DROP TEMPORARY TABLE userMatchScores');
+  end;
+
   gbAll.Enabled := true;
   gDeliver.SetFocus;
 end;
@@ -52,7 +58,7 @@ end;
 procedure TfDeliver.bApplyClick(Sender: TObject);
 begin
   fMain.InsertOrUpdate('answers', 'ID = -1', ['UserID', 'MatchID', 'DeliverTime'], [StrToInt(fMain.selectedUserId), StrToInt(gDeliver.Cells[0, gDeliver.Row]), Now] );
-  deselectFrame;
+  fMain.bRefreshClick(nil);
 end;
 
 end.

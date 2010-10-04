@@ -194,7 +194,7 @@ object fUser: TfUser
         Anchors = [akTop, akRight]
         ParentBackground = False
         ParentCtl3D = True
-        TabOrder = 6
+        TabOrder = 7
         ItemIndex = 0
         Items.Strings = (
           #1570#1602#1575
@@ -211,7 +211,7 @@ object fUser: TfUser
         CaptionPosition = cpTopRight
         Anchors = [akLeft, akTop, akRight]
         ParentCtl3D = True
-        TabOrder = 7
+        TabOrder = 6
         DesignSize = (
           741
           27)
@@ -268,7 +268,6 @@ object fUser: TfUser
         ParentCtl3D = False
         ParentFont = False
         TabOrder = 0
-        OnKeyDown = Edit1KeyDown
       end
       object SpeedButton2: TAdvGlowButton
         Left = 17
@@ -409,7 +408,6 @@ object fUser: TfUser
         ParentCtl3D = False
         ParentFont = False
         TabOrder = 2
-        OnKeyDown = eNationalIDKeyDown
       end
       object MaskEdit3: TMaskEdit
         Left = 607
@@ -498,7 +496,6 @@ object fUser: TfUser
         ParentCtl3D = False
         ParentFont = False
         TabOrder = 1
-        OnKeyDown = Edit2KeyDown
       end
       object ePhone: TEdit
         Left = 586
@@ -526,6 +523,8 @@ object fUser: TfUser
       Width = 752
       Height = 75
       CaptionPosition = cpTopRight
+      Images = fMain.ilButton
+      ImageIndex = 0
       Align = alTop
       Caption = #1581#1602' '#1608#1585#1608#1583
       ParentCtl3D = True
@@ -709,55 +708,6 @@ object fUser: TfUser
       Appearance.GradientMirrorDown = ggVertical
       Appearance.GradientChecked = ggVertical
       Layout = blGlyphRight
-    end
-    object bLogin: TAdvGlowButton
-      Left = 115
-      Top = 4
-      Width = 100
-      Height = 26
-      Caption = #1581#1602' '#1608#1585#1608#1583
-      ImageIndex = 22
-      Images = fMain.ilButton
-      DisabledImages = fMain.ilButtonOff
-      NotesFont.Charset = DEFAULT_CHARSET
-      NotesFont.Color = clWindowText
-      NotesFont.Height = -11
-      NotesFont.Name = 'Tahoma'
-      NotesFont.Style = []
-      Transparent = True
-      TabOrder = 1
-      OnClick = bLoginClick
-      Appearance.BorderColor = 14727579
-      Appearance.BorderColorHot = 10079963
-      Appearance.BorderColorDown = 4548219
-      Appearance.BorderColorChecked = 4548219
-      Appearance.Color = 15653832
-      Appearance.ColorTo = 16178633
-      Appearance.ColorChecked = 11918331
-      Appearance.ColorCheckedTo = 7915518
-      Appearance.ColorDisabled = 15921906
-      Appearance.ColorDisabledTo = 15921906
-      Appearance.ColorDown = 7778289
-      Appearance.ColorDownTo = 4296947
-      Appearance.ColorHot = 15465983
-      Appearance.ColorHotTo = 11332863
-      Appearance.ColorMirror = 15586496
-      Appearance.ColorMirrorTo = 16245200
-      Appearance.ColorMirrorHot = 5888767
-      Appearance.ColorMirrorHotTo = 10807807
-      Appearance.ColorMirrorDown = 946929
-      Appearance.ColorMirrorDownTo = 5021693
-      Appearance.ColorMirrorChecked = 10480637
-      Appearance.ColorMirrorCheckedTo = 5682430
-      Appearance.ColorMirrorDisabled = 11974326
-      Appearance.ColorMirrorDisabledTo = 15921906
-      Appearance.GradientHot = ggVertical
-      Appearance.GradientMirrorHot = ggVertical
-      Appearance.GradientDown = ggVertical
-      Appearance.GradientMirrorDown = ggVertical
-      Appearance.GradientChecked = ggVertical
-      Layout = blGlyphRight
-      Style = bsCheck
     end
   end
   object gAccounts: TAdvColumnGrid

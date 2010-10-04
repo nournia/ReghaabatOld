@@ -15,12 +15,12 @@ type
     gReceive: TAdvColumnGrid;
     AdvPanel2: TAdvPanel;
     bApply: TAdvGlowButton;
-    AdvGlowButton1: TAdvGlowButton;
+    bRemove: TAdvGlowButton;
 
     procedure selectFrame();
     procedure deselectFrame();
     procedure bApplyClick(Sender: TObject);
-    procedure AdvGlowButton1Click(Sender: TObject);
+    procedure bRemoveClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -49,10 +49,10 @@ begin
 end;
 
 // GUI
-procedure TfReceive.AdvGlowButton1Click(Sender: TObject);
+procedure TfReceive.bRemoveClick(Sender: TObject);
 begin
   fMain.executeCommand('DELETE FROM answers WHERE UserID = '+ fMain.selectedUserId + ' AND MatchID = '+ gReceive.Cells[0, gReceive.Row]);
-  fMain.bRefreshClick(nil);
+  gReceive.RemoveRows(gReceive.Row, 1);
 end;
 
 procedure TfReceive.bApplyClick(Sender: TObject);

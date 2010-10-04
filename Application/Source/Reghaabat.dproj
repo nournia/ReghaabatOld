@@ -52,7 +52,7 @@
 				<Form>F_TDE</Form>
 			</DCCReference>
 			<DCCReference Include="UnitSetScore.pas">
-				<Form>fSetScore</Form>
+				<Form>fCorrect</Form>
 			</DCCReference>
 			<DCCReference Include="uCryptography.pas"/>
 			<DCCReference Include="UnitTarrahReport.pas">
@@ -153,7 +153,7 @@
 						<VersionInfo Name="MajorVer">3</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">1052</VersionInfo>
+						<VersionInfo Name="Build">1090</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -165,7 +165,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">Rooyesh</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">3.0.0.1052</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">3.0.0.1090</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>

@@ -24,7 +24,7 @@ object fUser: TfUser
     Left = 0
     Top = 33
     Width = 758
-    Height = 407
+    Height = 406
     Align = alClient
     BevelOuter = bvNone
     Color = 16445929
@@ -184,7 +184,7 @@ object fUser: TfUser
         Transparent = True
         ExplicitLeft = 733
       end
-      object RG_S: TAdvOfficeRadioGroup
+      object rgGender: TAdvOfficeRadioGroup
         Left = 459
         Top = 5
         Width = 70
@@ -233,7 +233,7 @@ object fUser: TfUser
           Transparent = True
           ExplicitLeft = 712
         end
-        object edtDescription: TEdit
+        object eDescription: TEdit
           Left = 14
           Top = 3
           Width = 653
@@ -252,7 +252,7 @@ object fUser: TfUser
           TabOrder = 0
         end
       end
-      object Edit1: TEdit
+      object eFirstName: TEdit
         Left = 537
         Top = 12
         Width = 133
@@ -375,7 +375,7 @@ object fUser: TfUser
         Appearance.GradientMirrorDown = ggVertical
         Appearance.GradientChecked = ggVertical
       end
-      object Edit7: TEdit
+      object eAddress: TEdit
         Left = 17
         Top = 133
         Width = 653
@@ -409,7 +409,7 @@ object fUser: TfUser
         ParentFont = False
         TabOrder = 2
       end
-      object MaskEdit3: TMaskEdit
+      object meBirthDate: TMaskEdit
         Left = 607
         Top = 84
         Width = 63
@@ -429,7 +429,7 @@ object fUser: TfUser
         ParentFont = False
         TabOrder = 3
         Text = '    /  /  '
-        OnKeyDown = MaskEdit3KeyDown
+        OnKeyDown = meBirthDateKeyDown
       end
       object AdvGroupBox4: TAdvGroupBox
         Left = 17
@@ -472,7 +472,7 @@ object fUser: TfUser
           ParentFont = False
           Transparent = True
         end
-        object Image1: TImage
+        object iUser: TImage
           Left = 2
           Top = 3
           Width = 54
@@ -480,7 +480,7 @@ object fUser: TfUser
           Stretch = True
         end
       end
-      object Edit2: TEdit
+      object eLastName: TEdit
         Left = 537
         Top = 36
         Width = 133
@@ -513,7 +513,6 @@ object fUser: TfUser
         ParentCtl3D = False
         ParentFont = False
         TabOrder = 4
-        OnKeyDown = ePhoneKeyDown
       end
     end
     object pLogin: TAdvGroupBox
@@ -615,9 +614,9 @@ object fUser: TfUser
   end
   object AdvPanel2: TAdvPanel
     Left = 0
-    Top = 440
+    Top = 439
     Width = 758
-    Height = 33
+    Height = 34
     Align = alBottom
     BevelOuter = bvNone
     Color = 16445929
@@ -661,7 +660,7 @@ object fUser: TfUser
     Styler = ps
     FullHeight = 0
     object bApply: TAdvGlowButton
-      Left = 9
+      Left = 10
       Top = 4
       Width = 100
       Height = 26

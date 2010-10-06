@@ -14,7 +14,7 @@ uses
   UnitLog in 'UnitLog.pas' {fLog},
   UnitTotalReport in 'UnitTotalReport.pas' {fTotalReport},
   UnitChart in 'UnitChart.pas' {fChart},
-  UnitNewUser in 'UnitNewUser.pas' {fUser},
+  UnitUser in 'UnitUser.pas' {fUser},
   UnitOptions in 'UnitOptions.pas' {fOptions},
   UnitSentence in 'UnitSentence.pas' {F_Sentence},
   UnitExImport in 'UnitExImport.pas' {fImport},

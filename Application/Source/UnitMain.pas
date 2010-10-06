@@ -95,8 +95,6 @@ type
     nDeliver: TAdvGlowButton;
     nReceive: TAdvGlowButton;
     AdvToolBar10: TAdvToolBar;
-    nMatchList: TAdvGlowButton;
-    nCorrect: TAdvGlowButton;
     nDesigner: TAdvGlowButton;
     AdvToolBar9: TAdvToolBar;
     nImport: TAdvGlowButton;
@@ -142,7 +140,6 @@ type
     odJPEG: TOpenPictureDialog;
     nFreeScore: TAdvGlowButton;
     sdJPEG: TSavePictureDialog;
-    qTmpImport: TADOQuery;
     odReghaabat: TOpenDialog;
     iEditButtonOff: TImageList;
     pLogin: TAdvGroupBox;
@@ -168,6 +165,9 @@ type
     qfPicture: TMyQuery;
     cMyGlobal: TMyConnection;
     myQueryTmp: TMyQuery;
+    nCorrect: TAdvGlowButton;
+    qImport: TADOQuery;
+    qImportTmp: TADOQuery;
     procedure bSearchUserClick(Sender: TObject);
     procedure nUploadClick(Sender: TObject);
     procedure nAboutClick(Sender: TObject);
@@ -185,7 +185,6 @@ type
     procedure nInstructionMatchesClick(Sender: TObject);
     procedure nQuestionMatchesClick(Sender: TObject);
     procedure nResourcesClick(Sender: TObject);
-    procedure nMatchListClick(Sender: TObject);
     procedure nFreeScoreClick(Sender: TObject);
     procedure nDesignerClick(Sender: TObject);
     procedure M_TarrahReport3Click(Sender: TObject);
@@ -256,6 +255,7 @@ type
     function recordExists(sql : string) : boolean;
     procedure executeCommand(sql : String);
     function searchMatch( Str : String ) : Boolean;
+    function insertGlobalVar(value, table : string) : integer;
 
     function loadJpeg(id, group : String; img: TImage; qry: TMyQuery) : Boolean;
     procedure InsertOrUpdateJpeg(id, kind : String; img : TImage);
@@ -291,13 +291,13 @@ type
 
 var
   fMain: TfMain;
-  LicenseCheckBool : Boolean;
+  ValidLicence : Boolean;
 
 implementation
 
 uses UnitTDE, UnitSetScore, uCryptography,
   UnitTarrahReport, UnitResumeTahvil, UnitMatchReport, UnitDesignBC,
-  UnitDesignWP, UnitLog, UnitTotalReport, UnitChart, UnitNewUser, AdvStyleIF,
+  UnitDesignWP, UnitLog, UnitTotalReport, UnitChart, UnitUser, AdvStyleIF,
   UnitOptions, UnitSentence, UnitExImport, UnitForm, UnitAbout, UnitWeb, UnitMessage,
   UFaDate, uShamsiDate, UnitReference, UnitDeliver, UnitReceive;
 
@@ -540,7 +540,7 @@ begin
     themeTmp := options.Values['Theme'];
   end;
 
-  filename := ExtractFileDir(exen)+'\op.mpt';
+  filename := ExtractFileDir(exen)+'\op';
   if FileExists(filename) then
   begin
     DecodeFile(filename);
@@ -555,14 +555,11 @@ begin
   if options.Values['AutoConnectLibrary'] = '' then options.Values['AutoConnectLibrary'] := BoolToStr(false);
   if options.Values['DownGrade'] = '' then options.Values['DownGrade'] := BoolToStr(true);
 
-  if options.Values['BeginDate'] = '' then options.Values['BeginDate'] := '1380/01/01';
   if options.Values['CBookMatch'] = '' then options.Values['CBookMatch'] := '1';
   if options.Values['CCDMatch'] = '' then options.Values['CCDMatch'] := '1';
   if options.Values['CWorkMatch'] = '' then options.Values['CWorkMatch'] := '1';
   if options.Values['CPaintMatch'] = '' then options.Values['CPaintMatch'] := '1';
-  if options.Values['ChildAge'] = '' then options.Values['ChildAge'] := '10';
   if options.Values['Paper'] = '' then options.Values['Paper'] := 'A4';
-  if options.Values['MatchAddress'] = '' then options.Values['MatchAddress'] := 'Reghaabat.mdb';
   if options.Values['LibraryAddress'] = '' then options.Values['LibraryAddress'] := 'Library.mdb';
   if options.Values['Theme'] = '' then options.Values['Theme'] := 'Blue';
   if options.Values['ComputerID'] = '' then options.Values['ComputerID'] := getComputerID;
@@ -571,15 +568,6 @@ begin
   printer:= TPrinter.Create;
   if printer.Printers.Count = 0 then tmp := 0 else tmp := printer.PrinterIndex;
   if options.Values['Printer'] = '' then options.Values['Printer'] :=  IntToStr(tmp);
-
-  if options.Values['LvMin1'] = '' then options.Values['LvMin1'] := '7';
-  if options.Values['LvMax1'] = '' then options.Values['LvMax1'] := '9';
-  if options.Values['LvMin2'] = '' then options.Values['LvMin2'] := '10';
-  if options.Values['LvMax2'] = '' then options.Values['LvMax2'] := '12';
-  if options.Values['LvMin3'] = '' then options.Values['LvMin3'] := '13';
-  if options.Values['LvMax3'] = '' then options.Values['LvMax3'] := '15';
-  if options.Values['LvMin4'] = '' then options.Values['LvMin4'] := '16';
-  if options.Values['LvMax4'] = '' then options.Values['LvMax4'] := '20';
 
   if options.Values['BookTip'] = '' then options.Values['BookTip'] := 'نوشتن خلاصه‌ای از کتاب مسابقه به اندازه پاسخ‌گویی به سوالها امتیاز دارد.';
   if options.Values['WorkTip'] = '' then options.Values['WorkTip'] := 'گزارشی از نحوه انجام خواسته‌های مسابقه تهیه کنید.';
@@ -605,7 +593,7 @@ begin
   begin
      if writeAddress = '' then exen := options.Values['ServerAddress'] else exen := writeAddress;
   end else exen := Application.ExeName;
-  filename := ExtractFileDir(exen)+'\op.mpt';
+  filename := ExtractFileDir(exen)+'\op';
   options.SaveToFile(filename, TEncoding.UTF8);
   EncodeFile(filename);
 end;
@@ -646,31 +634,31 @@ begin
   pStatus.Visible := true;
   bDeLogin.Visible := pStatus.Visible;
   nSkin.Enabled := True;
+
+  ValidLicence := false;
+  try
+    ValidLicence := LicenceCheck;
+  except on E: Exception do
+  end;
+
+  if ValidLicence then
+  begin
+    nUser.Enabled := true;
+//x    nMessage.Enabled:=True;
+    nDeliver.Enabled := true;
+    nReceive.Enabled := true;
+//x    nScoreList.Enabled:=True;
+    nDeliverClick(nil);
+  end;
 end;
 procedure TfMain.ELOperator( Cascade : Boolean );
 begin
   ELUser(True);
-
-  LicenseCheckBool := False;
-  try
-    LicenseCheckBool := LicenceCheck;
-  except on E: Exception do
-  end;
-
-  if LicenseCheckBool then
-  begin
-    nUser.Enabled:=True;
-//x    nMessage.Enabled:=True;
-    nDeliver.Enabled:=True;
-    nReceive.Enabled:=True;
-//x    nScoreList.Enabled:=True;
-//x    nDeliverClick(nil);
-  end;
 end;
 
 procedure TfMain.ELDesigner( Cascade : Boolean );
 begin
-  ELOperator(True);
+  ELUser(True);
 
   pStatus.Visible := true;
   bDeLogin.Visible := pStatus.Visible;
@@ -678,7 +666,9 @@ begin
   nResources.Enabled := True;
   nQuestionMatches.Enabled := True;
   nInstructionMatches.Enabled := True;
-//x  nMatchList.Enabled := True;
+
+  if ValidLicence then
+    nCorrect.Enabled:=True;
 end;
 
 procedure TfMain.ELManager( Cascade : Boolean );
@@ -692,11 +682,10 @@ begin
   end;
 
 //x  nLabel.Enabled:=True;
-  if LicenseCheckBool then
+  if ValidLicence then
   begin
 //x    nPay.Enabled:=True;
 //x    nFreeScore.Enabled:=True;
-    nCorrect.Enabled:=True;
 //x    nTotalReport.Enabled:=True;
 //x    nDesigner.Enabled:=True;
 //x    nLog.Enabled:=True;
@@ -739,7 +728,6 @@ begin
   nOptions.Enabled:=False;
   nDesigner.Enabled:=False;
   nDesignerList.Enabled:=False;
-  nMatchList.Enabled:=False;
   nFreeScore.Enabled:=False;
   nChart.Enabled:=False;
   nImport.Enabled:=False;
@@ -988,6 +976,7 @@ end;
 procedure TfMain.nConnectLibraryClick(Sender: TObject);
 var Ok : Boolean; libraryAddress : string;
 begin
+{
   Ok := True;
   if isClient then libraryAddress := 'LibraryClientAddress' else libraryAddress := 'LibraryAddress';
 
@@ -1033,11 +1022,12 @@ begin
 
     if fOptions <> nil then
     begin
-      fOptions.CH_AutoConnectLibrary.Visible := true;
+      fOptions.chAutoConnectLibrary.Visible := true;
     end;
 
     ICLibrary.Visible := True;
   end;
+}
 end;
 
 procedure TfMain.nLabelClick(Sender: TObject);
@@ -1110,6 +1100,7 @@ var
   i : integer;
   line, sentence, person : String;
 begin
+{
   P_Temp.Visible := True;
   pUser.Visible := False;
   P_SearchUser.Visible := False;
@@ -1159,12 +1150,13 @@ begin
     fImport.BringToFront;
     P_Temp.Visible := False;
   end;
-end;
+}end;
 
 procedure TfMain.thrImport();
 var
   i, j : integer;
 begin
+{
   with fImport do
   begin
     qTmpImport.SQL.Text := 'SELECT ID, Title FROM Matches';
@@ -1183,7 +1175,7 @@ begin
 
     if CB_Match.ItemIndex <> 0 then CB_Match.ItemIndex := 0 else CB_MatchChange(nil);
   end;
-end;
+}end;
 
 procedure incChar(var a : Char);
 begin
@@ -1388,7 +1380,7 @@ begin
   grid.ColumnSize.StretchColumn := strech;
   grid.ColumnSize.Stretch := true;
   grid.FixedCols := 1;
-  grid.Options := [goRowSelect, goHorzLine];
+  grid.Options := [goHorzLine, goHorzLine];
 end;
 
 procedure TfMain.fillGridWithQuery(grid : TAdvColumnGrid; isql : string);
@@ -1433,66 +1425,40 @@ end;
 
 procedure TfMain.nOptionsClick(Sender: TObject);
 begin
-  AdvToolBarPager.Caption.Caption := 'تنظیمات';
+  presetMenu;
 
-  P_Temp.Visible := True;
-  pUser.Visible := False;
-  P_SearchUser.Visible := False;
-
-  if fOptions = nil then
-    Application.CreateForm(TfOptions, fOptions);
-
-  if fMain.ICLibrary.Visible then
-    fOptions.CH_AutoConnectLibrary.Visible := true;
-
-  if fMain.ICMatch.Visible then
-  begin
-    ReadOptions(isClient, true);
+  if fOptions = nil then Application.CreateForm(TfOptions, fOptions);
   with fOptions do
   begin
-    imgChange := false;
-
-    if Sender <> nil then chServer.Checked := fMain.isClient;
-    eServerAddress.Text := fMain.options.Values['ServerAddress'];
-    eServerAddress.Enabled := chServer.Checked;
-    edt1.Text := getComputerID;
-    {x
-    qGroup.SQL.Text := 'SELECT ID, Caption FROM Groups ORDER BY ID';
-    qGroup.Open;
-
-    fMain.qTmp.SQL.Text := 'SELECT * FRoM Library'; fMain.qTmp.Open;
-    E_Title.Text := fMain.qTmp.FieldByName('Title').AsString;
-    fMain.loadJpeg('1', Image1, fMain.qTmp);
-    }
-    ME_MatchDate.Text := fMain.options.Values['BeginDate'];
-    CH_AutoConnectLibrary.Checked := StrToBool(fMain.options.Values['AutoConnectLibrary']);
-    chDownGrade.Checked := StrToBool(fMain.options.Values['DownGrade']);
-    SpinEdit1.Value := StrToInt(fMain.options.Values['CBookMatch']);
-    SpinEdit2.Value := StrToInt(fMain.options.Values['CCDMatch']);
-    SpinEdit3.Value := StrToInt(fMain.options.Values['CWorkMatch']);
-    SpinEdit4.Value := StrToInt(fMain.options.Values['CPaintMatch']);
-    SE_ChildAge.Value := StrToInt(fMain.options.Values['ChildAge']);
-    if fMain.options.Values['Paper'] = 'A5' then cbPaper.ItemIndex := 1 else cbPaper.ItemIndex := 0;
-    cbPrinter.ItemIndex := StrToInt(fMain.options.Values['Printer']);
-    // level grid
-    gLevel.RowCount := 2;
-    gLevel.ClearRows(1,1);
-
-    i := 1;
-    while options.Values['LvMin' + IntToStr(i)] <> '' do
+    if fMain.ICMatch.Visible then
     begin
-      gLevel.AddRow;
-      gLevel.Cells[1,i] := 'سطح ' + IntToStr(i);
-      gLevel.Cells[2,i] := options.Values['LvMin' + IntToStr(i)];
-      gLevel.Cells[3,i] := options.Values['LvMax' + IntToStr(i)];
-      inc(i);
+      ReadOptions(isClient, true);
+      imgChange := false;
+
+      if Sender <> nil then chServer.Checked := fMain.isClient;
+      eServerAddress.Text := fMain.options.Values['ServerAddress'];
+      eServerAddress.Enabled := chServer.Checked;
+      eComputerId.Text := getComputerID;
+      {x
+      qGroup.SQL.Text := 'SELECT ID, Caption FROM Groups ORDER BY ID';
+      qGroup.Open;
+      }
+      myQuery.SQL.Text := 'SELECT * FROM library';
+      myQuery.Open;
+      eTitle.Text := myQuery.FieldByName('Title').AsString;
+      loadJpeg('0', 'library', iLibrary, myQuery);
+
+      chAutoConnectLibrary.Checked := StrToBool(fMain.options.Values['AutoConnectLibrary']);
+      chDownGrade.Checked := StrToBool(fMain.options.Values['DownGrade']);
+      if fMain.options.Values['Paper'] = 'A5' then cbPaper.ItemIndex := 1 else cbPaper.ItemIndex := 0;
+      cbPrinter.ItemIndex := StrToInt(fMain.options.Values['Printer']);
     end;
-    gLevel.RemoveRows(gLevel.RowCount,1);
-  end;
+
+    if fMain.ICLibrary.Visible then
+      chAutoConnectLibrary.Visible := true;
   end;
 
-  fOptions.BringToFront;
-  P_Temp.Visible := False;
+  postsetMenu('تنظیمات', fOptions);
 end;
 
 procedure TfMain.nUploadClick(Sender: TObject);
@@ -1700,9 +1666,13 @@ begin
     ePassword.SelectAll;
   end else
   begin
+    bRefreshClick(nil);
+
     loginUser := StringToUser(myQuery.FieldByName('Permission').AsString);
     loginGender := StringToGender(myQuery.FieldByName('Gender').AsString);
     loginUserID := meLogin.Text;
+
+    lLogin.Caption := myQuery.FieldByName('FirstName').AsString + ' ' + myQuery.FieldByName('LastName').AsString;
 
     if isSuperUser then ELAdmin else
     if loginUser = uManager then ELManager(False) else
@@ -1711,15 +1681,11 @@ begin
     P_LS.ImageIndex := ord(loginUser);
     L_LS.Caption := UserToPersian(loginUser);
 
-    lLogin.Caption := myQuery.FieldByName('FirstName').AsString + ' ' + myQuery.FieldByName('LastName').AsString;
-
     {x
     myQuery.SQL.Text := 'SELECT * FROM Messages WHERE Viewed = False AND DestinationID = '+ loginUserID;
     myQuery.Open;
     if myQuery.RecordCount > 0 then nMessage.ImageIndex := 2 else nMessage.ImageIndex := 1;
     }
-
-    bRefresh.Click;
   end;
 end;
 
@@ -1785,7 +1751,7 @@ begin
   if Key = 13 then
   begin
     valid := false;
-    myQuery.SQL.Text := 'SELECT users.FirstName, users.LastName, users.Gender, users.Description, ageclasses.Title AS AgeClass FROM users INNER JOIN ageclasses ON getAgeClass(BirthDate) = ageclasses.ID WHERE users.ID = '+ meUserId.Text;
+    myQuery.SQL.Text := 'SELECT users.FirstName, users.LastName, users.Gender, users.Description, ageclasses.Title AS AgeClass FROM users LEFT JOIN ageclasses ON getAgeClass(BirthDate) = ageclasses.ID WHERE users.ID = '+ meUserId.Text;
     myQuery.Open;
 
     if myQuery.RecordCount = 0 then MyShowMessage('عضوی با این کد ثبت نشده است')
@@ -2041,36 +2007,57 @@ begin
   P_Temp.Visible := False;
 end;
 
+function needToSelectFrame(op : boolean = true) : boolean;
+var tmp : boolean;
+begin
+with fMain do
+begin
+  tmp := loginUser >= uManager;
+  if op then tmp := tmp or (loginUser = uOperator);
+
+  Result := false;
+  if tmp then
+  begin
+    pUser.Visible := true;
+    if selectedUserId = '' then meUserId.SetFocus else Result := true;
+  end else
+  begin
+    selectedUserId := loginUserID;
+    Result := true;
+  end;
+end;
+end;
+
 procedure TfMain.nDeliverClick(Sender: TObject);
 begin
   presetMenu;
-  pUser.Visible := True;
 
   if fDeliver = nil then Application.CreateForm(TfDeliver, fDeliver);
   with fDeliver do
   begin
     addGridColumns(gDeliver, ['', 'عنوان', 'امتیاز'], 1);
     gDeliver.Columns[0].Width := 0;
+    gDeliver.Options := gDeliver.Options + [goRowSelect];
   end;
 
   postsetMenu('تحویل مسابقه', fDeliver);
-  if selectedUserId <> '' then fDeliver.selectFrame else meUserId.SetFocus;
+  if needToSelectFrame then fDeliver.selectFrame;
 end;
 
 procedure TfMain.nReceiveClick(Sender: TObject);
 begin
   presetMenu;
-  pUser.Visible := True;
 
   if fReceive = nil then Application.CreateForm(TfReceive, fReceive);
   with fReceive do
   begin
     addGridColumns(gReceive, ['', 'عنوان'], 1);
     gReceive.Columns[0].Width := 0;
+    gReceive.Options := gReceive.Options + [goRowSelect];
   end;
 
   postsetMenu('دریافت مسابقه', fReceive);
-  if selectedUserId <> '' then fReceive.selectFrame else meUserId.SetFocus;
+  if needToSelectFrame then fReceive.selectFrame;
 end;
 
 procedure TfMain.nPayClick(Sender: TObject);
@@ -2114,7 +2101,6 @@ end;
 procedure TfMain.nCorrectClick(Sender: TObject);
 begin
   presetMenu;
-  pUser.Visible := True;
 
   if fCorrect = nil then Application.CreateForm(TfCorrect, fCorrect);
   with fCorrect do
@@ -2125,11 +2111,16 @@ begin
     gCorrect.Columns[1].Width := 0;
     gCorrect.Columns[4].ReadOnly := false;
     gCorrect.Columns[4].Editor := edFloat;
-    gCorrect.Options := gCorrect.Options - [goRowSelect] + [goVertLine];
   end;
 
+  if loginUser < uManager then
+  begin
+    fCorrect.rgUserId.ItemIndex := 0;
+    fCorrect.pUserId.Visible := false;
+  end else fCorrect.pUserId.Visible := true;
+
   postsetMenu('تعیین امتیاز مسابقات', fCorrect);
-  if selectedUserId <> '' then fDeliver.selectFrame else meUserId.SetFocus;
+  if needToSelectFrame(false) then fCorrect.selectFrame;
 end;
 
 procedure TfMain.nDesignerClick(Sender: TObject);
@@ -2149,36 +2140,6 @@ begin
 
   fDesigner.BringToFront;
   P_Temp.Visible := False;
-end;
-
-procedure TfMain.nMatchListClick(Sender: TObject);
-begin
-{x
-  AdvToolBarPager.Caption.Caption := 'لیست مسابقات';
-
-  P_Temp.Visible := True;
-  pUser.Visible := False;
-  P_MatchEdit.Visible := False;
-  P_SearchUser.Visible := False;
-
-  if fMatchList = nil then
-  begin
-    Application.CreateForm(TfMatchList, fMatchList);
-    fMatchList.CB_MatchChange(nil);
-  end;
-
-  fMatchList.BringToFront;
-  P_Temp.Visible := False;
-
-  fMatchList.BitBtn1.Down := False;
-  fMatchList.Grid.Options := fMatchList.Grid.Options - [goEditing];
-  fMatchList.BitBtn1Click(fMatchList.BitBtn1);
-
-  if ( fMain.P_LS.ImageIndex = 2 )or( fMain.P_LS.ImageIndex = 1 ) then
-    fMatchList.BitBtn1.Enabled := True
-  else
-    fMatchList.BitBtn1.Enabled := False;
-}
 end;
 
 procedure TfMain.nMessageClick(Sender: TObject);
@@ -2355,6 +2316,21 @@ begin
   listHeader[7] := 'تصحیح نشده'; listField[7] := '[fdList."Uncorrected"]'; listWidth[7] := 100;
 //  listHeader[8] := 'شماره تماس'; listField[8] := '[fdList."Phone"]'; listWidth[8] := 100;
   MakeFastList(SQ, title, '', 8, 2);
+end;
+
+function TfMain.insertGlobalVar(value, table : string) : integer;
+begin
+  if value <> '' then
+  begin
+    myQuery.SQL.Text := 'SELECT ID FROM '+ table +' WHERE Title = "'+ correctString(value) +'"';
+    myQuery.Open;
+    if myQuery.RecordCount > 0 then Result := myQuery.Fields[0].AsInteger
+    else
+    begin
+      executeCommand('INSERT INTO '+ table +' (Title) VALUES ("'+ correctString(value) +'")');
+      Result := myCommand.InsertId;
+    end;
+  end else Result := -1;
 end;
 
 procedure TfMain.MakeFastList(sql, titleText, footerText : string; lLength, rightAlign, moveRight : integer);

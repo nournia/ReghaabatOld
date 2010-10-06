@@ -27,7 +27,7 @@ object fCorrect: TfCorrect
     ExplicitTop = 8
     ExplicitWidth = 802
     ExplicitHeight = 503
-    object P_SetScore: TAdvPanel
+    object pUserId: TAdvPanel
       Left = 2
       Top = 3
       Width = 787
@@ -73,6 +73,7 @@ object fCorrect: TfCorrect
       StatusBar.ColorTo = 16109747
       StatusBar.GradientDirection = gdVertical
       Styler = ps
+      ExplicitLeft = 1
       DesignSize = (
         787
         23)
@@ -156,7 +157,7 @@ object fCorrect: TfCorrect
       ExplicitTop = 443
       FullHeight = 0
       object bApply: TAdvGlowButton
-        Left = 7
+        Left = 10
         Top = 4
         Width = 100
         Height = 26
@@ -205,7 +206,7 @@ object fCorrect: TfCorrect
         Layout = blGlyphRight
       end
       object bRemove: TAdvGlowButton
-        Left = 113
+        Left = 116
         Top = 4
         Width = 100
         Height = 26

@@ -13,7 +13,7 @@ type
     fs: TAdvFormStyler;
     ps: TAdvPanelStyler;
     gbAll: TAdvGroupBox;
-    P_SetScore: TAdvPanel;
+    pUserId: TAdvPanel;
     rgUserId: TAdvOfficeRadioGroup;
     AdvPanel2: TAdvPanel;
     bApply: TAdvGlowButton;

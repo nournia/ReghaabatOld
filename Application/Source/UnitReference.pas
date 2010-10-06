@@ -189,31 +189,8 @@ var authorId, publicationId, tId : integer; filetype, dest : string;
 begin
   if validate then
   begin
-    with fMain do
-    begin
-      if cbAuthor.Text <> '' then
-      begin
-        myQuery.SQL.Text := 'SELECT ID FROM authors WHERE Title = "'+ fMain.correctString(cbAuthor.Text) +'"';
-        myQuery.Open;
-        if myQuery.RecordCount > 0 then authorId := myQuery.Fields[0].AsInteger
-        else
-        begin
-          executeCommand('INSERT INTO authors (Title) VALUES ("'+ fMain.correctString(cbAuthor.Text) +'")');
-          authorId := myCommand.InsertId;
-        end;
-      end else authorId := -1;
-      if cbPublication.Text <> '' then
-      begin
-        myQuery.SQL.Text := 'SELECT ID FROM publications WHERE Title = "'+ fMain.correctString(cbPublication.Text) +'"';
-        myQuery.Open;
-        if myQuery.RecordCount > 0 then publicationId := myQuery.Fields[0].AsInteger
-        else
-        begin
-          executeCommand('INSERT INTO publications (Title) VALUES ("'+ fMain.correctString(cbPublication.Text) +'")');
-          publicationId := myCommand.InsertId;
-        end;
-      end else publicationId := -1;
-    end;
+    authorId := fMain.insertGlobalVar(cbAuthor.Text, 'authors');
+    publicationId := fMain.insertGlobalVar(cbPublication.Text, 'publications');
 
     case kind of
       rBook:

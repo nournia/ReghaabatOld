@@ -311,7 +311,7 @@ object fDeliver: TfDeliver
         34)
       FullHeight = 0
       object bPreview: TAdvGlowButton
-        Left = 660
+        Left = 657
         Top = 4
         Width = 100
         Height = 26
@@ -374,7 +374,7 @@ object fDeliver: TfDeliver
         Version = '1.2.4.1'
       end
       object bApply: TAdvGlowButton
-        Left = 9
+        Left = 10
         Top = 4
         Width = 100
         Height = 26

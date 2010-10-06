@@ -321,9 +321,10 @@ end;
 function TfImport.Add(otherMatchID, mainMatchID : string) : boolean; // from other to main
 var designerTmp, qppTmp : string; i, tmp : Integer; bs: TADOBlobStream;
 begin
-  Result := False;
+{  Result := False;
 with fMain do
 begin
+
   qTmpImport.SQL.Text := 'SELECT * FROM Matches WHERE ID = '+ otherMatchID;
   qTmpImport.Open;
 
@@ -368,6 +369,7 @@ begin
     Result := True;
   end;
 end;
+}
 end;
 
 procedure TfImport.bAddClick(Sender: TObject);
@@ -416,6 +418,7 @@ var
   i : integer;
   Filter, Level : String;
 begin
+{
   Filter := ''; Level := '' ;
   if CB_Match.ItemIndex <> 0 then Filter := 'WHERE ID div 10000 = 3' + IntToStr(CB_Match.ItemIndex);
 
@@ -447,6 +450,7 @@ begin
   end;
   if fMain.qTmpImport.RecordCount > 0 then gOther.RemoveRows(fMain.qTmpImport.RecordCount+1,1);
   gOther.AddCheckBoxColumn(0);
+}
 end;
 
 end.

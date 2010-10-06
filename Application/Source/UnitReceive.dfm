@@ -309,7 +309,7 @@ object fReceive: TfReceive
       ExplicitTop = 368
       FullHeight = 0
       object bApply: TAdvGlowButton
-        Left = 9
+        Left = 10
         Top = 4
         Width = 100
         Height = 26
@@ -358,7 +358,7 @@ object fReceive: TfReceive
         Layout = blGlyphRight
       end
       object bRemove: TAdvGlowButton
-        Left = 115
+        Left = 116
         Top = 4
         Width = 100
         Height = 26

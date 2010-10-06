@@ -8,35 +8,30 @@ uses
   ExtCtrls, Mask, AdvSpin, AdvGroupBox, AdvPanel, AdvGlowButton, AdvAppStyler,
   DBCtrls, ExtDlgs, AdvOfficePager, AdvOfficeButtons, UnitMaster, DBTables,
   AdvProgressBar, jpeg, ComObj, Spin, AdvCGrid, Printers, MemDS, DBAccess,
-  MyAccess;
+  MyAccess, StrUtils;
 
 type
   TfOptions = class(TMaster)
     AdvPanel2: TAdvPanel;
-    AdvGlowButton3: TAdvGlowButton;
+    bApply: TAdvGlowButton;
     fs: TAdvFormStyler;
     ps: TAdvPanelStyler;
     AdvOfficePager2: TAdvOfficePager;
     advfcpg2: TAdvOfficePage;
-    AdvGroupBox3: TAdvGroupBox;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
     AdvOfficePage1: TAdvOfficePage;
     AdvGroupBox4: TAdvGroupBox;
     Label6: TLabel;
-    E_Title: TEdit;
+    eTitle: TEdit;
     AdvGroupBox5: TAdvGroupBox;
-    Image1: TImage;
+    iLibrary: TImage;
     SpeedButton1: TAdvGlowButton;
     SpeedButton2: TAdvGlowButton;
     LicenseOfficePage: TAdvOfficePage;
     AdvGroupBox6: TAdvGroupBox;
     lbl1: TLabel;
     lbl2: TLabel;
-    edt1: TEdit;
-    edt2: TEdit;
+    eComputerId: TEdit;
+    eLicence: TEdit;
     AdvGlowButton4: TAdvGlowButton;
     AdvOfficePage2: TAdvOfficePage;
     AdvGroupBox10: TAdvGroupBox;
@@ -48,20 +43,14 @@ type
     AdvOfficePage3: TAdvOfficePage;
     AdvGroupBox8: TAdvGroupBox;
     bReplace: TAdvGlowButton;
-    AdvGroupBox14: TAdvGroupBox;
     aqTable: TADOTable;
     Label9: TLabel;
     Label10: TLabel;
-    AdvGlowButton6: TAdvGlowButton;
     AdvGlowButton8: TAdvGlowButton;
     AdvPanel1: TAdvPanel;
     Label7: TLabel;
     AdvGlowButton5: TAdvGlowButton;
     dsGroup: TDataSource;
-    SpinEdit1: TAdvSpinEdit;
-    SpinEdit2: TAdvSpinEdit;
-    SpinEdit3: TAdvSpinEdit;
-    SpinEdit4: TAdvSpinEdit;
     AdvGlowButton1: TAdvGlowButton;
     AdvGroupBox1: TAdvGroupBox;
     Label11: TLabel;
@@ -69,42 +58,32 @@ type
     eServerAddress: TButtonedEdit;
     AdvGlowButton2: TAdvGlowButton;
     AdvGlowButton7: TAdvGlowButton;
-    AdvGlowButton9: TAdvGlowButton;
-    AdvGroupBox7: TAdvGroupBox;
-    Label13: TLabel;
-    SE_ChildAge: TAdvSpinEdit;
-    cbPaper: TComboBox;
-    Label5: TLabel;
-    Label8: TLabel;
-    ME_MatchDate: TMaskEdit;
-    chDownGrade: TAdvOfficeCheckBox;
-    CH_AutoConnectLibrary: TAdvOfficeCheckBox;
-    AdvGroupBox2: TAdvGroupBox;
-    gLevel: TAdvColumnGrid;
-    cbPrinter: TComboBox;
-    Label14: TLabel;
     qGroup: TMyQuery;
     AdvGlowButton11: TAdvGlowButton;
+    AdvGroupBox7: TAdvGroupBox;
+    Label5: TLabel;
+    Label14: TLabel;
+    cbPaper: TComboBox;
+    chDownGrade: TAdvOfficeCheckBox;
+    chAutoConnectLibrary: TAdvOfficeCheckBox;
+    cbPrinter: TComboBox;
     T_CheckBoxLibrary: TAdvOfficeCheckBox;
-    procedure edt1Click(Sender: TObject);
-    procedure edt2Click(Sender: TObject);
+    procedure eComputerIdClick(Sender: TObject);
+    procedure eLicenceClick(Sender: TObject);
     procedure AdvGlowButton5Click(Sender: TObject);
     procedure AdvGlowButton4Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
-    procedure AdvGlowButton3Click(Sender: TObject);
+    procedure bApplyClick(Sender: TObject);
     procedure AdvGlowButton1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure bReplaceClick(Sender: TObject);
     procedure ReplaceInTable( tname : string );
     procedure AdvGlowButton2Click(Sender: TObject);
-    procedure AdvGlowButton6Click(Sender: TObject);
     procedure AdvGlowButton7Click(Sender: TObject);
     procedure AdvGlowButton8Click(Sender: TObject);
-    procedure AdvGlowButton9Click(Sender: TObject);
     procedure eServerAddressRightButtonClick(Sender: TObject);
     procedure chServerClick(Sender: TObject);
-    procedure gLevelEditingDone(Sender: TObject);
     procedure AdvGlowButton11Click(Sender: TObject);
   private
     { Private declarations }
@@ -118,99 +97,208 @@ var
 
 implementation
 
-uses UnitMain, UnitNewUser, uCryptography;
+uses UnitMain, UnitUser, uCryptography, UFaDate, UnitTypes;
 
 {$R *.dfm}
 
-procedure moveTable(tableName : string; keyFields, syncFields : array of string);
-var keyMySQL, keyAccess, keyQ, fieldString, cmd : string; i, j, fieldCount, keyCount : integer;
-
-procedure initVars();
-var j : integer;
+procedure moveTable(tableName : string; fields : array of string; values : array of string);
+var fieldString, valueString, cmd : string; i, j, fieldCount : integer;
 begin
-  keyCount := Length(keyFields) - 1;
-  if keyCount = 0 then
+with fMain do
+begin
+  // init
+  fieldCount := Length(fields) - 1; fieldString := ''; valueString := '';
+  for j := 0 to fieldCount do
   begin
-    keyQ := '';
-    keyMySQL := keyFields[0];
-    keyAccess := keyFields[0];
-  end else
-  begin
-    keyQ := '"';
-    keyMySQL := 'CONCAT('; keyAccess := '';
-    for j := 0 to keyCount do
+    fieldString := fieldString + fields[j];
+    valueString := valueString + values[j];
+    if j <> fieldCount then
     begin
-      keyMySQL := keyMySQL + keyFields[j];
-      keyAccess := keyAccess + 'Trim(Str('+ keyFields[j] +'))';
-      if j <> keyCount then
-      begin
-        keyMySQL := keyMySQL + ',"-",';
-        keyAccess := keyAccess + '+"-"+';
-      end;
+      fieldString := fieldString + ',';
+      valueString := valueString + ',';
     end;
-    keyMySQL := keyMySQL + ')';
   end;
-  fieldCount := Length(syncFields) - 1; fieldString := '';
-  for j := 0 to keyCount do fieldString := fieldString + keyFields[j] + ',';
-  for j := 0 to fieldCount do
-  begin
-    fieldString := fieldString + syncFields[j];
-    if j <> fieldCount then fieldString := fieldString + ',';
-  end;
-end;
 
-procedure loopTempUp();
-var i, j : integer;
-begin
-with fMain do
-begin
-  for i := 1 to qTmpImport.RecordCount do
-  begin
-    for j := 0 to keyCount do myCommand.ParamValues[keyFields[j]] := qTmpImport.Fields[j].AsVariant;
-    for j := 0 to fieldCount do myCommand.ParamValues[syncFields[j]] := qTmpImport.Fields[j+keyCount+1].AsVariant;
-    try
-      myCommand.Execute;
-    except on E: Exception do
-      MyShowMessage(tableName + '->' + qTmpImport.Fields[0].AsString);
-    end;
-    qTmpImport.Next;
-  end;
-end;
-end;
-
-begin
-  initVars;
-
-with fMain do
-begin
+  // query
   cmd := 'INSERT INTO '+ tableName +' ('+ fieldString + ') VALUES (';
-  for j := 0 to keyCount do cmd := cmd +':'+ keyFields[j] +',';
   for j := 0 to fieldCount do
   begin
-    cmd := cmd +':'+ syncFields[j];
+    cmd := cmd +':'+ fields[j];
     if j <> fieldCount then cmd := cmd + ',';
   end;
   myCommand.SQL.Text := cmd + ');';
 
-  qTmpImport.SQL.Text := 'SELECT '+ fieldString +' FROM '+ tableName;
-  qTmpImport.Open;
-  if qTmpImport.RecordCount > 0 then loopTempUp;
-end;
-end;
+  // insert
+  qImport.SQL.Text := 'SELECT '+ valueString +' FROM '+ tableName;
+  qImport.Open;
+  if qImport.RecordCount > 0 then
+  begin
+    for i := 1 to qImport.RecordCount do
+    begin
+      try
+        for j := 0 to fieldCount do
+        begin
+          if EndsStr('Date', values[j]) then
+            myCommand.ParamValues[fields[j]] := TFaDate.Create(qImport.FieldByName(values[j]).AsString).ToGregorianDate
+          else if fields[j] = 'Gender' then
+          begin
+            if qImport.FieldByName(values[j]).AsBoolean then myCommand.ParamValues[fields[j]] := GenderToString(gMale) else myCommand.ParamValues[fields[j]] := GenderToString(gFemale);
+          end else
+            myCommand.ParamValues[fields[j]] := qImport.FieldByName(values[j]).AsVariant;
+        end;
 
+        myCommand.Execute;
+      except on E: Exception do
+        MyShowMessage(tableName + '->' + qImport.Fields[0].AsString);
+      end;
+      qImport.Next;
+    end;
+  end;
+end;
+end;
+{
+function getDateRefinedField(field : string): string;
+var i : integer;
+begin
+  Result := '';
+  for i := 1 to 11 do
+    Result := Result + 'Replace(';
+  Result := Result + field;
+  for i := 1 to 9 do
+    Result := Result + ', "'+ IntToStr(i) +' ", " '+ IntToStr(i) +'")';
+  Result := Result + ', " ", "0")';
+  Result := Result + ', "00", "01")';
+end;
+}
+
+function getRefined(v : Variant) : Variant;
+begin
+  if v = null then
+    Result := -1
+  else
+    Result := v;
+end;
 procedure TfOptions.AdvGlowButton11Click(Sender: TObject);
-var i, matchID, questionID, entityID : integer;  tmp : string; resource : boolean;
+var i, matchId, questionId, authorId, publicationId : integer;  tmp, tmp2 : string; resource : boolean;
 begin
 with fMain do
 begin
   cImport.Close;
-  cImport.ConnectionString:= AddressToConnectionString('ForConvert.mdb');
+  cImport.ConnectionString:= AddressToConnectionString('D:\Flash\Project\Match\DBs\Genuine_Reghaabat.mdb');
   cImport.Open;
-  moveTable('Pictures', ['ID'], ['Picture']);
+
+{
+  // users
+  //tmp := 'UPDATE users SET BirthDate = '+ getDateRefinedField('BirthDate');
+  moveTable('users', ['ID', 'NationalID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Gender', 'RegisterTime', 'Description'],
+                     ['ID', 'ID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Man', 'RegisterDate', 'Description']);
+
+  qImport.SQL.Text := 'SELECT Pictures.* FROM Pictures INNER JOIN Users ON Pictures.ID = Users.ID';
+  qImport.Open;
+  myCommand.SQL.Text := 'INSERT INTO pictures (ID, Kind, Picture) VALUES (:ID, "user", :Picture)';
+  for i := 1 to qImport.RecordCount do
+  begin
+    myCommand.ParamValues['ID'] := qImport.FieldByName('ID').AsInteger;
+    myCommand.ParamValues['Picture'] := qImport.FieldByName('Picture').AsVariant;
+    myCommand.Execute;
+    qImport.Next;
+  end;
+}
+{
+//matches
+  // init
+  myQuery.SQL.Text := 'SELECT * FROM ageclasses ORDER BY ID';
+  myQuery.Open;
+  tmp := '';
+  for i := 1 to myQuery.RecordCount do
+  begin
+    tmp := tmp + 'IIF(Age >= '+ myQuery.FieldByName('BeginAge').AsString +' AND Age <= '+ myQuery.FieldByName('EndAge').AsString + ', '+ myQuery.FieldByName('ID').AsString + ', ';
+    if i = myQuery.RecordCount then tmp := tmp + 'NULL';
+    myQuery.Next;
+  end;
+  for i := 1 to myQuery.RecordCount do tmp := tmp + ')';
+  myQuery.SQL.Text := 'SELECT * FROM categories ORDER BY ID';
+  myQuery.Open;
+  tmp2 := '';
+  for i := 1 to myQuery.RecordCount do
+  begin
+    tmp2 := tmp2 + 'IIF(Caption = "'+ myQuery.FieldByName('Title').AsString + '", '+ myQuery.FieldByName('ID').AsString + ', ';
+    if i = myQuery.RecordCount then tmp2 := tmp2 + 'NULL';
+    myQuery.Next;
+  end;
+  for i := 1 to myQuery.RecordCount do tmp2 := tmp2 + ')';
+
+  // insert
+  qImport.SQL.Text := 'SELECT Matches.*, Caption, '+ tmp +' AS AgeClass, '+ tmp2 +' AS Category, Picture FROM (Matches LEFT JOIN Groups ON Matches.GroupID = Groups.ID) LEFT JOIN Pictures ON Matches.ID = Pictures.ID ORDER BY Matches.ID';
+  qImport.Open;
+  qImportTmp.SQL.Text := 'SELECT * FROM Questions INNER JOIN Matches ON Questions.MatchID = Matches.ID ORDER BY MatchID';
+  qImportTmp.Open;
+  myCommandTmp.SQL.Text := 'INSERT INTO questions (MatchID, ID, Question, Answer) VALUES (:MatchID, :ID, :Question, :Answer)';
+
+  for i := 1 to qImport.RecordCount do
+  begin
+    resource := (qImport.FieldByName('ID').AsInteger div 10000 = 31) or (qImport.FieldByName('ID').AsInteger div 10000 = 34);
+    if resource then
+    begin
+      authorId := fMain.insertGlobalVar(qImport.FieldByName('Author').AsString, 'authors');
+      publicationId := fMain.insertGlobalVar(qImport.FieldByName('Publication').AsString, 'publications');
+
+      myCommand.SQL.Text := 'INSERT INTO resources (CreatorID, AuthorID, PublicationID, Kind, Title, AgeClass, EntityID) VALUES (:CreatorID, :AuthorID, :PublicationID, :Kind, :Title, :AgeClass, -1)';
+      myCommand.ParamValues['CreatorID'] := getRefined(qImport.FieldByName('DesignerID').AsVariant);
+      myCommand.ParamValues['Title'] := qImport.FieldByName('Title').AsString;
+      myCommand.ParamValues['AgeClass'] := qImport.FieldByName('AgeClass').AsVariant;
+      if qImport.FieldByName('ID').AsInteger div 10000 = 31 then myCommand.ParamValues['Kind'] := ResourceToString(rBook) else myCommand.ParamValues['Kind'] := ResourceToString(rMultiMedia);
+
+      if authorId <> -1 then myCommand.ParamValues['AuthorID'] := authorId else myCommand.ParamValues['AuthorID'] := null;
+      if publicationId <> -1 then myCommand.ParamValues['PublicationID'] := publicationId else myCommand.ParamValues['PublicationID'] := null;
+      myCommand.Execute;
+    end;
+
+    myCommand.SQL.Text := 'INSERT INTO matches (DesignerID, Title, AgeClass, ResourceID, CategoryID, Content, Configuration) VALUES (:DesignerID, :Title, :AgeClass, :ResourceID, :CategoryID, :Content, :Configuration)';
+    myCommand.ParamValues['DesignerID'] := getRefined(qImport.FieldByName('DesignerID').AsVariant);
+    myCommand.ParamValues['Title'] := qImport.FieldByName('Title').AsString;
+    myCommand.ParamValues['AgeClass'] := qImport.FieldByName('AgeClass').AsVariant;
+    if resource then myCommand.ParamValues['ResourceID'] := myCommand.InsertId else myCommand.ParamValues['ResourceID'] := null;
+    myCommand.ParamValues['CategoryID'] := qImport.FieldByName('Category').AsVariant;
+    myCommand.ParamValues['Configuration'] := qImport.FieldByName('PictureConfiguration').AsString;
+    myCommand.ParamValues['Content'] := qImport.FieldByName('Content').AsString;
+    myCommand.Execute;
+    matchId := myCommand.InsertId;
+
+    questionId := 0;
+    while (not qImportTmp.Eof) and (qImport.FieldByName('ID').AsInteger = qImportTmp.FieldByName('MatchID').AsInteger) do
+    begin
+      inc(questionId);
+      myCommandTmp.ParamValues['MatchID'] := matchId;
+      myCommandTmp.ParamValues['ID'] := questionId;
+      myCommandTmp.ParamValues['Question'] := qImportTmp.FieldByName('Question').AsString;
+      myCommandTmp.ParamValues['Answer'] := qImportTmp.FieldByName('Answer').AsString;
+      qImportTmp.Next;
+      myCommandTmp.Execute;
+    end;
+
+    if qImport.FieldByName('Picture').AsString <> '' then
+    begin
+      myCommand.SQL.Text := 'INSERT INTO pictures (ID, Kind, Picture) VALUES (:ID, "match", :Picture)';
+      myCommand.ParamValues['ID'] := matchId;
+      myCommand.ParamValues['Picture'] := qImport.FieldByName('Picture').AsVariant;
+      myCommand.Execute;
+    end;
+
+    myCommand.SQL.Text := 'INSERT INTO supports (TournamentID, MatchID, CorrectorID, CurrentState) VALUES (1, :MatchID, :CorrectorID, :CurrentState)';
+    myCommand.ParamValues['MatchID'] := matchId;
+    myCommand.ParamValues['CurrentState'] := StateToString(TMatchState(qImport.FieldByName('State').AsInteger));
+    myCommand.ParamValues['CorrectorID'] := getRefined(qImport.FieldByName('DesignerID').AsVariant);
+    myCommand.Execute;
+
+    qImport.Next;
+  end;
+}
+
+
 {
   moveTable('Messages', ['ID'], ['SourceID', 'DestinationID', 'Content', 'SendDate', 'Viewed']);
   moveTable('Payments', ['ID'], ['UserID', 'Score', 'ScoreDate', 'OperatorID']);
-  moveTable('Users', ['ID'], ['FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Man', 'RegisterDate', 'Description']);
 
 // freescores
   moveTable('FreeScores', ['ID'], ['UserID', 'GroupID', 'Title', 'Score', 'ScoreDate', 'OperatorID']);
@@ -233,76 +321,6 @@ begin
     qTmpImport.Next;
   end;
 }
-//matches
-  myQuery.SQL.Text := 'SELECT * FROM categories ORDER BY ID';
-  myQuery.Open;
-  tmp := '';
-  for i := 1 to myQuery.RecordCount do
-  begin
-    tmp := tmp + 'IIF(Age >= '+ myQuery.FieldByName('BeginAge').AsString +' AND Age <= '+ myQuery.FieldByName('EndAge').AsString + ', '+ myQuery.FieldByName('ID').AsString + ', ';
-    if i = myQuery.RecordCount then tmp := tmp + 'NULL';
-    myQuery.Next;
-  end;
-  for i := 1 to myQuery.RecordCount do tmp := tmp + ')';
-
-  moveTable('Matches', ['ID'], ['State', 'QPPaper', 'Content']);
-  qTmpImport.SQL.Text := 'SELECT Matches.*, Caption, '+ tmp +' AS Category FROM Matches LEFT JOIN Groups ON Matches.GroupID = Groups.ID';
-  qTmpImport.Open;
-  for i := 1 to qTmpImport.RecordCount do
-  begin
-    myCommand.SQL.Text := 'INSERT INTO entities (Title, Tags, Category) VALUES (:Title, :Tags, :Category);';
-    myCommand.ParamValues['Title'] := qTmpImport.FieldByName('Title').AsString;
-    myCommand.ParamValues['Tags'] := qTmpImport.FieldByName('Caption').AsString;
-    myCommand.ParamValues['Category'] := qTmpImport.FieldByName('Category').AsVariant;
-    myCommand.Execute;
-    entityID := myCommand.InsertId;
-
-    resource := (qTmpImport.FieldByName('ID').AsInteger div 10000 = 31) or (qTmpImport.FieldByName('ID').AsInteger div 10000 = 34);
-    if resource then
-    begin
-      myCommand.SQL.Text := 'INSERT INTO resources (EntityID, Author, Publication) VALUES (:EntityID, :Author, :Publication);';
-      myCommand.ParamValues['EntityID'] := entityID;
-      myCommand.ParamValues['Author'] := qTmpImport.FieldByName('Author').AsString;
-      myCommand.ParamValues['Publication'] := qTmpImport.FieldByName('Publication').AsString;
-      myCommand.Execute;
-    end;
-
-    myCommand.SQL.Text := 'UPDATE matches SET ResourceID = :ResourceID, EntityID = :EntityID, CorrectorID = :DesignerID, LibraryResourceID = :LibraryBookID, Configuration = :PictureConfiguration WHERE ID = :ID;';
-    myCommand.ParamValues['ID'] := qTmpImport.FieldByName('ID').AsVariant;
-    if resource then myCommand.ParamValues['ResourceID'] := myCommand.InsertId;
-    myCommand.ParamValues['EntityID'] := entityID;
-    myCommand.ParamValues['DesignerID'] := qTmpImport.FieldByName('DesignerID').AsVariant;
-    myCommand.ParamValues['LibraryBookID'] := qTmpImport.FieldByName('LibraryBookID').AsString;
-    myCommand.ParamValues['PictureConfiguration'] := qTmpImport.FieldByName('PictureConfiguration').AsString;
-    myCommand.Execute;
-    qTmpImport.Next;
-  end;
-  myCommand.SQL.Text := 'UPDATE pictures, matches SET pictures.ID = matches.EntityID WHERE pictures.ID = matches.ID';
-  myCommand.Execute;
-
-// questions
-  executeCommand('ALTER TABLE questions CHANGE ID ID INT(11) NOT NULL;');
-  moveTable('Questions', ['MatchID', 'ID'], ['Question', 'Answer']);
-
-  matchID := 0;
-  qTmp.SQL.Text := 'SELECT MatchID, ID FROM Questions ORDER BY MatchID, ID';
-  qTmp.Open;
-  myCommand.SQL.Text := 'UPDATE questions SET ID = :questionID WHERE MatchID = :MatchID AND ID = :ID';
-  for i := 1 to qTmp.RecordCount do
-  begin
-    if matchID <> qTmp.Fields[0].AsInteger then
-    begin
-      questionID := 0;
-      matchID := qTmp.Fields[0].AsInteger;
-      myCommand.ParamValues['MatchID'] := matchID;
-    end;
-    inc(questionID);
-    myCommand.ParamValues['questionID'] := questionID;
-    myCommand.ParamValues['ID'] := qTmp.Fields[1].AsInteger;
-    myCommand.Execute;
-    qTmp.Next;
-  end;
-  executeCommand('ALTER TABLE questions CHANGE ID ID TINYINT(4) NOT NULL;');
 
 {// sentences
   qTmpImport.SQL.Text := 'SELECT * FROM Sentences';
@@ -412,45 +430,30 @@ begin
 }
 end;
 
-procedure TfOptions.AdvGlowButton3Click(Sender: TObject);
+procedure TfOptions.bApplyClick(Sender: TObject);
 var clientTmp : boolean; i : integer;
 begin
-  clientTmp := fMain.isClient;
-  fMain.options.Values['ServerAddress'] := eServerAddress.Text;
-  fMain.WriteOptions;
-
-  fMain.ReadOptions(clientTmp);
-  if (ME_MatchDate.Text <> '    /  /  ') and (ME_MatchDate.Text <> fMain.options.Values['BeginDate']) then
+  with fMain do
   begin
-    fMain.MyShowMessage( 'مسابقات جدید از تاریخ ' + ME_MatchDate.Text + ' برگزار می‌شود' );
-    fMain.options.Values['BeginDate'] := ME_MatchDate.Text;
+    clientTmp := isClient;
+    options.Values['ServerAddress'] := eServerAddress.Text;
+    WriteOptions;
+
+    ReadOptions(clientTmp);
+
+    executeCommand('UPDATE Library SET Title = "'+ correctString(eTitle.Text) + '"');
+    if imgChange then fMain.InsertOrUpdateJpeg('0', 'library', iLibrary);
+
+    options.Values['AutoConnectLibrary'] := BoolToStr(chAutoConnectLibrary.Checked);
+    options.Values['DownGrade'] := BoolToStr(chDownGrade.Checked);
+    options.Values['Paper'] := cbPaper.Text;
+    options.Values['Printer'] := IntToStr(cbPrinter.ItemIndex);
+
+    WriteOptions(clientTmp, eServerAddress.Text);
+    ReadOptions(false, false, true);
+
+    P_Temp.Visible := True;
   end;
-
-  fMain.executeCommand('UPDATE Library SET Title = "'+ fMain.correctString(E_Title.Text) + '"');
-  if imgChange then fMain.InsertOrUpdateJpeg('0', 'library', Image1);
-
-  fMain.options.Values['AutoConnectLibrary'] := BoolToStr(CH_AutoConnectLibrary.Checked);
-  fMain.options.Values['DownGrade'] := BoolToStr(chDownGrade.Checked);
-  fMain.options.Values['CBookMatch'] := SpinEdit1.Text;
-  fMain.options.Values['CCDMatch'] := SpinEdit2.Text;
-  fMain.options.Values['CWorkMatch'] := SpinEdit3.Text;
-  fMain.options.Values['CPaintMatch'] := SpinEdit4.Text;
-  fMain.options.Values['ChildAge'] := SE_ChildAge.Text;
-  fMain.options.Values['Paper'] := cbPaper.Text;
-  fMain.options.Values['Printer'] := IntToStr(cbPrinter.ItemIndex);
-
-  for i := 1 to gLevel.RowCount do
-    if gLevel.Cells[1,i] <> '' then
-    begin
-      fMain.options.Values['LvMin' + IntToStr(i)] := gLevel.Cells[2,i];
-      fMain.options.Values['LvMax' + IntToStr(i)] := gLevel.Cells[3,i];
-    end;
-
-  fMain.WriteOptions(clientTmp, eServerAddress.Text);
-  fMain.ReadOptions(false, false, true);
-
-  fMain.L_MatchDate.Caption := ME_MatchDate.Text;
-  fMain.P_Temp.Visible := True;
 end;
 
 procedure TfOptions.AdvGlowButton4Click(Sender: TObject);
@@ -458,7 +461,7 @@ var
   S1, S2, TempS : string;
 begin
   try
-    TempS := LicenceToShamsi(S1, S2, edt2.Text, getComputerID);
+    TempS := LicenceToShamsi(S1, S2, eLicence.Text, getComputerID);
     Label7.Caption := 'تاریخ اعتبار : از ' + S1 + ' تا : ' + S2;
     Valid := True;
     if TempS = '1300/00/00' then Valid := False;
@@ -480,7 +483,7 @@ begin
   begin
     with fMain do
     begin
-      fMain.executeCommand('UPDATE library SET ServerID = "'+ edt1.Text +'", Licence = "'+ edt2.Text +'"');
+      fMain.executeCommand('UPDATE library SET ServerID = "'+ eComputerId.Text +'", Licence = "'+ eLicence.Text +'"');
       fMain.MyShowMessage( 'مجوز وارد شده ثبت شد' );
 
       if LicenceCheck then
@@ -502,29 +505,6 @@ begin
       end;
     end;
   end else fMain.MyShowMessage( 'ثبت این مجوز مقدور نیست' );
-end;
-
-procedure TfOptions.AdvGlowButton6Click(Sender: TObject);
-var v: OLEvariant; DBa, matchAddress : string;
-begin
-  if fMain.isClient then matchAddress := 'MatchClientAddress' else matchAddress := 'MatchAddress';
-
-  fMain.cMatch.Close;
-  DBa := fMain.options.Values[matchAddress];
-  try
-    v := CreateOLEObject('JRO.JetEngine');
-    try
-      v.CompactDatabase('Provider=Microsoft.Jet.OLEDB.4.0;Jet OLEDB:Database Password=abrdmkazhdpkzsrst;Data Source=' + DBa,
-                        'Provider=Microsoft.Jet.OLEDB.4.0;Jet OLEDB:Database Password=abrdmkazhdpkzsrst;Data Source=' + DBa + 'x;Jet OLEDB:Engine type=5');
-      DeleteFile(DBa);
-      RenameFile(DBa + 'x', DBa)
-    finally
-      v := Unassigned
-    end;
-  except on E: Exception do
-    fMain.MyShowMessage(E.Message);
-  end;
-  fMain.nConnectMatch.Click;
 end;
 
 procedure TfOptions.AdvGlowButton7Click(Sender: TObject);
@@ -553,31 +533,7 @@ end;
 procedure TfOptions.AdvGlowButton8Click(Sender: TObject);
 begin
   if fMain.sdJPEG.Execute then
-     Image1.Picture.SaveToFile(fMain.AddExtension(fMain.sdJPEG.FileName, '.jpg'));
-end;
-
-procedure TfOptions.AdvGlowButton9Click(Sender: TObject);
-var S, id : string; i : integer;
-begin
-{
-  fMain.qTmp1.SQL.Text := '(SELECT ID FROM Users) UNION (SELECT ID FROM Matches)';
-  fMain.qTmp1.Open;
-  for I := 1 to fMain.qTmp1.RecordCount do
-  begin
-  id := fMain.qTmp1.Fields[0].AsString;
-  S := 'D:\Flash\Project\Match\Match\Send\' + id + '.jpg';
-  if FileExists(S) then
-  begin
-    fMain.qTmp.SQL.Text := 'SELECT * FROM Pictures'; fMain.qTmp.Open;
-    fMain.qTmp.AppendRecord([id, nil]);
-    fMain.qTmp.Edit;
-    TBlobField(fMain.qTmp.FieldByName('Picture')).LoadFromFile(S);
-    fMain.qTmp.Post;
-    DeleteFile(S);
-  end;
-  fMain.qTmp1.Next;
-  end;
-}
+     iLibrary.Picture.SaveToFile(fMain.AddExtension(fMain.sdJPEG.FileName, '.jpg'));
 end;
 
 procedure TfOptions.chServerClick(Sender: TObject);
@@ -595,14 +551,14 @@ begin
   end;
 end;
 
-procedure TfOptions.edt1Click(Sender: TObject);
+procedure TfOptions.eComputerIdClick(Sender: TObject);
 begin
-  edt1.SelectAll;
+  eComputerId.SelectAll;
 end;
 
-procedure TfOptions.edt2Click(Sender: TObject);
+procedure TfOptions.eLicenceClick(Sender: TObject);
 begin
-  edt2.SelectAll;
+  eLicence.SelectAll;
 end;
 
 procedure TfOptions.eServerAddressRightButtonClick(Sender: TObject);
@@ -610,7 +566,7 @@ var ok : boolean;
 begin
   ok := false;
   if fMain.odReghaabat.Execute then
-    if FileExists(ExtractFileDir(fMain.odReghaabat.FileName)+'\op.mpt') then
+    if FileExists(ExtractFileDir(fMain.odReghaabat.FileName)+'\op') then
     begin
       ok := true;
       eServerAddress.Enabled := true;
@@ -627,29 +583,10 @@ procedure TfOptions.FormCreate(Sender: TObject);
 var printer:TPrinter;
 begin
   AdvOfficePager2.ActivePageIndex := 0;
-  gLevel.Options := gLevel.Options + [goEditing];
 
   printer:= TPrinter.Create;
   cbPrinter.Items.Clear;
   cbPrinter.Items := printer.Printers;
-end;
-
-procedure TfOptions.gLevelEditingDone(Sender: TObject);
-var i : integer;
-begin
-  if gLevel.Row <> 1 then
-    gLevel.Cells[3, gLevel.Row-1] := IntToStr(StrToInt(gLevel.Cells[2, gLevel.Row]) - 1);
-  if gLevel.Row <> gLevel.RowCount then
-    gLevel.Cells[2, gLevel.Row+1] := IntToStr(StrToInt(gLevel.Cells[3, gLevel.Row]) + 1);
-
-  for i := 1 to gLevel.RowCount-1 do
-  begin
-    if StrToInt(gLevel.Cells[2, i]) > StrToInt(gLevel.Cells[3, i]) then
-       gLevel.Cells[3, i] := gLevel.Cells[2, i];
-    if i < gLevel.RowCount-1 then
-      if StrToInt(gLevel.Cells[3, i]) >= StrToInt(gLevel.Cells[2, i+1]) then
-        gLevel.Cells[2, i+1] := IntToStr(StrToInt(gLevel.Cells[3, i]) + 1);
-  end;
 end;
 
 procedure TfOptions.SpeedButton1Click(Sender: TObject);
@@ -659,10 +596,10 @@ begin
     imgChange := true;
     if UpperCase(ExtractFileExt(fMain.odJPEG.FileName)) = '.JPG' then
     begin
-      Image1.Picture.LoadFromFile(fMain.odJPEG.FileName);
-      if (Image1.Picture.Width <> 300) or (Image1.Picture.Height <> 300) then
+      iLibrary.Picture.LoadFromFile(fMain.odJPEG.FileName);
+      if (iLibrary.Picture.Width <> 300) or (iLibrary.Picture.Height <> 300) then
       begin
-        Image1.Picture := nil;
+        iLibrary.Picture := nil;
         fMain.MyShowMessage('لطفا تصویر را به ابعاد نوشته شده تبدیل کنید');
       end;
     end else fMain.MyShowMessage('قالب تصویر نامناسب است');
@@ -671,7 +608,7 @@ end;
 
 procedure TfOptions.SpeedButton2Click(Sender: TObject);
 begin
-  Image1.Picture := nil;
+  iLibrary.Picture := nil;
   imgChange := true;
 end;
 

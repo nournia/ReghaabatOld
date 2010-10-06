@@ -1,4 +1,4 @@
-﻿unit UnitNewUser;
+﻿unit UnitUser;
 
 interface
 
@@ -34,25 +34,25 @@ type
     gEdit: TAdvGroupBox;
     gDescription: TAdvGroupBox;
     Label10: TLabel;
-    edtDescription: TEdit;
+    eDescription: TEdit;
     Label2: TLabel;
-    Edit1: TEdit;
-    RG_S: TAdvOfficeRadioGroup;
+    eFirstName: TEdit;
+    rgGender: TAdvOfficeRadioGroup;
     SpeedButton2: TAdvGlowButton;
     SpeedButton1: TAdvGlowButton;
-    Edit7: TEdit;
+    eAddress: TEdit;
     Label11: TLabel;
     eNationalID: TEdit;
     Label13: TLabel;
-    MaskEdit3: TMaskEdit;
+    meBirthDate: TMaskEdit;
     Label8: TLabel;
     Label12: TLabel;
     AdvGroupBox4: TAdvGroupBox;
     Label7: TLabel;
     Label4: TLabel;
-    Image1: TImage;
+    iUser: TImage;
     Label3: TLabel;
-    Edit2: TEdit;
+    eLastName: TEdit;
     ePhone: TEdit;
     meUserID: TMaskEdit;
     Label1: TLabel;
@@ -63,7 +63,7 @@ type
     procedure ePasswordChange(Sender: TObject);
     procedure bAccountsClick(Sender: TObject);
     procedure CheckBox4Click(Sender: TObject);
-    procedure MaskEdit3KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure meBirthDateKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure bApplyClick(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
@@ -73,7 +73,6 @@ type
     procedure loadUserFromLibrary();
     procedure bImportFromLibraryClick(Sender: TObject);
     procedure bEditClick(Sender: TObject);
-    procedure ePhoneKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
     procedure fillCBLogin(userID : string);
     procedure bLoginClick(Sender: TObject);
@@ -107,33 +106,38 @@ begin
   imgChange := false;
   cbLogin.ItemIndex := 0;
   pLogin.Visible := true;
-  Edit1.Text := '';
-  Edit2.Text := '';
-  edtDescription.Text := '';
+  eFirstName.Text := '';
+  eLastName.Text := '';
+  eDescription.Text := '';
   eNationalID.Text := '';
-  MaskEdit3.Text := '';
-  Edit7.Text := '';
+  meBirthDate.Text := '';
+  eAddress.Text := '';
   ePhone.Text := '';
-  RG_S.ItemIndex := 0;
-  Image1.Picture := Nil;
+  rgGender.ItemIndex := 0;
+  iUser.Picture := Nil;
   gEdit.Visible := false;
 
   ePassword.Text := '';
   ePassword.PasswordChar := '*';
   CheckBox4.Checked := True;
 
-  Edit1.SetFocus;
+  eFirstName.SetFocus;
 end;
 function TfUser.validate() : boolean;
+var tmp : TDateTime;
 begin
-  Result := (Edit1.Text <> '') and (Edit2.Text <> '') and (eNationalID.Text <> '') and (MaskEdit3.Text <> '    /  /  ');
+  Result := (eFirstName.Text <> '') and (eLastName.Text <> '') and (eNationalID.Text <> '') and (meBirthDate.Text <> '    /  /  ');
   if not Result then
   begin
     fMain.MyShowMessage('مقادیر نام، نام‌خانوادگی، شماره‌ی ملی و تاریخ تولد باید پر شوند');
     exit;
   end;
 
-  Result := Result and (StrToInt(LeftStr(MaskEdit3.Text, 4)) < 1800);
+  try
+    tmp := TFaDate.Create(meBirthDate.Text).ToGregorianDate
+  except on E: Exception do
+    Result := false;
+  end;
   if not Result then
   begin
     fMain.MyShowMessage('مقدار تاریخ تولد معتبر نیست');
@@ -164,14 +168,14 @@ begin
     begin
       if not fMain.hasGenderPermission(FieldByName('Gender').AsString) then fMain.MyShowMessage('شما اجازه دسترسی به اطلاعات این عضو را ندارید') else
       begin
-        Edit1.Text := FieldByName('FirstName').AsString;
-        Edit2.Text := FieldByName('LastName').AsString;
-        MaskEdit3.Text := TFaDate.Create(FieldByName('BirthDate').AsDateTime).ToDateString;
+        eFirstName.Text := FieldByName('FirstName').AsString;
+        eLastName.Text := FieldByName('LastName').AsString;
+        meBirthDate.Text := TFaDate.Create(FieldByName('BirthDate').AsDateTime).ToDateString;
         ePhone.Text := FieldByName('Phone').AsString;
-        Edit7.Text := FieldByName('Address').AsString;
-        edtDescription.Text := FieldByName('Description').AsString;
+        eAddress.Text := FieldByName('Address').AsString;
+        eDescription.Text := FieldByName('Description').AsString;
         eNationalID.Text := FieldByName('NationalID').AsString;
-        if FieldByName('Gender').AsString = 'male' then RG_S.ItemIndex := 0 else RG_S.ItemIndex := 1;
+        rgGender.ItemIndex := Ord(StringToGender(FieldByName('Gender').AsString));
 
         fillCBLogin(FieldByName('ID').AsString);
 
@@ -183,7 +187,7 @@ begin
         end else
           pLogin.Visible := false;
 
-        fMain.loadJpeg(FieldByName('ID').AsString, 'user', Image1, fMain.myQuery);
+        fMain.loadJpeg(FieldByName('ID').AsString, 'user', iUser, fMain.myQuery);
       end;
     end;
   end;
@@ -245,26 +249,21 @@ begin
   ePassword.Text := SuggestCode;
 end;
 
-procedure TfUser.ePhoneKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = 13 then Edit7.SetFocus;
-end;
-
 procedure TfUser.bApplyClick(Sender: TObject);
 var gender, user : string; tId, i : Integer; j : TUser;
 begin
   if validate then
   begin
-    if RG_S.ItemIndex = 0 then gender := GenderToString(gMale) else gender := GenderToString(gFemale);
+    if rgGender.ItemIndex = 0 then gender := GenderToString(gMale) else gender := GenderToString(gFemale);
     tId := fMain.InsertOrUpdate('users', 'ID = '+ IntToStr(userID),
                                 ['NationalID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Gender', 'RegisterTime', 'Description'],
-                                [eNationalID.Text, Edit1.Text, Edit2.Text, TFaDate.CreateByPersianDate(MaskEdit3.Text).ToGregorianDate, Edit7.Text, ePhone.Text, gender, Now, edtDescription.Text]);
+                                [eNationalID.Text, eFirstName.Text, eLastName.Text, TFaDate.CreateByPersianDate(meBirthDate.Text).ToGregorianDate, eAddress.Text, ePhone.Text, gender, Now, eDescription.Text]);
     if tId <> -1 then userId := tId;
 
   //  Convert Image
   //  if (Image1.Picture.Width <> 54) or (Image1.Picture.Height <> 72) then fMain.ScaleBmp(Image1.Picture.Bitmap);
     if imgChange then
-      fMain.InsertOrUpdateJpeg(IntToStr(userID), 'user', Image1);
+      fMain.InsertOrUpdateJpeg(IntToStr(userID), 'user', iUser);
 
     if pLogin.Visible then
     begin
@@ -330,10 +329,10 @@ begin
     imgChange := true;
     if UpperCase(ExtractFileExt(fMain.odJPEG.FileName)) = '.JPG' then
     begin
-      Image1.Picture.LoadFromFile(fMain.odJPEG.FileName);
-      if (Image1.Picture.Width <> 54) or (Image1.Picture.Height <> 72) then
+      iUser.Picture.LoadFromFile(fMain.odJPEG.FileName);
+      if (iUser.Picture.Width <> 54) or (iUser.Picture.Height <> 72) then
       begin
-        Image1.Picture := nil;
+        iUser.Picture := nil;
         fMain.MyShowMessage('لطفا تصویر را به ابعاد نوشته شده تبدیل کنید');
       end;
     end else fMain.MyShowMessage('قالب تصویر نامناسب است');
@@ -343,7 +342,7 @@ end;
 procedure TfUser.SpeedButton2Click(Sender: TObject);
 begin
   imgChange := true;
-  Image1.Picture := nil;
+  iUser.Picture := nil;
 end;
 
 procedure TfUser.fillCBLogin(userID : string);
@@ -402,10 +401,12 @@ begin
     loadData(StrToInt(meUserID.Text));
     gEdit.Visible := true;
     meUserID.Text := tmp;
+    if eFirstName.Text = '' then
+      meUserID.SetFocus;
   end;
 end;
 
-procedure TfUser.MaskEdit3KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TfUser.meBirthDateKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = 13 then ePhone.SetFocus;
 end;

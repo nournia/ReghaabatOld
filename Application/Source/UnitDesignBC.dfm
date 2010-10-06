@@ -64,7 +64,6 @@ object fQuestionMatch: TfQuestionMatch
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    ExplicitTop = -3
     FullHeight = 140
     object gProperties: TAdvGroupBox
       AlignWithMargins = True
@@ -81,8 +80,6 @@ object fQuestionMatch: TfQuestionMatch
       ParentCtl3D = True
       ParentFont = False
       TabOrder = 0
-      ExplicitLeft = 9
-      ExplicitTop = 19
       DesignSize = (
         767
         107)
@@ -545,8 +542,6 @@ object fQuestionMatch: TfQuestionMatch
           Tag = 0
           Width = 200
         end>
-      ExplicitLeft = -85
-      ExplicitTop = 361
       ColWidths = (
         25
         487
@@ -565,8 +560,6 @@ object fQuestionMatch: TfQuestionMatch
       Align = alBottom
       TabOrder = 2
       Visible = False
-      ExplicitLeft = -134
-      ExplicitTop = 312
       DesignSize = (
         769
         62)

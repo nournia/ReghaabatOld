@@ -361,7 +361,6 @@ object fInstructionMatch: TfInstructionMatch
         Align = alLeft
         ParentCtl3D = True
         TabOrder = 5
-        ExplicitTop = 3
         object gContent: TAdvGroupBox
           Left = 3
           Top = 3
@@ -482,7 +481,7 @@ object fInstructionMatch: TfInstructionMatch
             TabStop = False
             SpinType = sptFloat
             Value = 0
-            DateValue = 40452.819566180560000000
+            DateValue = 40457.410801562500000000
             HexValue = 0
             SpinFlat = True
             Anchors = [akTop, akRight]
@@ -516,7 +515,7 @@ object fInstructionMatch: TfInstructionMatch
             TabStop = False
             SpinType = sptFloat
             Value = 0
-            DateValue = 40452.819566180560000000
+            DateValue = 40457.410801562500000000
             HexValue = 0
             SpinFlat = True
             Anchors = [akTop, akRight]
@@ -550,7 +549,7 @@ object fInstructionMatch: TfInstructionMatch
             TabStop = False
             SpinType = sptFloat
             Value = 0
-            DateValue = 40452.819566180560000000
+            DateValue = 40457.410801562500000000
             HexValue = 0
             SpinFlat = True
             Anchors = [akTop, akRight]
@@ -584,7 +583,7 @@ object fInstructionMatch: TfInstructionMatch
             TabStop = False
             SpinType = sptFloat
             Value = 0
-            DateValue = 40452.819566180560000000
+            DateValue = 40457.410801574070000000
             HexValue = 0
             SpinFlat = True
             Anchors = [akTop, akRight]
@@ -874,8 +873,6 @@ object fInstructionMatch: TfInstructionMatch
       ParentFont = False
       ScrollBars = ssVertical
       TabOrder = 1
-      ExplicitTop = 125
-      ExplicitHeight = 293
     end
   end
   object fs: TAdvFormStyler

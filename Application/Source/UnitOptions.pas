@@ -178,8 +178,12 @@ begin
   else
     Result := v;
 end;
+function shamsiToGregorian(s : string) : Variant;
+begin
+  if s <> '' then Result := TFaDate.Create(s).ToGregorianDate else Result := NULL;
+end;
 procedure TfOptions.AdvGlowButton11Click(Sender: TObject);
-var i, matchId, questionId, authorId, publicationId : integer;  tmp, tmp2 : string; resource : boolean;
+var i, j, matchId, questionId, authorId, publicationId : integer;  tmp, tmp2 : string; resource : boolean;
 begin
 with fMain do
 begin
@@ -187,8 +191,7 @@ begin
   cImport.ConnectionString:= AddressToConnectionString('D:\Flash\Project\Match\DBs\Genuine_Reghaabat.mdb');
   cImport.Open;
 
-{
-  // users
+{// users
   //tmp := 'UPDATE users SET BirthDate = '+ getDateRefinedField('BirthDate');
   moveTable('users', ['ID', 'NationalID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Gender', 'RegisterTime', 'Description'],
                      ['ID', 'ID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Man', 'RegisterDate', 'Description']);
@@ -203,8 +206,20 @@ begin
     myCommand.Execute;
     qImport.Next;
   end;
+
+  qImport.SQL.Text := 'SELECT * FROM Users';
+  qImport.Open;
+  //myCommand.SQL.Text := 'INSERT INTO users (ID, NationalID, FirstName, LastName, BirthDate, Address, Phone, Gender, RegisterTime, Description) VALUES (:ID, :NationalID, :FirstName, :LastName, :BirthDate, :Address, :Phone, :Gender, :RegisterTime, :Description)';
+  myCommand.SQL.Text := 'INSERT INTO scores (UserID, TournamentID, ParticipateTime) VALUES (:UserID, 1, :ParticipateTime)';
+  for i := 1 to qImport.RecordCount do
+  begin
+    myCommand.ParamValues['UserID'] := qImport.FieldByName('ID').AsInteger;
+    myCommand.ParamValues['ParticipateTime'] := TFaDate.Create(qImport.FieldByName('RegisterDate').AsString).ToGregorianDate;
+    myCommand.Execute;
+    qImport.Next;
+  end;
 }
-{
+
 //matches
   // init
   myQuery.SQL.Text := 'SELECT * FROM ageclasses ORDER BY ID';
@@ -233,7 +248,6 @@ begin
   qImport.Open;
   qImportTmp.SQL.Text := 'SELECT * FROM Questions INNER JOIN Matches ON Questions.MatchID = Matches.ID ORDER BY MatchID';
   qImportTmp.Open;
-  myCommandTmp.SQL.Text := 'INSERT INTO questions (MatchID, ID, Question, Answer) VALUES (:MatchID, :ID, :Question, :Answer)';
 
   for i := 1 to qImport.RecordCount do
   begin
@@ -266,6 +280,7 @@ begin
     matchId := myCommand.InsertId;
 
     questionId := 0;
+    myCommandTmp.SQL.Text := 'INSERT INTO questions (MatchID, ID, Question, Answer) VALUES (:MatchID, :ID, :Question, :Answer)';
     while (not qImportTmp.Eof) and (qImport.FieldByName('ID').AsInteger = qImportTmp.FieldByName('MatchID').AsInteger) do
     begin
       inc(questionId);
@@ -291,36 +306,52 @@ begin
     myCommand.ParamValues['CorrectorID'] := getRefined(qImport.FieldByName('DesignerID').AsVariant);
     myCommand.Execute;
 
+    qImportTmp2.SQL.Text := 'SELECT UserID, DeliverDate, ReceiveDate, ScoreDate, Transactions.Score/Matches.MaxScore AS rRate, IIF (rRate > 0, rRate, 0)  AS Rate FROM Transactions INNER JOIN Matches ON Transactions.MatchID = Matches.ID WHERE MatchID = '+ qImport.FieldByName('ID').AsString;
+    qImportTmp2.Open;
+    myCommand.SQL.Text := 'INSERT INTO answers (UserID, MatchID, DeliverTime, ReceiveTime, CorrectTime) VALUES (:UserID, :MatchID, :DeliverTime, :ReceiveTime, :CorrectTime)';
+    myCommandTmp.SQL.Text := 'UPDATE answers SET Rate = :Rate WHERE ID = :ID';
+    myCommand.ParamValues['MatchID'] := matchId;
+    for j := 1 to qImportTmp2.RecordCount do
+    begin
+      myCommand.ParamValues['UserID'] := qImportTmp2.FieldByName('UserID').AsString;
+      myCommand.ParamValues['DeliverTime'] := shamsiToGregorian(qImportTmp2.FieldByName('DeliverDate').AsString);
+      myCommand.ParamValues['ReceiveTime'] := shamsiToGregorian(qImportTmp2.FieldByName('ReceiveDate').AsString);
+      myCommand.ParamValues['CorrectTime'] := shamsiToGregorian(qImportTmp2.FieldByName('ScoreDate').AsString);
+      myCommand.Execute;
+
+      if qImportTmp2.FieldByName('ScoreDate').AsString <> '' then
+      begin
+        myCommandTmp.ParamValues['ID'] := myCommand.InsertId;
+        myCommandTmp.ParamValues['Rate'] := qImportTmp2.FieldByName('Rate').AsVariant;
+        myCommandTmp.Execute;
+      end;
+
+      qImportTmp2.Next;
+    end;
+
     qImport.Next;
   end;
-}
 
+// payments
+  qImport.SQL.Text := 'SELECT * FROM Payments';
+  qImport.Open;
+  myCommand.SQL.Text := 'INSERT INTO payments (TournamentID, UserID, Payment, PayTime) VALUES (1, :UserID, :Payment, :PayTime)';
+  for i := 1 to qImport.RecordCount do
+  begin
+    myCommand.ParamValues['UserID'] := qImport.FieldByName('UserID').AsInteger;
+    myCommand.ParamValues['Payment'] := qImport.FieldByName('Score').AsInteger;
+    myCommand.ParamValues['PayTime'] := shamsiToGregorian(qImport.FieldByName('ScoreDate').AsString);
+    myCommand.Execute;
+    qImport.Next;
+  end;
 
 {
-  moveTable('Messages', ['ID'], ['SourceID', 'DestinationID', 'Content', 'SendDate', 'Viewed']);
-  moveTable('Payments', ['ID'], ['UserID', 'Score', 'ScoreDate', 'OperatorID']);
+moveTable('Payments', ['ID'], ['UserID', 'Score', 'ScoreDate']);
 
 // freescores
   moveTable('FreeScores', ['ID'], ['UserID', 'GroupID', 'Title', 'Score', 'ScoreDate', 'OperatorID']);
   myCommand.SQL.Text := 'UPDATE freescores SET GroupID = 1';
   myCommand.Execute;
-
-// transactions
-  moveTable('Transactions', ['UserID', 'MatchID'], ['DeliverDate', 'ReceiveDate', 'ScoreDate', 'Score', 'OperatorID']);
-  qTmpImport.SQL.Text := 'SELECT UserID, Matches.ID AS MatchID, IIf(Abs(DeltaAge)>=3,IIf(DeltaAge>0, 1.5*Score, 0.5*Score), IIf(Abs(DeltaAge)<2, Score, IIf(DeltaAge>0, 1.25, 0.75) * Score)) AS RealScore, ' + 'Age - CInt(Left(ScoreDate,4))+CInt(Left(BirthDate,4)) AS DeltaAge, IIF(MaxScore <> 0, Round(Score/MaxScore,1), NULL) AS Quality, OperatorID, Man '+
-                         'FROM (Transactions INNER JOIN Matches ON Transactions.MatchID = Matches.ID) INNER JOIN Users ON Transactions.UserID = Users.ID WHERE Transactions.ScoreDate IS NOT NULL AND IsNumeric(Left(BirthDate,4))';
-  qTmpImport.Open;
-  myCommand.SQL.Text := 'UPDATE transactions SET Rate = :Rate, Score = :Score WHERE UserID = :UserID AND MatchID = :MatchID';
-  for i := 1 to qTmpImport.RecordCount do
-  begin
-    myCommand.ParamValues['UserID'] := qTmpImport.FieldByName('UserID').AsString;
-    myCommand.ParamValues['MatchID'] := qTmpImport.FieldByName('MatchID').AsString;
-    myCommand.ParamValues['Rate'] := qTmpImport.FieldByName('Quality').AsString;
-    myCommand.ParamValues['Score'] := qTmpImport.FieldByName('RealScore').AsString;
-    myCommand.Execute;
-    qTmpImport.Next;
-  end;
-}
 
 {// sentences
   qTmpImport.SQL.Text := 'SELECT * FROM Sentences';

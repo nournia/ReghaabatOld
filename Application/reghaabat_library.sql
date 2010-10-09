@@ -224,6 +224,16 @@ CREATE TABLE scores (
 	FOREIGN KEY (UserID) REFERENCES users(ID),
 	FOREIGN KEY (TournamentID) REFERENCES tournaments(ID)
 );
+CREATE TABLE payments (
+	ID int(11) NOT NULL AUTO_INCREMENT,
+	TournamentID INT(11) NOT NULL,
+	UserID INT(11) NOT NULL,
+	Payment SMALLINT(6) NOT NULL,
+	PayTime DATETIME NOT NULL,
+	PRIMARY KEY (ID),
+	FOREIGN KEY (UserID) REFERENCES users(ID),
+	FOREIGN KEY (TournamentID) REFERENCES tournaments(ID)
+);
 
 /* data */
 INSERT INTO ageclasses	(ID, Title, Description, BeginAge, EndAge) VALUES 

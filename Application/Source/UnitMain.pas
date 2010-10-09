@@ -168,6 +168,7 @@ type
     nCorrect: TAdvGlowButton;
     qImport: TADOQuery;
     qImportTmp: TADOQuery;
+    qImportTmp2: TADOQuery;
     procedure bSearchUserClick(Sender: TObject);
     procedure nUploadClick(Sender: TObject);
     procedure nAboutClick(Sender: TObject);

@@ -65,7 +65,6 @@ object fOptions: TfOptions
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    ExplicitTop = 379
     FullHeight = 0
     object bApply: TAdvGlowButton
       Left = 10
@@ -122,7 +121,7 @@ object fOptions: TfOptions
     Height = 380
     AdvOfficePagerStyler = fMain.pagers
     Align = alClient
-    ActivePage = AdvOfficePage3
+    ActivePage = advfcpg2
     AntiAlias = aaAntiAlias
     ButtonSettings.CloseButtonPicture.Data = {
       424DA20400000000000036040000280000000900000009000000010008000000
@@ -372,7 +371,6 @@ object fOptions: TfOptions
     TabReorder = False
     ShowShortCutHints = False
     TabOrder = 2
-    ExplicitTop = -2
     NextPictureChanged = False
     PrevPictureChanged = False
     object advfcpg2: TAdvOfficePage
@@ -522,8 +520,6 @@ object fOptions: TfOptions
         ParentCtl3D = True
         ParentFont = False
         TabOrder = 1
-        ExplicitLeft = 7
-        ExplicitTop = 67
         DesignSize = (
           678
           301)
@@ -540,7 +536,7 @@ object fOptions: TfOptions
           Left = 634
           Top = 49
           Width = 31
-          Height = 14
+          Height = 13
           Anchors = [akTop, akRight]
           Caption = #1670#1575#1662#1711#1585' :'
           Transparent = True
@@ -704,8 +700,6 @@ object fOptions: TfOptions
         Align = alTop
         ParentCtl3D = True
         TabOrder = 0
-        ExplicitLeft = 7
-        ExplicitTop = -3
         DesignSize = (
           678
           162)
@@ -1310,7 +1304,6 @@ object fOptions: TfOptions
         ParentFont = False
         TabOrder = 0
         Visible = False
-        ExplicitHeight = 367
         object AdvGroupBox12: TAdvGroupBox
           AlignWithMargins = True
           Left = 204
@@ -1321,7 +1314,6 @@ object fOptions: TfOptions
           Align = alClient
           ParentCtl3D = True
           TabOrder = 0
-          ExplicitHeight = 342
           object AdvGroupBox9: TAdvGroupBox
             AlignWithMargins = True
             Left = 6

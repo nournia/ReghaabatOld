@@ -220,7 +220,7 @@ begin
   end;
 }
 
-//matches
+{//matches
   // init
   myQuery.SQL.Text := 'SELECT * FROM ageclasses ORDER BY ID';
   myQuery.Open;
@@ -344,10 +344,8 @@ begin
     myCommand.Execute;
     qImport.Next;
   end;
-
+}
 {
-moveTable('Payments', ['ID'], ['UserID', 'Score', 'ScoreDate']);
-
 // freescores
   moveTable('FreeScores', ['ID'], ['UserID', 'GroupID', 'Title', 'Score', 'ScoreDate', 'OperatorID']);
   myCommand.SQL.Text := 'UPDATE freescores SET GroupID = 1';

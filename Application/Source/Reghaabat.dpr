@@ -29,7 +29,8 @@ uses
   UnitReference in 'UnitReference.pas' {fResource},
   UnitTypes in 'UnitTypes.pas',
   UnitDeliver in 'UnitDeliver.pas' {fDeliver},
-  UnitReceive in 'UnitReceive.pas' {fReceive};
+  UnitReceive in 'UnitReceive.pas' {fReceive},
+  UnitPay in 'UnitPay.pas' {fPay};
 
 {Master}
 
@@ -40,6 +41,7 @@ begin
   Application.Title := 'Reghaabat';
   Application.CreateForm(TfMain, fMain);
   Application.CreateForm(TfMatchList, fMatchList);
+  Application.CreateForm(TfPay, fPay);
   //	fMain.SplashScreen.ProgressBar.Position := 100;
 {
   Application.CreateForm(TfReference, fReference);

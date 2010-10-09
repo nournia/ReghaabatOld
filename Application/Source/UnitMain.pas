@@ -300,7 +300,7 @@ uses UnitTDE, UnitSetScore, uCryptography,
   UnitTarrahReport, UnitResumeTahvil, UnitMatchReport, UnitDesignBC,
   UnitDesignWP, UnitLog, UnitTotalReport, UnitChart, UnitUser, AdvStyleIF,
   UnitOptions, UnitSentence, UnitExImport, UnitForm, UnitAbout, UnitWeb, UnitMessage,
-  UFaDate, uShamsiDate, UnitReference, UnitDeliver, UnitReceive;
+  UFaDate, uShamsiDate, UnitReference, UnitDeliver, UnitReceive, UnitPay;
 
 {$R *.dfm}
 
@@ -685,7 +685,7 @@ begin
 //x  nLabel.Enabled:=True;
   if ValidLicence then
   begin
-//x    nPay.Enabled:=True;
+    nPay.Enabled:=True;
 //x    nFreeScore.Enabled:=True;
 //x    nTotalReport.Enabled:=True;
 //x    nDesigner.Enabled:=True;
@@ -1777,6 +1777,7 @@ begin
     if fDeliver <> nil then fDeliver.selectFrame;
     if fReceive <> nil then fReceive.selectFrame;
     if fCorrect <> nil then fCorrect.selectFrame;
+    if fPay <> nil then fPay.selectFrame;
 
 {
 // TDE Code --------------------------------------------------------------------
@@ -2062,41 +2063,13 @@ begin
 end;
 
 procedure TfMain.nPayClick(Sender: TObject);
-var
-  b : Boolean;
 begin
-  AdvToolBarPager.Caption.Caption := 'پرداخت امتیاز';
+  presetMenu;
 
-  P_Temp.Visible := True;
-  pUser.Visible := True;
-  P_SearchUser.Visible := False;
+  if fPay = nil then Application.CreateForm(TfPay, fPay);
 
-  if F_TDE = nil then
-  begin
-    Application.CreateForm( TF_TDE, F_TDE );
-    F_TDE.AdvOfficePager.Enabled := False;
-  end;
-
-  if ICLibrary.Visible then
-  begin
-    F_TDE.Label14.Visible := True;
-    F_TDE.MaskEdit3.Visible := True;
-    F_TDE.T_CheckBoxLibrary.Visible := True;
-
-    F_TDE.Label26.Visible := True;
-    F_TDE.MaskEdit5.Visible := True;
-
-    F_TDE.D_CheckBoxLibrary.Visible := True;
-  end;
-
-  F_TDE.BringToFront;
-  P_Temp.Visible := False;
-
-  b := F_TDE.AdvOfficePager.Enabled;
-  F_TDE.AdvOfficePager.Enabled := True;
-  F_TDE.AdvOfficePager.ActivePageIndex := 2;
-  F_TDE.AdvOfficePager.Enabled := b;
-  if selectedUserId = '' then meUserId.SetFocus;
+  postsetMenu('پرداخت امتیاز', fPay);
+  if needToSelectFrame then fPay.selectFrame;
 end;
 
 procedure TfMain.nCorrectClick(Sender: TObject);

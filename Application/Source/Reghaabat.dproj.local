@@ -23,5 +23,7 @@
     <Transaction>2010/09/30 17:52:44.786.dfm,D:\Repo\Reghaabat\Application\Source\Unit2.dfm=D:\Repo\Reghaabat\Application\Source\UnitDeliver.dfm</Transaction>
     <Transaction>2010/10/02 08:15:42.028.pas,D:\Repo\Reghaabat\Application\Source\Unit2.pas=D:\Repo\Reghaabat\Application\Source\UnitReceive.pas</Transaction>
     <Transaction>2010/10/02 08:15:42.028.dfm,D:\Repo\Reghaabat\Application\Source\Unit2.dfm=D:\Repo\Reghaabat\Application\Source\UnitReceive.dfm</Transaction>
+    <Transaction>2010/10/09 10:36:54.317.pas,D:\Repo\Reghaabat\Application\Source\Unit2.pas=D:\Repo\Reghaabat\Application\Source\UnitPay.pas</Transaction>
+    <Transaction>2010/10/09 10:36:54.317.dfm,D:\Repo\Reghaabat\Application\Source\Unit2.dfm=D:\Repo\Reghaabat\Application\Source\UnitPay.dfm</Transaction>
   </Transactions>
 </BorlandProject>

@@ -121,6 +121,9 @@
 			<DCCReference Include="UnitReceive.pas">
 				<Form>fReceive</Form>
 			</DCCReference>
+			<DCCReference Include="UnitPay.pas">
+				<Form>fPay</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -153,7 +156,7 @@
 						<VersionInfo Name="MajorVer">3</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">1199</VersionInfo>
+						<VersionInfo Name="Build">1221</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -165,7 +168,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">Rooyesh</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">3.0.0.1199</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">3.0.0.1221</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>

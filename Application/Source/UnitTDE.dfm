@@ -25,7 +25,7 @@ object F_TDE: TF_TDE
     Height = 452
     AdvOfficePagerStyler = fMain.pagers
     Align = alClient
-    ActivePage = P_Tahvil
+    ActivePage = P_Score
     ButtonSettings.CloseButtonPicture.Data = {
       424DA20400000000000036040000280000000900000009000000010008000000
       00006C000000C30E0000C30E00000001000000010000427B8400DEEFEF00FFFF
@@ -3693,6 +3693,7 @@ object F_TDE: TF_TDE
         Align = alTop
         ParentCtl3D = True
         TabOrder = 2
+        ExplicitTop = -4
         DesignSize = (
           643
           96)
@@ -3814,7 +3815,7 @@ object F_TDE: TF_TDE
           Width = 76
           Height = 22
           Value = 0
-          DateValue = 40396.653959363420000000
+          DateValue = 40460.445065682870000000
           HexValue = 0
           Anchors = [akTop, akRight]
           Color = clWhite

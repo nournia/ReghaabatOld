@@ -288,6 +288,7 @@ type
     sendFolderAddress : string;
     listHeader, listField : array[0..100] of String;
     listWidth : array[0..100] of Integer;
+    selectedForm : TForm;
   end;
 
 var
@@ -1774,10 +1775,10 @@ begin
     laDescription.Visible := lDescription.Caption <> '';
     uPicture.Visible := not loadJpeg(selectedUserId, 'user', Picture, myQuery);
 
-    if fDeliver <> nil then fDeliver.selectFrame;
-    if fReceive <> nil then fReceive.selectFrame;
-    if fCorrect <> nil then fCorrect.selectFrame;
-    if fPay <> nil then fPay.selectFrame;
+    if selectedForm = fDeliver then fDeliver.selectFrame else
+    if selectedForm = fReceive then fReceive.selectFrame else
+    if selectedForm = fCorrect then fCorrect.selectFrame else
+    if selectedForm = fPay then fPay.selectFrame;
 
 {
 // TDE Code --------------------------------------------------------------------

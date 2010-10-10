@@ -62,10 +62,6 @@ object fPay: TfPay
     StatusBar.ColorTo = 16109747
     StatusBar.GradientDirection = gdVertical
     Styler = ps
-    ExplicitLeft = -8
-    ExplicitTop = 8
-    ExplicitWidth = 650
-    ExplicitHeight = 341
     FullHeight = 0
     object gbAll: TAdvGroupBox
       Left = 0
@@ -74,9 +70,6 @@ object fPay: TfPay
       Height = 318
       Align = alClient
       TabOrder = 0
-      ExplicitTop = -8
-      ExplicitWidth = 650
-      ExplicitHeight = 341
       object S_GroupBox1: TAdvGroupBox
         Left = 2
         Top = 3
@@ -85,8 +78,6 @@ object fPay: TfPay
         Align = alTop
         ParentCtl3D = True
         TabOrder = 0
-        ExplicitLeft = 1
-        ExplicitTop = 0
         DesignSize = (
           671
           96)
@@ -218,7 +209,7 @@ object fPay: TfPay
           Width = 76
           Height = 22
           Value = 0
-          DateValue = 40460.464947615740000000
+          DateValue = 40461.245012314820000000
           HexValue = 0
           Anchors = [akTop, akRight]
           Color = clWhite
@@ -244,7 +235,6 @@ object fPay: TfPay
           Visible = True
           Version = '1.4.5.1'
           OnChange = sScoreChange
-          ExplicitLeft = 478
         end
         object bPay: TAdvGlowButton
           Left = 425
@@ -296,7 +286,6 @@ object fPay: TfPay
           Appearance.GradientChecked = ggVertical
           Enabled = False
           Layout = blGlyphRight
-          ExplicitLeft = 400
         end
       end
     end

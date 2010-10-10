@@ -41,9 +41,9 @@ begin
   Application.Title := 'Reghaabat';
   Application.CreateForm(TfMain, fMain);
   Application.CreateForm(TfMatchList, fMatchList);
-  Application.CreateForm(TfPay, fPay);
   //	fMain.SplashScreen.ProgressBar.Position := 100;
 {
+  Application.CreateForm(TfPay, fPay);
   Application.CreateForm(TfReference, fReference);
   Application.CreateForm(TfUser, fUser);
   Application.CreateForm(TF_DesignBC, F_DesignBC);

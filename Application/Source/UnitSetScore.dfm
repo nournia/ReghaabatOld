@@ -24,9 +24,6 @@ object fCorrect: TfCorrect
     Align = alClient
     Enabled = False
     TabOrder = 1
-    ExplicitTop = 8
-    ExplicitWidth = 802
-    ExplicitHeight = 503
     object pUserId: TAdvPanel
       Left = 2
       Top = 3
@@ -73,7 +70,6 @@ object fCorrect: TfCorrect
       StatusBar.ColorTo = 16109747
       StatusBar.GradientDirection = gdVertical
       Styler = ps
-      ExplicitLeft = 1
       DesignSize = (
         787
         23)
@@ -153,8 +149,6 @@ object fCorrect: TfCorrect
       StatusBar.ColorTo = 16109747
       StatusBar.GradientDirection = gdVertical
       Styler = ps
-      ExplicitLeft = 1
-      ExplicitTop = 443
       FullHeight = 0
       object bApply: TAdvGlowButton
         Left = 10
@@ -444,9 +438,52 @@ object fCorrect: TfCorrect
         BBBDBFC2C4C6C9CB19FAFAFA1919191919191919191919191919191919191919
         FAFAFAFAFAFAFAFAFAFAFAFAFAFAFAFAFAFAFAFAFAFAFAFAFAFA}
       Version = '3.1.1.3'
-      Columns = <>
-      ExplicitLeft = -446
-      ExplicitTop = 106
+      Columns = <
+        item
+          AutoMinSize = 0
+          AutoMaxSize = 0
+          Alignment = taLeftJustify
+          Borders = []
+          BorderPen.Color = clSilver
+          CheckFalse = 'N'
+          CheckTrue = 'Y'
+          Color = clWindow
+          ColumnPopupType = cpFixedCellsRClick
+          DropDownCount = 8
+          EditLength = 0
+          Editor = edNormal
+          FilterCaseSensitive = False
+          Fixed = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HeaderAlignment = taLeftJustify
+          HeaderFont.Charset = DEFAULT_CHARSET
+          HeaderFont.Color = clWindowText
+          HeaderFont.Height = -11
+          HeaderFont.Name = 'Tahoma'
+          HeaderFont.Style = []
+          MinSize = 0
+          MaxSize = 0
+          Password = False
+          PrintBorders = [cbTop, cbLeft, cbRight, cbBottom]
+          PrintColor = clWhite
+          PrintFont.Charset = DEFAULT_CHARSET
+          PrintFont.Color = clWindowText
+          PrintFont.Height = -11
+          PrintFont.Name = 'Tahoma'
+          PrintFont.Style = []
+          ReadOnly = False
+          ShowBands = False
+          SortStyle = ssAutomatic
+          SpinMax = 0
+          SpinMin = 0
+          SpinStep = 1
+          Tag = 0
+          Width = 70
+        end>
       ColWidths = (
         70)
     end

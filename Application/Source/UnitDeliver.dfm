@@ -305,7 +305,6 @@ object fDeliver: TfDeliver
       StatusBar.ColorTo = 16109747
       StatusBar.GradientDirection = gdVertical
       Styler = ps
-      ExplicitTop = 306
       DesignSize = (
         770
         34)

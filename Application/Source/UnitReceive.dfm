@@ -305,8 +305,6 @@ object fReceive: TfReceive
       StatusBar.ColorTo = 16109747
       StatusBar.GradientDirection = gdVertical
       Styler = ps
-      ExplicitLeft = 1
-      ExplicitTop = 368
       FullHeight = 0
       object bApply: TAdvGlowButton
         Left = 10

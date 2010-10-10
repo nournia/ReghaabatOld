@@ -2,7 +2,8 @@ CREATE DATABASE IF NOT EXISTS reghaabat_library CHARACTER SET utf8 COLLATE utf8_
 USE reghaabat_library;
 -- 0 <= Rate <= 1, 0 <= Quality	
 
-/* globals */
+/* tables */
+-- globals 
 CREATE TABLE ageclasses(
 	ID TINYINT(4) NOT NULL,
 	Title VARCHAR(255) NOT NULL,
@@ -22,7 +23,7 @@ CREATE TABLE categories (
 	PRIMARY KEY (ID)
 );
 
-/* users */
+-- users
 CREATE TABLE library (
 	/* group */
 	MasterID int(11) NOT NULL,
@@ -70,7 +71,7 @@ CREATE TABLE pictures (
 	PRIMARY KEY (ID, Kind)
 );
 
-/* matches */
+-- matches 
 CREATE TABLE authors (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
 	Quality INT(11) NOT NULL DEFAULT '0',
@@ -159,7 +160,7 @@ CREATE TABLE choices (
 	FOREIGN KEY (QuestionID) REFERENCES questions(ID)
 );
 
-/* answers */
+-- answers 
 CREATE TABLE answers (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
 	UserID INT(11) NOT NULL,
@@ -235,6 +236,27 @@ CREATE TABLE payments (
 	FOREIGN KEY (TournamentID) REFERENCES tournaments(ID)
 );
 
+-- open_scores 
+CREATE TABLE open_categories (
+	TournamentID INT(11) NOT NULL,
+	ID TINYINT(4) NOT NULL,
+	Title VARCHAR(255) NOT NULL,
+	PRIMARY KEY (TournamentID, ID),
+	FOREIGN KEY (TournamentID) REFERENCES tournaments(ID)
+);
+CREATE TABLE open_scores (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	TournamentID INT(11) NOT NULL,
+	UserID INT(11) NOT NULL,
+	CategoryID TINYINT(4) NOT NULL,
+	Title VARCHAR(255) NOT NULL,
+	Score SMALLINT(6) NOT NULL,
+	ScoreTime DATETIME NOT NULL,
+	PRIMARY KEY (ID),
+	FOREIGN KEY (UserID) REFERENCES users(ID),
+	FOREIGN KEY (TournamentID, CategoryID) REFERENCES open_categories(TournamentID, ID)
+);
+
 /* data */
 INSERT INTO ageclasses	(ID, Title, Description, BeginAge, EndAge) VALUES 
 						(0, 'الف', 'آمادگی و سال اول دبستان', 6, 7), 
@@ -255,8 +277,8 @@ INSERT INTO tags	 	(ID, Title) VALUES
 						(1, 'تاریخی'), 
 						(2, 'علمی');
 
-DELIMITER $$
 /* functions */
+DELIMITER $$
 
 CREATE FUNCTION getAgeClass(birth DATE) RETURNS INT(11) DETERMINISTIC
 BEGIN

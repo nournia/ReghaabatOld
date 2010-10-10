@@ -344,22 +344,20 @@ begin
     myCommand.Execute;
     qImport.Next;
   end;
-}
-{
-// freescores
-  moveTable('FreeScores', ['ID'], ['UserID', 'GroupID', 'Title', 'Score', 'ScoreDate', 'OperatorID']);
-  myCommand.SQL.Text := 'UPDATE freescores SET GroupID = 1';
-  myCommand.Execute;
 
-{// sentences
-  qTmpImport.SQL.Text := 'SELECT * FROM Sentences';
-  qTmpImport.Open;
-  myGlobalCommand.SQL.Text := 'INSERT INTO sentences (Sentence, ChangeDate) VALUES (:Sentence, "'+ getShamsiDate +'")';
-  for i := 1 to qTmpImport.RecordCount do
+// open_scores
+  qImport.SQL.Text := 'SELECT * FROM FreeScores WHERE ScoreDate <> ""';
+  qImport.Open;
+
+  myCommand.SQL.Text := 'INSERT INTO open_scores (TournamentID, UserID, CategoryID, Title, Score, ScoreTime) VALUES (1, :UserID, 1, :Title, :Score, :ScoreTime)';
+  for i := 1 to qImport.RecordCount do
   begin
-    myGlobalCommand.ParamValues['Sentence'] := qTmpImport.FieldByName('Sentence').AsString + '  ' + qTmpImport.FieldByName('Person').AsString;
-    myGlobalCommand.Execute;
-    qTmpImport.Next;
+    myCommand.ParamValues['UserID'] := qImport.FieldByName('UserID').AsInteger;
+    myCommand.ParamValues['Title'] := qImport.FieldByName('Title').AsString;
+    myCommand.ParamValues['Score'] := qImport.FieldByName('Score').AsInteger;
+    myCommand.ParamValues['ScoreTime'] := shamsiToGregorian(qImport.FieldByName('ScoreDate').AsString);
+    myCommand.Execute;
+    qImport.Next;
   end;
 }
 end;

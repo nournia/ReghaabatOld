@@ -56,6 +56,7 @@ begin
     lSum.Caption := IntToStr(StrToInt(lScore.Caption) - StrToInt(lPaid.Caption));
   end;
 
+  fMain.selectedForm := fPay;
   gbAll.Enabled := true;
   sScore.SetFocus;
 end;

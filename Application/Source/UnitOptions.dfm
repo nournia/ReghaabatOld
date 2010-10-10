@@ -121,7 +121,7 @@ object fOptions: TfOptions
     Height = 380
     AdvOfficePagerStyler = fMain.pagers
     Align = alClient
-    ActivePage = advfcpg2
+    ActivePage = AdvOfficePage3
     AntiAlias = aaAntiAlias
     ButtonSettings.CloseButtonPicture.Data = {
       424DA20400000000000036040000280000000900000009000000010008000000

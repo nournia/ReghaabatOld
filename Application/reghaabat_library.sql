@@ -277,9 +277,10 @@ INSERT INTO tags	 	(ID, Title) VALUES
 						(1, 'تاریخی'), 
 						(2, 'علمی');
 
-/* functions */
+
 DELIMITER $$
 
+/* functions */
 CREATE FUNCTION getAgeClass(birth DATE) RETURNS INT(11) DETERMINISTIC
 BEGIN
 	DECLARE i, b, e INT;
@@ -305,14 +306,14 @@ BEGIN
 	RETURN r;
 END$$
 
+/* procedures */
 CREATE PROCEDURE prepareMatchScores()
 BEGIN
 	DROP TEMPORARY TABLE IF EXISTS matchScores;
 	CREATE TEMPORARY TABLE matchScores AS
-	SELECT matches.ID AS MatchID, ROUND(100 * (IFNULL(LOG(matches.Quality), 0) + IFNULL(LOG(users.Quality), 0) + IFNULL(LOG(resources.Quality), 0) + IFNULL(LOG(authors.Quality), 0) + IFNULL(LOG(publications.Quality), 0))) AS Score
+	SELECT matches.ID AS MatchID, ROUND(100 * (matches.AgeClass + IFNULL(LOG(IFNULL(matches.Quality, 0) + IFNULL(users.Quality, 0) + IFNULL(resources.Quality, 0) + IFNULL(authors.Quality, 0) + IFNULL(publications.Quality, 0)), 0))) AS Score
 	FROM (matches LEFT JOIN users ON matches.DesignerID = users.ID) LEFT JOIN ((resources LEFT JOIN authors ON resources.AuthorID = authors.ID) LEFT JOIN publications ON resources.PublicationID = publications.ID) ON matches.ResourceID = resources.ID;
 END$$
-
 CREATE PROCEDURE prepareUserMatchScores(IN UID INT)
 BEGIN
 	DROP TEMPORARY TABLE IF EXISTS userMatchScores, supported, followed, newrows;
@@ -347,43 +348,53 @@ BEGIN
 	
 	DROP TEMPORARY TABLE supported, followed, newrows, matchScores;
 END$$
-
-CREATE TRIGGER trgAnswerUpdate AFTER UPDATE ON answers
+CREATE PROCEDURE updateQualities(IN iMatchID INT)
 BEGIN
-	CALL prepareUserMatchScores(NEW.UserID);
+	DECLARE qBefore, qAfter, mDesignerID, mResourceID, mAuthorID, mPublicationID INT;
+	SELECT Quality, DesignerID, ResourceID INTO qBefore, mDesignerID, mResourceID FROM matches WHERE ID = iMatchID;
+	SELECT COUNT(TournamentID) INTO qAfter FROM supports WHERE MatchID = iMatchID;
 	
-	UPDATE scores, userMatchScores SET scores.Score = scores.Score + userMatchScores.UserScore * (NEW.Rate - IFNULL(OLD.Rate, 0))
-		WHERE scores.UserID = new.UserID AND scores.TournamentID = userMatchScores.TournamentID AND new.MatchID = userMatchScores.MatchID;
+	UPDATE matches SET Quality = qAfter WHERE ID = iMatchID;
+	UPDATE users SET Quality = Quality - qBefore + qAfter WHERE ID = mDesignerID;
 
-	IF OLD.Rate IS NULL THEN
-		UPDATE scores, userMatchScores, matches SET Score = Score + userMatchScores.DesignerScore
-			WHERE matches.ID = userMatchScores.MatchID AND scores.UserID = matches.DesignerID AND scores.TournamentID = userMatchScores.TournamentID AND new.MatchID = userMatchScores.MatchID;
+	IF mResourceID IS NOT NULL THEN
+		SELECT AuthorID, PublicationID INTO mAuthorID, mPublicationID FROM resources WHERE ID = mResourceID;
+		UPDATE resources SET Quality = Quality - qBefore + qAfter WHERE ID = mResourceID;
+		UPDATE authors SET Quality = Quality - qBefore + qAfter WHERE ID = mAuthorID;
+		UPDATE publications SET Quality = Quality - qBefore + qAfter WHERE ID = mPublicationID;
+	END IF;	
+END$$
+
+/* triggers */
+CREATE TRIGGER trgAnswerUpdate AFTER UPDATE ON answers
+FOR EACH ROW BEGIN
+	IF NEW.Rate IS NOT NULL THEN
+		CALL prepareUserMatchScores(NEW.UserID);
+		
+		UPDATE scores, userMatchScores SET scores.Score = scores.Score + userMatchScores.UserScore * (NEW.Rate - IFNULL(OLD.Rate, 0))
+			WHERE scores.UserID = NEW.UserID AND scores.TournamentID = userMatchScores.TournamentID AND NEW.MatchID = userMatchScores.MatchID;
+	
+		IF OLD.Rate IS NULL THEN
+			UPDATE scores, userMatchScores, matches SET Score = Score + userMatchScores.DesignerScore
+				WHERE matches.ID = userMatchScores.MatchID AND scores.UserID = matches.DesignerID AND scores.TournamentID = userMatchScores.TournamentID AND NEW.MatchID = userMatchScores.MatchID;
+		END IF;
+		
+		DROP TEMPORARY TABLE userMatchScores;
+		
+		UPDATE users, scores SET users.Score = scores.Score 
+			WHERE users.ID = NEW.UserID AND scores.UserID = NEW.UserID AND scores.TournamentID = 1;
 	END IF;
-	
-	DROP TEMPORARY TABLE userMatchScores;
-	
-	UPDATE users, scores SET users.Score = scores.Score 
-		WHERE users.ID = new.UserID AND scores.UserID = new.UserID AND scores.TournamentID = 1;
+END$$
+CREATE TRIGGER trgSupportInsert AFTER INSERT ON supports
+FOR EACH ROW BEGIN
+	CALL updateQualities(NEW.MatchID);
+END$$
+CREATE TRIGGER trgSupportDelete AFTER DELETE ON supports
+FOR EACH ROW BEGIN
+	CALL updateQualities(OLD.MatchID);
 END$$
 
 /*
-CREATE PROCEDURE setMatchCoefficient(IN MID INT)
-BEGIN
-  DECLARE addScore, a, b FLOAT;
-  SET b = (SELECT MAX(Score) FROM groups);
-  SELECT MAX(groups.Score) INTO a
-  FROM supports
-    INNER JOIN tournaments ON supports.TournamentID = tournaments.ID
-    INNER JOIN groups ON tournaments.GroupID = groups.ID
-  WHERE supports.MatchID = MID
-  GROUP BY supports.MatchID;
-
-  IF a IS NULL THEN SET a = 0; END IF;
-  IF b IS NULL THEN SET b = 0; END IF;
-  iF b = 0 THEN SET addScore = 0; ELSE SET addScore = a / b; END IF;
-  UPDATE matches SET Coefficient = 1 + addScore WHERE ID = MID;
-END$$
-
 CREATE PROCEDURE setAnswerScore(IN AID INT)
 BEGIN
   DECLARE avgRate, crrTime FLOAT;
@@ -403,15 +414,6 @@ BEGIN
 END$$
 
 DELIMITER //
-CREATE TRIGGER trgSupportInsert AFTER INSERT ON supports
- FOR EACH ROW BEGIN
-  CALL setMatchCoefficient(new.MatchID);
-END
-//
-CREATE TRIGGER trgSupportDelete AFTER DELETE ON supports
- FOR EACH ROW BEGIN
-  CALL setMatchCoefficient(old.MatchID);
-END
 //
 CREATE TRIGGER trgUserUpdate AFTER UPDATE ON users
 FOR EACH ROW

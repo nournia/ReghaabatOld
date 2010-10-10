@@ -5,10 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, AdvGlowButton, StdCtrls, Mask, AdvSpin, AdvGroupBox, ExtCtrls,
-  AdvPanel, AdvAppStyler;
+  AdvPanel, AdvAppStyler, UnitMaster;
 
 type
-  TfPay = class(TForm)
+  TfPay = class(TMaster)
     fs: TAdvFormStyler;
     ps: TAdvPanelStyler;
     AdvPanel2: TAdvPanel;
@@ -56,7 +56,6 @@ begin
     lSum.Caption := IntToStr(StrToInt(lScore.Caption) - StrToInt(lPaid.Caption));
   end;
 
-  fMain.selectedForm := fPay;
   gbAll.Enabled := true;
   sScore.SetFocus;
 end;

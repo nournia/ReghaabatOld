@@ -45,7 +45,6 @@ begin
     executeCommand('DROP TEMPORARY TABLE userMatchScores');
   end;
 
-  fMain.selectedForm := fDeliver;
   gbAll.Enabled := true;
   gDeliver.SetFocus;
 end;

@@ -50,7 +50,6 @@ begin
     1 : tmp := ' AND answers.UserID = '+ fMain.selectedUserId;
   end;
 
-  fMain.selectedForm := fCorrect;
   fMain.fillGridWithQuery(gCorrect, 'SELECT UserID, MatchID, users.LastName, matches.Title FROM answers INNER JOIN users ON answers.UserID = users.ID INNER JOIN matches ON answers.MatchID = matches.ID WHERE ReceiveTime IS NOT NULL AND DeliverTime IS NOT NULL AND CorrectTime IS NULL '+ tmp);
   gbAll.Enabled := true;
   gCorrect.SetFocus;

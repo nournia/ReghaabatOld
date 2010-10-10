@@ -12,7 +12,7 @@ uses
   ImgList, AdvOfficeHint, DB, ADODB, frxClass, frxDBSet, TaskDialog,
   TaskDialogEx, AdvOfficeImage, GDIPPictureContainer, AdvOfficeButtons, AdvCGrid,
   AdvSmoothButton, pngimage, AdvSmoothSplashScreen, AdvSmoothMessageDialog, jpeg,
-  AdvProgressBar, AdvOfficeTabSet, ExtDlgs, Printers, DBAccess, MyAccess, MemDS, UnitTypes;
+  AdvProgressBar, AdvOfficeTabSet, ExtDlgs, Printers, DBAccess, MyAccess, MemDS, UnitTypes, UnitMaster;
 
 type
   TfMain = class(TAdvToolBarForm)
@@ -288,7 +288,6 @@ type
     sendFolderAddress : string;
     listHeader, listField : array[0..100] of String;
     listWidth : array[0..100] of Integer;
-    selectedForm : TForm;
   end;
 
 var
@@ -1748,7 +1747,7 @@ begin
 end;
 
 procedure TfMain.meUserIdKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-var valid : boolean; i : Integer; F: array[1..4] of Integer;
+var valid : boolean; i : Integer; F: array[1..4] of Integer; tmp : string;
 begin
   if Key = 13 then
   begin
@@ -1775,10 +1774,11 @@ begin
     laDescription.Visible := lDescription.Caption <> '';
     uPicture.Visible := not loadJpeg(selectedUserId, 'user', Picture, myQuery);
 
-    if selectedForm = fDeliver then fDeliver.selectFrame else
-    if selectedForm = fReceive then fReceive.selectFrame else
-    if selectedForm = fCorrect then fCorrect.selectFrame else
-    if selectedForm = fPay then fPay.selectFrame;
+    tmp := AdvToolBarPager.Caption.Caption;
+    if tmp = 'تحویل مسابقه' then fDeliver.selectFrame else
+    if tmp = 'دریافت مسابقه' then fReceive.selectFrame else
+    if tmp = 'تعیین امتیاز مسابقات' then fCorrect.selectFrame else
+    if tmp = 'پرداخت امتیاز' then fPay.selectFrame;
 
 {
 // TDE Code --------------------------------------------------------------------

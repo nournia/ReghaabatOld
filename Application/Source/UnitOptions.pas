@@ -196,17 +196,6 @@ begin
   moveTable('users', ['ID', 'NationalID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Gender', 'RegisterTime', 'Description'],
                      ['ID', 'ID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Man', 'RegisterDate', 'Description']);
 
-  qImport.SQL.Text := 'SELECT Pictures.* FROM Pictures INNER JOIN Users ON Pictures.ID = Users.ID';
-  qImport.Open;
-  myCommand.SQL.Text := 'INSERT INTO pictures (ID, Kind, Picture) VALUES (:ID, "user", :Picture)';
-  for i := 1 to qImport.RecordCount do
-  begin
-    myCommand.ParamValues['ID'] := qImport.FieldByName('ID').AsInteger;
-    myCommand.ParamValues['Picture'] := qImport.FieldByName('Picture').AsVariant;
-    myCommand.Execute;
-    qImport.Next;
-  end;
-
   qImport.SQL.Text := 'SELECT * FROM Users';
   qImport.Open;
   //myCommand.SQL.Text := 'INSERT INTO users (ID, NationalID, FirstName, LastName, BirthDate, Address, Phone, Gender, RegisterTime, Description) VALUES (:ID, :NationalID, :FirstName, :LastName, :BirthDate, :Address, :Phone, :Gender, :RegisterTime, :Description)';
@@ -219,8 +208,18 @@ begin
     qImport.Next;
   end;
 }
+  qImport.SQL.Text := 'SELECT Pictures.* FROM Pictures INNER JOIN Users ON Pictures.ID = Users.ID';
+  qImport.Open;
+  myCommand.SQL.Text := 'INSERT INTO pictures (ID, Kind, Picture) VALUES (:ID, "user", :Picture)';
+  for i := 1 to qImport.RecordCount do
+  begin
+    myCommand.ParamValues['ID'] := qImport.FieldByName('ID').AsInteger;
+    myCommand.ParamValues['Picture'] := qImport.FieldByName('Picture').AsVariant;
+    myCommand.Execute;
+    qImport.Next;
+  end;
 
-{//matches
+//matches
   // init
   myQuery.SQL.Text := 'SELECT * FROM ageclasses ORDER BY ID';
   myQuery.Open;
@@ -359,7 +358,7 @@ begin
     myCommand.Execute;
     qImport.Next;
   end;
-}
+
 end;
 end;
 

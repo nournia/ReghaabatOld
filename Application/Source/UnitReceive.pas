@@ -38,7 +38,6 @@ uses UnitMain;
 
 procedure TfReceive.selectFrame();
 begin
-  fMain.selectedForm := fReceive;
   fMain.fillGridWithQuery(gReceive, 'SELECT ID, Title FROM matches INNER JOIN supports ON matches.ID = supports.MatchID WHERE supports.TournamentID = 1 AND matches.ID IN (SELECT MatchID FROM answers WHERE UserID = '+ fMain.selectedUserId +' AND DeliverTime IS NOT NULL AND ReceiveTime IS NULL)');
   gbAll.Enabled := true;
   gReceive.SetFocus;

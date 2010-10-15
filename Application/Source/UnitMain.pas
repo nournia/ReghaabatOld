@@ -259,8 +259,9 @@ type
     function insertGlobalVar(value, table : string) : integer;
 
     function loadJpeg(id, group : String; img: TImage; qry: TMyQuery) : Boolean;
-    procedure InsertOrUpdateJpeg(id, kind : String; img : TImage);
-    function InsertOrUpdate(table, condition: string; fields : array of string; values : array of Variant) : integer;
+    procedure qInsertOrUpdateJpeg(id, kind : String; img : TImage);
+    function qInsertOrUpdate(table : string; fields : array of string; values : array of Variant; icond : string = '') : integer;
+    procedure qDelete(table : string; icond : string);
 
     function isClient() : boolean;
     function correctString(input : string) : string;
@@ -368,27 +369,28 @@ begin
   myQuery.Open;
   Result := (myQuery.RecordCount = 1);
 end;
-function TfMain.InsertOrUpdate(table, condition: string; fields : array of string; values : array of Variant) : integer; // -1: update, else : insertedId
-var i, count : integer; sql, tmp : string;
+function TfMain.qInsertOrUpdate(table : string; fields : array of string; values : array of Variant; icond : string) : integer; // ID
+var i, count : integer; sql, condition, tmp : string;
 begin
   count := Length(fields) - 1;
 
-  myQuery.SQL.Text := 'SELECT * FROM '+ table + ' WHERE '+ condition;
+  if icond = '' then condition := ' WHERE ID = '+ IntToStr(values[0]) else condition := ' WHERE '+ icond;
+  myQuery.SQL.Text := 'SELECT * FROM '+ table + condition;
   myQuery.Open;
   if myQuery.RecordCount = 1 then
   begin
     sql := 'UPDATE '+ table + ' SET ';
-    for i := 0 to count do
+    for i := 1 to count do
     begin
       sql := sql + fields[i] + '=:' + fields[i];
       if i <> count then sql := sql + ', ';
     end;
-    sql := sql + ' WHERE '+ condition;
-    Result := -1;
+    sql := sql + condition;
+    values[0] := myQuery.Fields[0].AsInteger;
   end else
   begin
     sql := 'INSERT INTO '+ table +' (';
-    for i := 0 to count do
+    for i := 1 to count do
     begin
       sql := sql + fields[i];
       tmp := tmp + ':' + fields[i];
@@ -399,19 +401,50 @@ begin
       end;
     end;
     sql := sql + ') VALUES ('+ tmp +')';
-    Result := 0;
   end;
   myCommand.SQL.Text := sql;
-  for i := 0 to count do
+  for i := 1 to count do
     myCommand.ParamValues[fields[i]] := values[i];
   myCommand.Execute;
 
-  if Result = 0 then Result := myCommand.InsertId;
+  // changes
+  myCommand.SQL.Text := 'INSERT INTO changes VALUES (:TableName, :ID, :SubjectID, :Kind, NOW())';
+  if values[0] = -1 then
+  begin
+    Result := myCommand.InsertId;
+    myCommand.ParamValues['Kind'] := 'insert';
+  end else
+  begin
+    Result := values[0];
+    myCommand.ParamValues['Kind'] := 'update';
+  end;
+  myCommand.ParamValues['SubjectID'] := loginUserID;
+  myCommand.ParamValues['TableName'] := table;
+  myCommand.ParamValues['ID'] := Result;
+
+  myCommand.Execute;
 end;
-procedure TfMain.InsertOrUpdateJpeg(id, kind : String; img : TImage);
-var S : String; valid : boolean;
+procedure TfMain.qDelete(table : string; icond : string);
 begin
+  myQueryTmp.SQL.Text := 'SELECT ID FROM '+ table + ' WHERE '+ icond;
+  myQueryTmp.Open;
+  if myQueryTmp.RecordCount = 1 then
+  begin
+    executeCommand('DELETE FROM '+ table + ' WHERE '+ icond);
+
+    myCommand.SQL.Text := 'INSERT INTO changes VALUES (:TableName, :ID, :SubjectID, "delete", NOW())';
+    myCommand.ParamValues['SubjectID'] := loginUserID;
+    myCommand.ParamValues['TableName'] := table;
+    myCommand.ParamValues['ID'] := myQueryTmp.Fields[0].AsInteger;
+    myCommand.Execute;
+  end;
+end;
+procedure TfMain.qInsertOrUpdateJpeg(id, kind : String; img : TImage);
+var S, event : String; valid : boolean; eid : integer;
+begin
+  event := '';
   valid := false;
+  eid := -1;
   if img.Picture <> nil then
   begin
     S := ExtractFileDir(Application.ExeName)+'\a.tmp';
@@ -419,28 +452,38 @@ begin
     valid := FileExists(S);
   end;
 
-  myQuery.SQL.Text := 'SELECT * FROM pictures WHERE Kind = "'+ kind +'" AND ID = '+ id;
+  myQuery.SQL.Text := 'SELECT * FROM pictures WHERE Kind = "'+ kind +'" AND ReferenceID = '+ id;
   myQuery.Open;
   if myQuery.RecordCount = 0 then
   begin
-    myCommand.SQL.Text := 'INSERT INTO pictures (ID, Kind) VALUES ('+ id +', "'+ kind +'")';
-    myCommand.Execute;
-    myQuery.SQL.Text := 'SELECT * FROM pictures WHERE Kind = "'+ kind +'" AND ID = '+ id;
-    myQuery.Open;
-  end else
-  if myQuery.RecordCount = 1 then
+    if valid then
+    begin
+      event := 'insert';
+      executeCommand('INSERT INTO pictures (ReferenceID, Kind) VALUES ('+ id +', "'+ kind +'")');
+      eid := myCommand.InsertId;
+      myQuery.Open;
+    end;
+  end else if myQuery.RecordCount = 1 then
   begin
+    eid := myQuery.FieldByName('ID').AsInteger;
     if not valid then
-      executeCommand('DELETE FROM Pictures WHERE ID = '+ id);
+    begin
+      event := 'delete';
+      executeCommand('DELETE FROM pictures WHERE ID = '+ id);
+    end;
   end;
 
   if valid then
   begin
+    if event = '' then event := 'update';
+
     myQuery.Edit;
     TBlobField(myQuery.FieldByName('Picture')).LoadFromFile(S);
     myQuery.Post;
     DeleteFile(S);
   end;
+
+  if (event <> '') and (eid <> -1) then executeCommand('INSERT INTO changes ("pictures", '+ IntToStr(eid) +', '+ loginUserID +', "'+ event +'", NOW())');
 end;
 procedure getJpeg(Image: TImage; Field: TField);
 var
@@ -554,7 +597,7 @@ begin
   else
   begin
   if options.Values['AutoConnectLibrary'] = '' then options.Values['AutoConnectLibrary'] := BoolToStr(false);
-  if options.Values['DownGrade'] = '' then options.Values['DownGrade'] := BoolToStr(true);
+  if options.Values['DownGrade'] = '' then options.Values['DownGrade'] := BoolToStr(false);
 
   if options.Values['CBookMatch'] = '' then options.Values['CBookMatch'] := '1';
   if options.Values['CCDMatch'] = '' then options.Values['CCDMatch'] := '1';
@@ -1658,10 +1701,10 @@ end;
 procedure TfMain.bLoginClick(Sender: TObject);
 var dPermission, kind : String;
 begin
-  myQuery.SQL.Text := 'SELECT * FROM users LEFT JOIN permissions ON users.ID = permissions.UserID WHERE users.ID = '+ meLogin.Text;
+  myQuery.SQL.Text := 'SELECT * FROM users LEFT JOIN permissions ON users.ID = permissions.UserID WHERE users.ID = '+ meLogin.Text +' AND UserPass = sha1("'+ ePassword.Text +'")';
   myQuery.Open;
 
-  if (myQuery.RecordCount = 0) or (encrypt(ePassword.Text) <> myQuery.FieldByName('UserPass').AsString) then
+  if myQuery.RecordCount = 0 then
   begin
     MyShowMessage('کد عضویت و یا کلمه عبور  معتبر نیست');
     ePassword.SelectAll;
@@ -2300,11 +2343,7 @@ begin
     myQuery.SQL.Text := 'SELECT ID FROM '+ table +' WHERE Title = "'+ correctString(value) +'"';
     myQuery.Open;
     if myQuery.RecordCount > 0 then Result := myQuery.Fields[0].AsInteger
-    else
-    begin
-      executeCommand('INSERT INTO '+ table +' (Title) VALUES ("'+ correctString(value) +'")');
-      Result := myCommand.InsertId;
-    end;
+    else Result := qInsertOrUpdate(table, ['ID', 'Title'], [-1, correctString(value)]);
   end else Result := -1;
 end;
 
@@ -2487,14 +2526,91 @@ end;
 
 // sync
 procedure TfMain.syncDatabase();
-var uniqueID, syncDate, libraryID : string;
-
-procedure executeGlobalCommand(s : string);
+var i, j, bunch : integer; tmp, tmp2 : string; synctime : TDateTime; sqls : TStringList;
 begin
-  myGlobalCommand.SQL.Text := s;
-  myGlobalCommand.Execute;
+  // tested: these queries are valid for valid data
+  sqls := TStringList.Create;
+  sqls.Values['users'] := 'SELECT * FROM users';
+  sqls.Values['authors'] := 'SELECT * FROM authors';
+  sqls.Values['publications'] := 'SELECT * FROM publications';
+  sqls.Values['books'] := 'SELECT * FROM books';
+  sqls.Values['multimedias'] := 'SELECT * FROM multimedias';
+  sqls.Values['webpages'] := 'SELECT * FROM webpages';
+  sqls.Values['tournaments'] := 'SELECT * FROM tournaments';
+
+  sqls.Values['permissions'] := 'SELECT permissions.ID, permissions.GID, tournaments.GID AS TournamentID, users.GID AS UserID, Permission, Accept FROM permissions INNER JOIN tournaments ON permissions.TournamentID = tournaments.ID INNER JOIN users ON permissions.UserID = users.ID';
+  sqls.Values['matches'] := 'SELECT matches.ID, matches.GID, users.GID AS DesignerID, resources.GID AS ResourceID, matches.Quality, matches.Title, matches.AgeClass, matches.CategoryID, matches.Content, matches.Configuration ' + 'FROM matches LEFT JOIN users ON matches.DesignerID = users.ID LEFT JOIN resources ON matches.ResourceID = resources.ID';
+  sqls.Values['questions'] := 'SELECT questions.ID, questions.GID, matches.GID AS MatchID, Question, Answer, ChoiceNumber FROM questions INNER JOIN matches ON questions.MatchID = matches.ID';
+  sqls.Values['choices'] := 'SELECT choices.ID, choices.GID, questions.GID AS QuestionID, Choice FROM choices INNER JOIN questions ON choices.QuestionID = questions.ID';
+  sqls.Values['answers'] := 'SELECT answers.ID, answers.GID, users.GID AS UserID, MatchID, DeliverTime, ReceiveTime, CorrectTime, Rate FROM answers INNER JOIN users ON answers.UserID = users.ID';
+  sqls.Values['subanswers'] := 'SELECT subanswers.ID, subanswers.GID, answers.GID AS AnswerID, Question, Answer, subanswers.Rate, Message, Attachment FROM subanswers INNER JOIN answers ON AnswerID = answers.ID';
+  //sqls.Values['follows'] := '';
+  sqls.Values['supports'] := 'SELECT supports.ID, supports.GID, tournaments.ID AS TournamentID, matches.ID AS MatchID, users.ID AS CorrectorID, CurrentState ' + 'FROM supports INNER JOIN tournaments ON supports.TournamentID = tournaments.ID INNER JOIN matches ON supports.MatchID = matches.ID LEFT JOIN users ON supports.CorrectorID = users.ID';
+//  sqls.Values['scores'] := '';
+  sqls.Values['payments'] := 'SELECT payments.ID, payments.GID, tournaments.GID AS TournamentID, users.GID AS UserID, Payment, PayTime FROM payments INNER JOIN tournaments ON payments.TournamentID = tournaments.ID INNER JOIN users ON payments.UserID = users.ID';
+  sqls.Values['open_categories'] := 'SELECT open_categories.ID, open_categories.GID, tournaments.GID AS TournamentID, open_categories.Title FROM open_categories INNER JOIN tournaments ON open_categories.TournamentID = tournaments.ID';
+  sqls.Values['open_scores'] := 'SELECT open_scores.ID, open_scores.GID, tournaments.GID AS TournamentID, users.GID AS UserID, open_categories.GID AS CategoryID, open_scores.Title, open_scores.Score, open_scores.ScoreTime '+ 'FROM open_scores INNER JOIN tournaments ON open_scores.TournamentID = tournaments.ID INNER JOIN users ON open_scores.UserID = users.ID INNER JOIN open_categories ON open_scores.CategoryID = open_categories.ID';
+
+  sqls.Values['pictures'] := 'SELECT * FROM ((SELECT pictures.ID, pictures.GID, users.GID AS ReferenceID, pictures.Kind FROM pictures INNER JOIN users ON pictures.ReferenceID = users.ID WHERE pictures.Kind = "user")' + ' UNION (SELECT pictures.ID, pictures.GID, matches.GID AS ReferenceID, pictures.Kind FROM pictures INNER JOIN matches ON pictures.ReferenceID = matches.ID WHERE pictures.Kind = "match")) as pictures';
+  sqls.Values['resources'] := 'SELECT resources.ID, resources.GID, users.GID AS CreatorID, authors.GID AS AuthorID, publications.GID AS PublicationID, t_resources.EntityID, resources.Quality, resources.Kind, resources.Tags, resources.Title, AgeClass '+
+                              'FROM resources LEFT JOIN users ON resources.CreatorID = users.ID LEFT JOIN authors ON resources.AuthorID = authors.ID LEFT JOIN publications ON resources.PublicationID = publications.ID LEFT JOIN '+
+                              '((SELECT resources.ID, books.GID AS EntityID FROM resources LEFT JOIN books ON resources.EntityID = books.ID WHERE Kind = "book") UNION '+
+                              '(SELECT resources.ID, multimedias.GID AS EntityID FROM resources LEFT JOIN multimedias ON resources.EntityID = multimedias.ID WHERE Kind = "multimedia") UNION '+
+                              '(SELECT resources.ID, webpages.GID AS EntityID FROM resources LEFT JOIN webpages ON resources.EntityID = webpages.ID WHERE Kind = "webpage")) AS t_resources ON resources.EntityID = t_resources.EntityID';
+
+  bunch := 10;
+  while True do
+  begin
+    myQuery.SQL.Text := 'SELECT MAX(EventTime) FROM (SELECT EventTime FROM changes WHERE EventTime > (SELECT SyncTime FROM library LIMIT 1) GROUP BY EventTime ORDER BY EventTime LIMIT '+ IntToStr(bunch) + ') as t_changes';
+    myQuery.Open;
+    if myQuery.Fields[0].AsString = '' then break;
+    synctime := myQuery.Fields[0].AsVariant;
+
+    myQuery.SQL.Text := 'SELECT * FROM changes WHERE EventTime BETWEEN (SELECT SyncTime FROM library LIMIT 1) AND ('+ myQuery.SQL.Text + ')';
+    myQuery.Open;
+
+    for i := 1 to myQuery.RecordCount do
+    begin
+      if myQuery.FieldByName('Kind').AsString = 'insert' then
+      begin
+//        if myQuery.FieldByName('TableName').AsString = 'pictures' then
+//          MyShowMessage('');
+
+
+        myQueryTmp.SQL.Text := sqls.Values[myQuery.FieldByName('TableName').AsString] + ' WHERE '+ myQuery.FieldByName('TableName').AsString +'.ID = '+ myQuery.FieldByName('ID').AsString;
+        myQueryTmp.Open;
+
+        tmp := ''; tmp2 := '';
+        for j := 2 to myQueryTmp.Fields.Count-1 do
+        begin
+          tmp := tmp + myQueryTmp.Fields[j].FieldName;
+          tmp2 := tmp2 + ':'+ myQueryTmp.Fields[j].FieldName;
+          if j <> myQueryTmp.Fields.Count-1 then
+          begin
+            tmp := tmp + ',';
+            tmp2 := tmp2 + ',';
+          end;
+        end;
+
+        myGlobalCommand.SQL.Text := 'INSERT INTO '+ myQuery.FieldByName('TableName').AsString +' ('+ tmp +') VALUES ('+ tmp2 +')';
+        for j := 2 to myQueryTmp.Fields.Count-1 do
+          myGlobalCommand.ParamValues[myQueryTmp.Fields[j].FieldName] := myQueryTmp.Fields[j].AsVariant;
+        myGlobalCommand.Execute;
+
+        myCommand.SQL.Text := 'UPDATE '+ myQuery.FieldByName('TableName').AsString +' SET GID = '+ IntToStr(myGlobalCommand.InsertId) + ' WHERE ID = '+ myQuery.FieldByName('ID').AsString;
+        myCommand.Execute;
+      end;
+
+      myQuery.Next;
+    end;
+    myCommand.SQL.Text := 'UPDATE library SET SyncTime = :SyncTime';
+    myCommand.ParamValues['SyncTime'] := synctime;
+    myCommand.Execute;
+  end;
 end;
 
+
+{
 function syncTable(upload : boolean; tableName : string; keyFields, syncFields : array of string) : boolean;
 var all, exists, notexists, keyField, keyChr, fieldString : string; fieldCount, keyCount : integer;
     cmd, tmp : string; i, j : integer;
@@ -2733,7 +2849,7 @@ begin
     myQuery.Next;
   end;
 end;
-}
+}{
 
 procedure uploadLibrary();
 begin
@@ -2806,6 +2922,7 @@ begin
   end;
   executeGlobalCommand('UPDATE libraries SET SyncDate = "'+ getShamsiDate +'" WHERE ID = '+ libraryID);
 end;
+}
 
 end.
 

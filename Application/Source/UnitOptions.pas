@@ -183,7 +183,7 @@ begin
   if s <> '' then Result := TFaDate.Create(s).ToGregorianDate else Result := NULL;
 end;
 procedure TfOptions.AdvGlowButton11Click(Sender: TObject);
-var i, j, matchId, questionId, authorId, publicationId : integer;  tmp, tmp2 : string; resource : boolean;
+var i, j, matchId, authorId, publicationId : integer;  tmp, tmp2 : string; resource : boolean;
 begin
 with fMain do
 begin
@@ -191,7 +191,7 @@ begin
   cImport.ConnectionString:= AddressToConnectionString('D:\Flash\Project\Match\DBs\Genuine_Reghaabat.mdb');
   cImport.Open;
 
-{// users
+// users
   //tmp := 'UPDATE users SET BirthDate = '+ getDateRefinedField('BirthDate');
   moveTable('users', ['ID', 'NationalID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Gender', 'RegisterTime', 'Description'],
                      ['ID', 'ID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Man', 'RegisterDate', 'Description']);
@@ -207,13 +207,13 @@ begin
     myCommand.Execute;
     qImport.Next;
   end;
-}
+
   qImport.SQL.Text := 'SELECT Pictures.* FROM Pictures INNER JOIN Users ON Pictures.ID = Users.ID';
   qImport.Open;
-  myCommand.SQL.Text := 'INSERT INTO pictures (ID, Kind, Picture) VALUES (:ID, "user", :Picture)';
+  myCommand.SQL.Text := 'INSERT INTO pictures (ReferenceID, Kind, Picture) VALUES (:ReferenceID, "user", :Picture)';
   for i := 1 to qImport.RecordCount do
   begin
-    myCommand.ParamValues['ID'] := qImport.FieldByName('ID').AsInteger;
+    myCommand.ParamValues['ReferenceID'] := qImport.FieldByName('ID').AsInteger;
     myCommand.ParamValues['Picture'] := qImport.FieldByName('Picture').AsVariant;
     myCommand.Execute;
     qImport.Next;
@@ -278,13 +278,10 @@ begin
     myCommand.Execute;
     matchId := myCommand.InsertId;
 
-    questionId := 0;
-    myCommandTmp.SQL.Text := 'INSERT INTO questions (MatchID, ID, Question, Answer) VALUES (:MatchID, :ID, :Question, :Answer)';
+    myCommandTmp.SQL.Text := 'INSERT INTO questions (MatchID, Question, Answer) VALUES (:MatchID, :Question, :Answer)';
     while (not qImportTmp.Eof) and (qImport.FieldByName('ID').AsInteger = qImportTmp.FieldByName('MatchID').AsInteger) do
     begin
-      inc(questionId);
       myCommandTmp.ParamValues['MatchID'] := matchId;
-      myCommandTmp.ParamValues['ID'] := questionId;
       myCommandTmp.ParamValues['Question'] := qImportTmp.FieldByName('Question').AsString;
       myCommandTmp.ParamValues['Answer'] := qImportTmp.FieldByName('Answer').AsString;
       qImportTmp.Next;
@@ -293,8 +290,8 @@ begin
 
     if qImport.FieldByName('Picture').AsString <> '' then
     begin
-      myCommand.SQL.Text := 'INSERT INTO pictures (ID, Kind, Picture) VALUES (:ID, "match", :Picture)';
-      myCommand.ParamValues['ID'] := matchId;
+      myCommand.SQL.Text := 'INSERT INTO pictures (ReferenceID, Kind, Picture) VALUES (:ReferenceID, "match", :Picture)';
+      myCommand.ParamValues['ReferenceID'] := matchId;
       myCommand.ParamValues['Picture'] := qImport.FieldByName('Picture').AsVariant;
       myCommand.Execute;
     end;
@@ -359,6 +356,18 @@ begin
     qImport.Next;
   end;
 
+  executeCommand( 'INSERT INTO changes (TableName, ID, SubjectID, Kind, EventTime) SELECT "users", users.ID, 1111, "insert", NOW() FROM users; '+
+                  'INSERT INTO changes (TableName, ID, SubjectID, Kind, EventTime) SELECT "matches", matches.ID, 1111, "insert", NOW() FROM matches; '+
+                  'INSERT INTO changes (TableName, ID, SubjectID, Kind, EventTime) SELECT "tournaments", tournaments.ID, 1111, "insert", NOW() FROM tournaments; '+
+                  'INSERT INTO changes (TableName, ID, SubjectID, Kind, EventTime) SELECT "answers", answers.ID, 1111, "insert", NOW() FROM answers; '+
+                  'INSERT INTO changes (TableName, ID, SubjectID, Kind, EventTime) SELECT "open_categories", open_categories.ID, 1111, "insert", NOW() FROM open_categories; '+
+                  'INSERT INTO changes (TableName, ID, SubjectID, Kind, EventTime) SELECT "open_scores", open_scores.ID, 1111, "insert", NOW() FROM open_scores; '+
+                  'INSERT INTO changes (TableName, ID, SubjectID, Kind, EventTime) SELECT "payments", payments.ID, 1111, "insert", NOW() FROM payments; '+
+                  'INSERT INTO changes (TableName, ID, SubjectID, Kind, EventTime) SELECT "pictures", pictures.ID, 1111, "insert", NOW() FROM pictures; '+
+                  'INSERT INTO changes (TableName, ID, SubjectID, Kind, EventTime) SELECT "questions", questions.ID, 1111, "insert", NOW() FROM questions; '+
+                  'INSERT INTO changes (TableName, ID, SubjectID, Kind, EventTime) SELECT "resources", resources.ID, 1111, "insert", NOW() FROM resources; '+
+//                  'INSERT INTO changes (TableName, ID, SubjectID, Kind, EventTime) SELECT "scores", scores.ID, 1111, "insert", NOW() FROM scores; '+
+                  'INSERT INTO changes (TableName, ID, SubjectID, Kind, EventTime) SELECT "supports", supports.ID, 1111, "insert", NOW() FROM supports;');
 end;
 end;
 
@@ -468,7 +477,7 @@ begin
     ReadOptions(clientTmp);
 
     executeCommand('UPDATE Library SET Title = "'+ correctString(eTitle.Text) + '"');
-    if imgChange then fMain.InsertOrUpdateJpeg('0', 'library', iLibrary);
+    if imgChange then fMain.qInsertOrUpdateJpeg('0', 'library', iLibrary);
 
     options.Values['AutoConnectLibrary'] := BoolToStr(chAutoConnectLibrary.Checked);
     options.Values['DownGrade'] := BoolToStr(chDownGrade.Checked);

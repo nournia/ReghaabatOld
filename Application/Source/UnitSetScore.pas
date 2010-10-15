@@ -56,7 +56,7 @@ begin
 end;
 procedure TfCorrect.bRemoveClick(Sender: TObject);
 begin
-  fMain.executeCommand('DELETE FROM answers WHERE UserID = '+ gCorrect.Cells[0, gCorrect.Row] +' AND MatchID = '+ gCorrect.Cells[1, gCorrect.Row]);
+  fMain.qDelete('answers', 'UserID = '+ gCorrect.Cells[0, gCorrect.Row] +' AND MatchID = '+ gCorrect.Cells[1, gCorrect.Row]);
   gCorrect.RemoveRows(gCorrect.Row, 1);
 end;
 
@@ -72,7 +72,7 @@ var
 begin
   for i := 1 to gCorrect.RowCount do
     if gCorrect.Cells[1,i] <> '' then
-      fMain.executeCommand('UPDATE answers SET CorrectTime = NOW(), Rate = '+ gCorrect.Cells[4,i] +' WHERE UserID = '+ gCorrect.Cells[0,i] +' AND MatchID = '+ gCorrect.Cells[1,i]);
+      fMain.qInsertOrUpdate('answers', ['CorrectTime', 'Rate'], [Now, gCorrect.Cells[4,i]], 'UserID = '+ gCorrect.Cells[0,i] +' AND MatchID = '+ gCorrect.Cells[1,i]);
   fMain.bRefreshClick(nil);
 end;
 

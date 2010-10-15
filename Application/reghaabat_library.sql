@@ -1,3 +1,4 @@
+DELIMITER $$
 CREATE DATABASE IF NOT EXISTS reghaabat_library CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE reghaabat_library;
 -- 0 <= Rate <= 1, 0 <= Quality	
@@ -25,19 +26,21 @@ CREATE TABLE categories (
 
 -- users
 CREATE TABLE library (
-	/* group */
+	-- group
 	MasterID int(11) NOT NULL,
 	Title VARCHAR(255) NOT NULL,
 	Description VARCHAR(1000) DEFAULT NULL,
 	Active tinyint(1) NOT NULL DEFAULT '0',
   
-	/* library */
+	-- library
 	UniqueID CHAR(40) NOT NULL,
 	ServerID CHAR(32) NULL DEFAULT NULL,
-	Licence VARCHAR(255) NULL DEFAULT NULL
+	Licence VARCHAR(255) NULL DEFAULT NULL,
+	SyncTime DATETIME NULL DEFAULT NULL
 );
 CREATE TABLE users (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	NationalID INT(11) NOT NULL,
 	Quality INT(11) NOT NULL DEFAULT '0',
 	FirstName VARCHAR(255) NOT NULL,
@@ -51,21 +54,27 @@ CREATE TABLE users (
 	Score INT NOT NULL DEFAULT '0',
 	CorrectionTime INT(11) NOT NULL DEFAULT '0' COMMENT 'Minute',
 	Email VARCHAR(255) DEFAULT NULL COLLATE 'ascii_bin',
-	UserPass VARCHAR(255) DEFAULT NULL COLLATE 'ascii_bin',
+	UserPass CHAR(40) DEFAULT NULL COLLATE 'ascii_bin',
 	
 	PRIMARY KEY (ID),
 	UNIQUE KEY Email (Email),
 	UNIQUE KEY NationalID (NationalID)
 ) AUTO_INCREMENT=1111;
 CREATE TABLE permissions (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	TournamentID int(11) NOT NULL,
 	UserID int(11) NOT NULL,
 	Permission ENUM('user', 'operator', 'designer', 'manager', 'master', 'admin') NOT NULL, /* Ozv, Ozvyar, Tarrah, Tarrahyar, Modir, Modir-e-Samaneh */
 	Accept tinyint(1) NOT NULL DEFAULT '0',
-	PRIMARY KEY (TournamentID, UserID)
+	PRIMARY KEY (ID),
+	FOREIGN KEY (UserID) REFERENCES users(ID),
+	FOREIGN KEY (TournamentID) REFERENCES tournaments(ID)
 );
 CREATE TABLE pictures (
-	ID INT(11) NOT NULL,
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
+	ReferenceID INT(11) NOT NULL,
 	Kind ENUM('library', 'user', 'resource', 'match') NOT NULL,
 	Picture MEDIUMBLOB NULL,
 	PRIMARY KEY (ID, Kind)
@@ -74,18 +83,21 @@ CREATE TABLE pictures (
 -- matches 
 CREATE TABLE authors (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	Quality INT(11) NOT NULL DEFAULT '0',
 	Title VARCHAR(255) NOT NULL,
 	PRIMARY KEY (ID)
 );
 CREATE TABLE publications (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	Quality INT(11) NOT NULL DEFAULT '0',
 	Title VARCHAR(255) NOT NULL,
 	PRIMARY KEY (ID)
 );
 CREATE TABLE resources (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	CreatorID INT(11) NOT NULL,
 	AuthorID INT(11) NULL DEFAULT NULL,
 	PublicationID INT(11) NULL DEFAULT NULL,
@@ -103,17 +115,20 @@ CREATE TABLE resources (
 );
 CREATE TABLE books (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	Pages INT NULL DEFAULT NULL,
 	PRIMARY KEY (ID)
 );
 CREATE TABLE multimedias (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	FileType VARCHAR(5) NULL DEFAULT NULL COLLATE 'ascii_bin',
 	Duration INT NULL DEFAULT NULL COMMENT 'minutes',
 	PRIMARY KEY (ID)
 );
 CREATE TABLE webpages (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	Content TEXT NULL,
 	Link varchar(1000) NULL DEFAULT NULL COLLATE 'ascii_bin',
 	Words INT NULL DEFAULT NULL,
@@ -121,6 +136,7 @@ CREATE TABLE webpages (
 );
 CREATE TABLE matches (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	DesignerID INT(11) NOT NULL,
 	Quality INT(11) NOT NULL DEFAULT '0',
 
@@ -142,27 +158,28 @@ CREATE TABLE matches (
 	FOREIGN KEY (AgeClass) REFERENCES ageclasses(ID)
 );
 CREATE TABLE questions (
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	MatchID INT(11) NOT NULL,
-	ID TINYINT(4) NOT NULL,
 	Question VARCHAR(1000) NOT NULL,
 	Answer VARCHAR(1000) NULL DEFAULT NULL,
 	ChoiceNumber TINYINT(4) NOT NULL DEFAULT '-1' COMMENT '-1: no choice, 0..n : valid',
-	PRIMARY KEY (MatchID, ID),
+	PRIMARY KEY (ID),
 	FOREIGN KEY (MatchID) REFERENCES matches(ID)
 );
 CREATE TABLE choices (
-	MatchID INT(11) NOT NULL,
+	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	QuestionID TINYINT(4) NOT NULL,
-	ID TINYINT(4) NOT NULL,
 	Choice VARCHAR(255) DEFAULT NULL,
-	PRIMARY KEY (MatchID, QuestionID, ID),
-	FOREIGN KEY (MatchID) REFERENCES matches(ID),
+	PRIMARY KEY (ID),
 	FOREIGN KEY (QuestionID) REFERENCES questions(ID)
 );
 
 -- answers 
 CREATE TABLE answers (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	UserID INT(11) NOT NULL,
 	MatchID INT(11) NOT NULL,
 	DeliverTime DATETIME NULL DEFAULT NULL,
@@ -175,6 +192,7 @@ CREATE TABLE answers (
 );
 CREATE TABLE subanswers (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	AnswerID INT(11) NOT NULL,
 	Question VARCHAR(1000) NOT NULL,
 	Answer VARCHAR(1000) NOT NULL,
@@ -188,6 +206,7 @@ CREATE TABLE subanswers (
 /* tournaments */
 CREATE TABLE tournaments (
 	ID int(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	Title VARCHAR(255) NOT NULL,
 	StartTime DATETIME NOT NULL,
 	Active TINYINT(1) NOT NULL,
@@ -200,33 +219,40 @@ CREATE TABLE tournaments (
 	PRIMARY KEY (ID)
 );
 CREATE TABLE follows (
+	ID int(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	TournamentID INT(11) NOT NULL,
 	FollowedID INT(11) NOT NULL,
-	PRIMARY KEY (TournamentID,FollowedID),
+	PRIMARY KEY (ID),
 	FOREIGN KEY (TournamentID) REFERENCES tournaments(ID),
 	FOREIGN KEY (FollowedID) REFERENCES tournaments(ID)
 );
 CREATE TABLE supports (
+	ID int(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	TournamentID INT(11) NOT NULL,
 	MatchID INT(11) NOT NULL,
 	CorrectorID INT(11) NOT NULL,
 	CurrentState ENUM('active', 'disabled', 'imported') NOT NULL,
-	PRIMARY KEY (TournamentID, MatchID),
+	PRIMARY KEY (ID),
 	FOREIGN KEY (TournamentID) REFERENCES tournaments(ID),
 	FOREIGN KEY (MatchID) REFERENCES matches(ID)
 );
 CREATE TABLE scores (
+	ID int(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	UserID INT(11) NOT NULL,
 	TournamentID INT(11) NOT NULL,
 	Score INT(11) NOT NULL DEFAULT '0',
 	ParticipateTime DATETIME NOT NULL,
 	Confirm TINYINT(1) NOT NULL DEFAULT '1',
-	PRIMARY KEY (UserID, TournamentID),
+	PRIMARY KEY (ID),
 	FOREIGN KEY (UserID) REFERENCES users(ID),
 	FOREIGN KEY (TournamentID) REFERENCES tournaments(ID)
 );
 CREATE TABLE payments (
 	ID int(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	TournamentID INT(11) NOT NULL,
 	UserID INT(11) NOT NULL,
 	Payment SMALLINT(6) NOT NULL,
@@ -238,14 +264,16 @@ CREATE TABLE payments (
 
 -- open_scores 
 CREATE TABLE open_categories (
+	ID int(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	TournamentID INT(11) NOT NULL,
-	ID TINYINT(4) NOT NULL,
 	Title VARCHAR(255) NOT NULL,
-	PRIMARY KEY (TournamentID, ID),
+	PRIMARY KEY (ID),
 	FOREIGN KEY (TournamentID) REFERENCES tournaments(ID)
 );
 CREATE TABLE open_scores (
 	ID INT(11) NOT NULL AUTO_INCREMENT,
+	GID INT(11) NULL DEFAULT NULL,
 	TournamentID INT(11) NOT NULL,
 	UserID INT(11) NOT NULL,
 	CategoryID TINYINT(4) NOT NULL,
@@ -254,7 +282,17 @@ CREATE TABLE open_scores (
 	ScoreTime DATETIME NOT NULL,
 	PRIMARY KEY (ID),
 	FOREIGN KEY (UserID) REFERENCES users(ID),
-	FOREIGN KEY (TournamentID, CategoryID) REFERENCES open_categories(TournamentID, ID)
+	FOREIGN KEY (CategoryID) REFERENCES open_categories(D)
+);
+
+-- log
+CREATE TABLE changes (
+	TableName VARCHAR(30) NOT NULL,
+	ID INT(11) NOT NULL,
+	SubjectID INT(11) NOT NULL,
+	Kind ENUM('insert', 'update', 'delete') NOT NULL DEFAULT 'insert',
+	EventTime DATETIME NOT NULL,
+	FOREIGN KEY (SubjectID) REFERENCES users(ID)	
 );
 
 /* data */
@@ -276,9 +314,6 @@ INSERT INTO tags	 	(ID, Title) VALUES
 						(0, 'داستانی'), 
 						(1, 'تاریخی'), 
 						(2, 'علمی');
-
-
-DELIMITER $$
 
 /* functions */
 CREATE FUNCTION getAgeClass(birth DATE) RETURNS INT(11) DETERMINISTIC
@@ -348,7 +383,7 @@ BEGIN
 	
 	DROP TEMPORARY TABLE supported, followed, newrows, matchScores;
 END$$
-CREATE PROCEDURE updateQualities(IN iMatchID INT)
+CREATE PROCEDURE updateQualities(IN iMatchID INT) -- bug: follow support
 BEGIN
 	DECLARE qBefore, qAfter, mDesignerID, mResourceID, mAuthorID, mPublicationID INT;
 	SELECT Quality, DesignerID, ResourceID INTO qBefore, mDesignerID, mResourceID FROM matches WHERE ID = iMatchID;
@@ -437,4 +472,10 @@ FOR EACH ROW BEGIN
 END
 //
 DELIMITER ;
+*/
+
+/* first
+INSERT INTO users (NationalID, FirstName, LastName, BirthDate, Gender, RegisterTime, UserPass) VALUES (1, 'علیرضا', 'نوریان', '1990-10-12', 'male', '2010-10-12 17:32:00', sha1('1'));
+INSERt INTO permissions (TournamentID, UserID, Permission, Accept) VALUES (1, 1111, "admin", 1);
+INSERT INTO library (MasterID, Title, UniqueID, SyncTime) VALUES (1111, 'کتاب', 'ef0dfd5a0d01ecb0ef9171bedd456325', NOW());
 */

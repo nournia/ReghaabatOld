@@ -77,7 +77,7 @@ end;
 
 procedure TfPay.bPayClick(Sender: TObject);
 begin
-  fMain.InsertOrUpdate('payments', 'ID = -1', ['TournamentID', 'UserID', 'Payment', 'PayTime'], [1, fMain.selectedUserId, sScore.Value, Now]);
+  fMain.qInsertOrUpdate('payments', ['ID', 'TournamentID', 'UserID', 'Payment', 'PayTime'], [-1, 1, fMain.selectedUserId, sScore.Value, Now]);
   deselectFrame;
   selectFrame;
 end;

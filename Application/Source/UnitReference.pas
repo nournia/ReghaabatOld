@@ -78,6 +78,7 @@ begin
   cbAgeClass.ItemIndex := 0;
   cbKindChange(nil);
   resourceId := -1;
+  entityId := -1;
   creatorId := StrToInt(fMain.loginUserID);
 
   sPages.Value := 0;
@@ -195,9 +196,7 @@ begin
     case kind of
       rBook:
       begin
-        tId := fMain.InsertOrUpdate('books', 'ID = '+ IntToStr(entityId),
-                                   ['Pages'],
-                                   [sPages.Value]);
+        entityId := fMain.qInsertOrUpdate('books', ['ID', 'Pages'], [entityId, sPages.Value]);
       end;
 
       rMultiMedia:
@@ -207,25 +206,17 @@ begin
         if eFile.Text <> dest then
           CopyFile(PWideChar(eFile.Text), PWideChar(dest), LongBool(0));
 
-
-        tId := fMain.InsertOrUpdate('multimedias', 'ID = '+ IntToStr(entityId),
-                                   ['FileType', 'Duration'],
-                                   [Copy(filetype, 2, Length(filetype)-1), sDuration.Value]);
+        entityId := fMain.qInsertOrUpdate('multimedias', ['ID', 'FileType', 'Duration'], [entityId, Copy(filetype, 2, Length(filetype)-1), sDuration.Value]);
       end;
 
       rWebPage:
       begin
-        tId := fMain.InsertOrUpdate('webpages', 'ID = '+ IntToStr(entityId),
-                                   ['Link', 'Content', 'Words'],
-                                   [eLink.Text, fMain.correctString(mContent.Lines.Text), 0]);
+        entityId := fMain.qInsertOrUpdate('webpages', ['ID', 'Link', 'Content', 'Words'], [entityId, eLink.Text, fMain.correctString(mContent.Lines.Text), 0]);
       end;
     end;
-    if tId <> -1 then entityId := tId;
 
-    tId := fMain.InsertOrUpdate('resources', 'ID = '+ IntToStr(resourceId),
-                               ['CreatorID', 'Kind', 'Title', 'AgeClass', 'EntityID'],
-                               [creatorId, ResourceToString(kind), fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex, entityId]);
-    if tId <> -1 then resourceId := tId;
+    resourceId := fMain.qInsertOrUpdate('resources', ['ID', 'CreatorID', 'Kind', 'Title', 'AgeClass', 'EntityID'],
+                                                    [resourceId, creatorId, ResourceToString(kind), fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex, entityId]);
 
     if authorId <> -1 then fMain.executeCommand('UPDATE resources SET AuthorID = '+ IntToStr(authorId) +' WHERE ID = '+ IntToStr(resourceId));
     if publicationId <> -1 then fMain.executeCommand('UPDATE resources SET PublicationID = '+ IntToStr(publicationId) +' WHERE ID = '+ IntToStr(resourceId));

@@ -72,14 +72,14 @@ object fUser: TfUser
       Left = 3
       Top = 3
       Width = 752
-      Height = 185
+      Height = 209
       CaptionPosition = cpTopRight
       Align = alTop
       ParentCtl3D = True
       TabOrder = 0
       DesignSize = (
         752
-        185)
+        209)
       object Label2: TLabel
         Left = 721
         Top = 16
@@ -100,7 +100,7 @@ object fUser: TfUser
       end
       object Label11: TLabel
         Left = 675
-        Top = 112
+        Top = 136
         Width = 63
         Height = 13
         Anchors = [akTop, akRight]
@@ -112,11 +112,10 @@ object fUser: TfUser
         Font.Style = []
         ParentFont = False
         Transparent = True
-        ExplicitLeft = 732
       end
       object Label13: TLabel
         Left = 680
-        Top = 64
+        Top = 88
         Width = 58
         Height = 13
         Anchors = [akTop, akRight]
@@ -130,11 +129,10 @@ object fUser: TfUser
         ParentBiDiMode = False
         ParentFont = False
         Transparent = True
-        ExplicitLeft = 737
       end
       object Label8: TLabel
         Left = 693
-        Top = 88
+        Top = 112
         Width = 45
         Height = 13
         Anchors = [akTop, akRight]
@@ -146,11 +144,10 @@ object fUser: TfUser
         Font.Style = []
         ParentFont = False
         Transparent = True
-        ExplicitLeft = 750
       end
       object Label12: TLabel
         Left = 709
-        Top = 137
+        Top = 161
         Width = 29
         Height = 13
         Anchors = [akTop, akRight]
@@ -164,7 +161,6 @@ object fUser: TfUser
         ParentBiDiMode = False
         ParentFont = False
         Transparent = True
-        ExplicitLeft = 766
       end
       object Label3: TLabel
         Left = 676
@@ -184,36 +180,53 @@ object fUser: TfUser
         Transparent = True
         ExplicitLeft = 733
       end
+      object Label5: TLabel
+        Left = 697
+        Top = 64
+        Width = 41
+        Height = 13
+        Anchors = [akTop, akRight]
+        BiDiMode = bdRightToLeft
+        Caption = #1580#1606#1587#1740#1578':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 7485192
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentBiDiMode = False
+        ParentFont = False
+        Transparent = True
+      end
       object rgGender: TAdvOfficeRadioGroup
-        Left = 459
-        Top = 5
-        Width = 70
-        Height = 60
+        Left = 568
+        Top = 53
+        Width = 108
+        Height = 38
         BorderStyle = bsNone
         Version = '1.2.4.1'
         Anchors = [akTop, akRight]
         ParentBackground = False
         ParentCtl3D = True
-        TabOrder = 7
+        TabOrder = 2
+        Columns = 2
         ItemIndex = 0
         Items.Strings = (
           #1570#1602#1575
           #1582#1575#1606#1605)
         Ellipsis = True
-        ShowFocus = False
       end
       object gDescription: TAdvGroupBox
         Left = 3
-        Top = 156
-        Width = 741
+        Top = 179
+        Width = 746
         Height = 27
         BorderStyle = bsNone
         CaptionPosition = cpTopRight
-        Anchors = [akLeft, akTop, akRight]
+        Align = alBottom
         ParentCtl3D = True
-        TabOrder = 6
+        TabOrder = 7
         DesignSize = (
-          741
+          746
           27)
         object Label10: TLabel
           Left = 691
@@ -231,7 +244,6 @@ object fUser: TfUser
           ParentBiDiMode = False
           ParentFont = False
           Transparent = True
-          ExplicitLeft = 712
         end
         object eDescription: TEdit
           Left = 14
@@ -377,7 +389,7 @@ object fUser: TfUser
       end
       object eAddress: TEdit
         Left = 17
-        Top = 133
+        Top = 157
         Width = 653
         Height = 21
         Anchors = [akLeft, akTop, akRight]
@@ -390,12 +402,12 @@ object fUser: TfUser
         MaxLength = 50
         ParentCtl3D = False
         ParentFont = False
-        TabOrder = 5
+        TabOrder = 6
       end
       object eNationalID: TEdit
-        Left = 586
-        Top = 60
-        Width = 84
+        Left = 568
+        Top = 84
+        Width = 102
         Height = 21
         Anchors = [akTop, akRight]
         Ctl3D = True
@@ -407,11 +419,11 @@ object fUser: TfUser
         MaxLength = 50
         ParentCtl3D = False
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 3
       end
       object meBirthDate: TMaskEdit
         Left = 607
-        Top = 84
+        Top = 108
         Width = 63
         Height = 21
         Anchors = [akTop, akRight]
@@ -427,7 +439,7 @@ object fUser: TfUser
         ParentBiDiMode = False
         ParentCtl3D = False
         ParentFont = False
-        TabOrder = 3
+        TabOrder = 4
         Text = '    /  /  '
         OnKeyDown = meBirthDateKeyDown
       end
@@ -498,9 +510,9 @@ object fUser: TfUser
         TabOrder = 1
       end
       object ePhone: TEdit
-        Left = 586
-        Top = 108
-        Width = 84
+        Left = 568
+        Top = 132
+        Width = 102
         Height = 21
         Anchors = [akTop, akRight]
         Ctl3D = True
@@ -512,13 +524,13 @@ object fUser: TfUser
         MaxLength = 50
         ParentCtl3D = False
         ParentFont = False
-        TabOrder = 4
+        TabOrder = 5
       end
     end
     object pLogin: TAdvGroupBox
       AlignWithMargins = True
       Left = 3
-      Top = 194
+      Top = 218
       Width = 752
       Height = 75
       CaptionPosition = cpTopRight
@@ -572,20 +584,17 @@ object fUser: TfUser
         ParentFont = False
         PasswordChar = '*'
         TabOrder = 1
-        TextHint = 
-          #1705#1604#1605#1607#8204#1740' '#1593#1576#1608#1585' '#1605#1740#8204#1578#1608#1575#1606#1583' '#1588#1575#1605#1604' '#1575#1593#1583#1575#1583' '#1608' '#1581#1585#1608#1601' '#1604#1575#1578#1740#1606' '#1576#1575#1588#1583' '#1608' '#1582#1575#1604#1740' '#1576#1608#1583#1606' '#1570#1606 +
-          ' '#1576#1607' '#1605#1593#1606#1740' '#1606#1583#1575#1588#1578#1606' '#1581#1602' '#1608#1585#1608#1583' '#1575#1587#1578'.'
-        OnChange = ePasswordChange
+        TextHint = #1705#1604#1605#1607#8204#1740' '#1593#1576#1608#1585' '#1578#1606#1607#1575' '#1605#1740#8204#1578#1608#1575#1606#1583' '#1588#1575#1605#1604' '#1575#1593#1583#1575#1583' '#1608' '#1581#1585#1608#1601' '#1604#1575#1578#1740#1606' '#1576#1575#1588#1583'.'
         OnLeftButtonClick = ePasswordLeftButtonClick
       end
-      object CheckBox4: TAdvOfficeCheckBox
+      object chPassword: TAdvOfficeCheckBox
         Left = 12
         Top = 47
         Width = 112
         Height = 20
         Checked = True
         TabOrder = 2
-        OnClick = CheckBox4Click
+        OnClick = chPasswordClick
         Alignment = taLeftJustify
         Caption = #1606#1605#1575#1610#1588' '#1576#1607' '#1588#1603#1604' '#1585#1605#1586
         Ellipsis = True
@@ -711,9 +720,9 @@ object fUser: TfUser
   end
   object gAccounts: TAdvColumnGrid
     Left = 8
-    Top = 313
+    Top = 332
     Width = 249
-    Height = 113
+    Height = 103
     Cursor = crDefault
     Align = alCustom
     BiDiMode = bdRightToLeft

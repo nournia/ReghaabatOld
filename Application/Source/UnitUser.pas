@@ -22,7 +22,7 @@ type
     DataSource: TDataSource;
     pLogin: TAdvGroupBox;
     ePassword: TButtonedEdit;
-    CheckBox4: TAdvOfficeCheckBox;
+    chPassword: TAdvOfficeCheckBox;
     Label18: TLabel;
     cbLogin: TComboBox;
     Label9: TLabel;
@@ -56,13 +56,13 @@ type
     ePhone: TEdit;
     meUserID: TMaskEdit;
     Label1: TLabel;
+    Label5: TLabel;
 
     procedure refresh();
     function validate() : boolean;
     procedure loadData(id : integer);
-    procedure ePasswordChange(Sender: TObject);
     procedure bAccountsClick(Sender: TObject);
-    procedure CheckBox4Click(Sender: TObject);
+    procedure chPasswordClick(Sender: TObject);
     procedure meBirthDateKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure bApplyClick(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
@@ -75,7 +75,6 @@ type
     procedure bEditClick(Sender: TObject);
 
     procedure fillCBLogin(userID : string);
-    procedure bLoginClick(Sender: TObject);
     procedure bNewUserClick(Sender: TObject);
   private
     { Private declarations }
@@ -119,7 +118,7 @@ begin
 
   ePassword.Text := '';
   ePassword.PasswordChar := '*';
-  CheckBox4.Checked := True;
+  chPassword.Checked := true;
 
   eFirstName.SetFocus;
 end;
@@ -183,7 +182,7 @@ begin
         if (pix >= 0) or ((fMain.loginUser >= uManager) and (FieldByName('Permission').AsString = '')) then
         begin
           if FieldByName('Permission').AsString <> '' then cbLogin.ItemIndex := pix else cbLogin.ItemIndex := 0;
-          ePassword.Text := decrypt(FieldByName('UserPass').AsString);
+          pLogin.ImageIndex := 0;
         end else
           pLogin.Visible := false;
 
@@ -196,11 +195,6 @@ end;
 procedure TfUser.bImportFromLibraryClick(Sender: TObject);
 begin
   loadUserFromLibrary;
-end;
-
-procedure TfUser.bLoginClick(Sender: TObject);
-begin
-  ePasswordChange(nil);
 end;
 
 procedure TfUser.bNewUserClick(Sender: TObject);
@@ -247,27 +241,28 @@ procedure TfUser.ePasswordLeftButtonClick(Sender: TObject);
   end;
 begin
   ePassword.Text := SuggestCode;
+  chPassword.Checked := false;
 end;
 
 procedure TfUser.bApplyClick(Sender: TObject);
-var gender, user : string; tId, i : Integer; j : TUser;
+var gender, user : string; tmp : Integer; j : TUser; newuser : boolean;
 begin
   if validate then
   begin
+    newuser := userId = -1;
     if rgGender.ItemIndex = 0 then gender := GenderToString(gMale) else gender := GenderToString(gFemale);
-    tId := fMain.InsertOrUpdate('users', 'ID = '+ IntToStr(userID),
-                                ['NationalID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Gender', 'RegisterTime', 'Description'],
-                                [eNationalID.Text, eFirstName.Text, eLastName.Text, TFaDate.CreateByPersianDate(meBirthDate.Text).ToGregorianDate, eAddress.Text, ePhone.Text, gender, Now, eDescription.Text]);
-    if tId <> -1 then userId := tId;
+    userId := fMain.qInsertOrUpdate('users', ['ID', 'NationalID', 'FirstName', 'LastName', 'BirthDate', 'Address', 'Phone', 'Gender', 'RegisterTime', 'Description'],
+                                             [userId, eNationalID.Text, eFirstName.Text, eLastName.Text, TFaDate.CreateByPersianDate(meBirthDate.Text).ToGregorianDate, eAddress.Text, ePhone.Text, gender, Now, eDescription.Text]);
 
   //  Convert Image
   //  if (Image1.Picture.Width <> 54) or (Image1.Picture.Height <> 72) then fMain.ScaleBmp(Image1.Picture.Bitmap);
     if imgChange then
-      fMain.InsertOrUpdateJpeg(IntToStr(userID), 'user', iUser);
+      fMain.qInsertOrUpdateJpeg(IntToStr(userID), 'user', iUser);
 
     if pLogin.Visible then
     begin
-      fMain.executeCommand('UPDATE users SET UserPass = "'+ encrypt(ePassword.Text) +'" WHERE ID = '+ IntToStr(userID));
+      if ePassword.Text <> '' then
+        fMain.executeCommand('UPDATE users SET UserPass = sha1("'+ ePassword.Text +'") WHERE ID = '+ IntToStr(userID));
 
       for j := uUser to uAdmin do
         if UserToPersian(j) = cbLogin.Text then
@@ -276,17 +271,12 @@ begin
           break;
         end;
 
-      fMain.InsertOrUpdate('permissions', 'TournamentID = 1 AND UserID = '+ IntToStr(userID),
-                          ['TournamentID', 'UserID', 'Permission', 'Accept'],
-                          [1, userID, user, 1]);
+      fMain.qInsertOrUpdate('permissions', ['ID', 'TournamentID', 'UserID', 'Permission', 'Accept'], [-1, 1, userID, user, 1], 'TournamentID = 1 AND UserID = '+ IntToStr(userID));
     end;
 
-    if tId <> -1 then
+    if newuser then
     begin
-      fMain.InsertOrUpdate('scores', 'TournamentID = 1 AND UserID = '+ IntToStr(userID),
-                          ['TournamentID', 'UserID', 'ParticipateTime'],
-                          [1, userID, Now]);
-
+      fMain.qInsertOrUpdate('scores', ['ID', 'TournamentID', 'UserID', 'ParticipateTime'], [-1, 1, userID, Now]);
       fMain.MyShowMessage('عضو جدید با کد '+ IntToStr(userID) +' ثبت شد');
     end;
   {
@@ -311,15 +301,9 @@ begin
   meUserID.SelectAll;
 end;
 
-procedure TfUser.CheckBox4Click(Sender: TObject);
+procedure TfUser.chPasswordClick(Sender: TObject);
 begin
-  if CheckBox4.Checked then ePassword.PasswordChar := '*'
-  else ePassword.PasswordChar := #0;
-end;
-
-procedure TfUser.ePasswordChange(Sender: TObject);
-begin
-  if ePassword.Text = '' then pLogin.ImageIndex := -1 else pLogin.ImageIndex := 0;
+  if chPassword.Checked then ePassword.PasswordChar := '*' else ePassword.PasswordChar := #0;
 end;
 
 procedure TfUser.SpeedButton1Click(Sender: TObject);

@@ -57,7 +57,7 @@ end;
 // GUI
 procedure TfDeliver.bApplyClick(Sender: TObject);
 begin
-  fMain.InsertOrUpdate('answers', 'ID = -1', ['UserID', 'MatchID', 'DeliverTime'], [StrToInt(fMain.selectedUserId), StrToInt(gDeliver.Cells[0, gDeliver.Row]), Now] );
+  fMain.qInsertOrUpdate('answers', ['ID', 'UserID', 'MatchID', 'DeliverTime'], [-1, StrToInt(fMain.selectedUserId), StrToInt(gDeliver.Cells[0, gDeliver.Row]), Now] );
   fMain.bRefreshClick(nil);
 end;
 

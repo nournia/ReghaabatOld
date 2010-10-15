@@ -131,7 +131,7 @@ begin
 
     for i := 1 to RecordCount do
     begin
-      Grid.Cells[0,i] := FieldByName('ID').AsString;
+      Grid.Cells[0,i] := IntToStr(i);
       Grid.Cells[1,i] := FieldByName('Question').AsString;
       Grid.Cells[2,i] := FieldByName('Answer').AsString;
       Grid.AddRow;
@@ -143,21 +143,30 @@ end;
 function TfQuestionMatch.addQuestionMatch(id : integer; test : boolean) : integer;
 var i, q : Integer; answer : string;
 begin
-  Result := fMain.InsertOrUpdate('matches', 'ID = '+ IntToStr(id), ['DesignerID', 'Title', 'AgeClass', 'ResourceID'], [designerId, fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex, resourceId]);
-  if Result <> -1 then id := Result;
+  id := fMain.qInsertOrUpdate('matches', ['ID', 'DesignerID', 'Title', 'AgeClass', 'ResourceID'], [id, designerId, fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex, resourceId]);
 
-  fMain.executeCommand('DELETE FROM questions WHERE MatchID = '+ IntToStr(id));
-  q := 1;
+    with fMain.myQuery do
+  begin
+    SQL.Text := 'SELECT ID FROM questions WHERE MatchID = '+ IntToStr(id);
+    Open;
+    for i := 1 to RecordCount do
+    begin
+      fMain.qDelete('questions', 'ID = '+ Fields[0].AsString);
+      Next;
+    end;
+  end;
+
   for i := 1 to Grid.RowCount-1 do
   if Grid.Cells[1,i] <> '' then
   begin
-    if Grid.Cells[2,i] <> '' then answer := '"'+ fMain.correctString(Grid.Cells[2,i]) +'"' else answer := 'NULL';
-    fMain.executeCommand('INSERT INTO questions (MatchID, ID, Question, Answer) VALUES ('+ IntToStr(id) +', '+ IntToStr(q) +', "'+ fMain.correctString(Grid.Cells[1,i]) +'", '+ answer +')');
-    inc(q);
+    if Grid.Cells[2,i] <> '' then
+      fMain.qInsertOrUpdate('questions', ['ID', 'MatchID', 'Question', 'Answer'], [-1, id, fMain.correctString(Grid.Cells[1,i]), fMain.correctString(Grid.Cells[2,i])])
+    else
+      fMain.qInsertOrUpdate('questions', ['ID', 'MatchID', 'Question'], [-1, id, fMain.correctString(Grid.Cells[1,i])])
   end;
 
   if not test then
-    fMain.InsertOrUpdate('supports', 'TournamentID = 1 AND MatchID = '+ IntToStr(id), ['TournamentID', 'MatchID', 'CorrectorID', 'CurrentState'], [1, id, meCorrectorId.Text, StateToString(TMatchState(cbState.ItemIndex))]);
+    fMain.qInsertOrUpdate('supports', ['ID', 'TournamentID', 'MatchID', 'CorrectorID', 'CurrentState'], [-1, 1, id, meCorrectorId.Text, StateToString(TMatchState(cbState.ItemIndex))], 'TournamentID = 1 AND MatchID = '+ IntToStr(id));
 end;
 
 // GUI

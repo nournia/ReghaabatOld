@@ -171,14 +171,14 @@ begin
   fMain.loadJpeg(IntToStr(matchId), 'match', iContent, fMain.myQuery);
 end;
 procedure TfInstructionMatch.addInstructionMatch(id : integer; test : boolean);
-var i, q, tId : Integer; answer : string;
+var i, q : Integer; answer : string;
 begin
-  tId := fMain.InsertOrUpdate('matches', 'ID = '+ IntToStr(id), ['DesignerID', 'Title', 'AgeClass', 'CategoryID', 'Content', 'Configuration'], [designerId, fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex, cbCategory.ItemIndex, fMain.correctString(mContent.Lines.Text), sHeight.Text +' '+ sWidth.Text +' '+ sTop.Text +' '+ sLeft.Text]);
-  if tId <> -1 then id := tId;
-  if imgChange then fMain.InsertOrUpdateJpeg(IntToStr(id), 'match', iContent);
+  id := fMain.qInsertOrUpdate('matches', ['ID', 'DesignerID', 'Title', 'AgeClass', 'CategoryID', 'Content', 'Configuration'],
+                                         [id, designerId, fMain.correctString(eTitle.Text), cbAgeClass.ItemIndex, cbCategory.ItemIndex, fMain.correctString(mContent.Lines.Text), sHeight.Text +' '+ sWidth.Text +' '+ sTop.Text +' '+ sLeft.Text]);
+  if imgChange then fMain.qInsertOrUpdateJpeg(IntToStr(id), 'match', iContent);
 
   if not test then
-  fMain.InsertOrUpdate('supports', 'TournamentID = 1 AND MatchID = '+ IntToStr(id), ['TournamentID', 'MatchID', 'CorrectorID', 'CurrentState'], [1, id, meCorrectorId.Text, StateToString(TMatchState(cbState.ItemIndex))]);
+    fMain.qInsertOrUpdate('supports', ['ID', 'TournamentID', 'MatchID', 'CorrectorID', 'CurrentState'], [-1, 1, id, meCorrectorId.Text, StateToString(TMatchState(cbState.ItemIndex))], 'TournamentID = 1 AND MatchID = '+ IntToStr(id));
 end;
 
 // GUI

@@ -51,13 +51,13 @@ end;
 // GUI
 procedure TfReceive.bRemoveClick(Sender: TObject);
 begin
-  fMain.executeCommand('DELETE FROM answers WHERE UserID = '+ fMain.selectedUserId + ' AND MatchID = '+ gReceive.Cells[0, gReceive.Row]);
+  fMain.qDelete('answers', 'UserID = '+ fMain.selectedUserId + ' AND MatchID = '+ gReceive.Cells[0, gReceive.Row]);
   gReceive.RemoveRows(gReceive.Row, 1);
 end;
 
 procedure TfReceive.bApplyClick(Sender: TObject);
 begin
-  fMain.executeCommand('UPDATE answers SET ReceiveTime = NOW() WHERE UserID = '+ fMain.selectedUserId + ' AND MatchID = '+ gReceive.Cells[0, gReceive.Row]);
+  fMain.qInsertOrUpdate('answers', ['ReceiveTime'], [Now], 'UserID = '+ fMain.selectedUserId + ' AND MatchID = '+ gReceive.Cells[0, gReceive.Row]);
   fMain.bRefreshClick(nil);
 end;
 end.
